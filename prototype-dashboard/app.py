@@ -29,7 +29,7 @@ st.markdown("""
 st.markdown('<p class="big-title">🎧 YouTube VN Music Analytics</p>', unsafe_allow_html=True)
 
 # ================= LOAD =================
-df = pd.read_csv("../data/youtube_vn_music_cleaned.csv")
+df = pd.read_csv("data/youtube_vn_music_cleaned.csv")
 
 # ================= FEATURE ENGINEERING =================
 df['video_publish_date'] = pd.to_datetime(df['video_publish_date'], errors='coerce')
