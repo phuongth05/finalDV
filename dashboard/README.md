@@ -27,8 +27,8 @@ Dữ liệu
 Chạy
 
 ```bash
-cd finalDV/dashboard
-streamlit run app.py
+cd finalDV
+streamlit run dashboard/app.py
 ```
 
 Ghi chú

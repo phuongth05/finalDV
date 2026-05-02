@@ -5,6 +5,7 @@ import numpy as np
 import re
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -74,10 +75,10 @@ df['day'] = df['video_publish_date'].dt.day_name()
 df['title_length'] = df['video_title'].astype(str).apply(len)
 
 # ================= SIDEBAR =================
+        # <h1>Điều khiển</h1>
 st.sidebar.markdown(
     """
     <div class="sidebar-card">
-        <h1>Điều khiển</h1>
         <p>Chọn khoảng thời gian, khoảng lượt xem, rồi dùng cross-filter trên các biểu đồ để khoanh vùng dữ liệu nhanh hơn.</p>
     </div>
     """,
@@ -106,7 +107,7 @@ if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
 else:
     start_date = end_date = date_range
 
-filtered_df = df[
+base_filtered_df = df[
     (df['publish_date'] >= start_date) &
     (df['publish_date'] <= end_date) &
     (df['video_view_count'].between(*view_range))
@@ -118,10 +119,10 @@ if "cross_filter_cache" not in st.session_state:
     st.session_state.cross_filter_cache = {}
 
 # dọn key cross-filter cũ đã ngưng sử dụng
-for stale_key in ["cross_heatmap", "cross_confounder"]:
-    st.session_state.cross_filter_disabled.pop(stale_key, None)
-    st.session_state.cross_filter_cache.pop(stale_key, None)
-    st.session_state.cross_filter_cache.pop(f"{stale_key}__signature", None)
+# for stale_key in ["cross_heatmap"]:
+#     st.session_state.cross_filter_disabled.pop(stale_key, None)
+#     st.session_state.cross_filter_cache.pop(stale_key, None)
+#     st.session_state.cross_filter_cache.pop(f"{stale_key}__signature", None)
 
 
 def _selection_state(widget_key):
@@ -169,9 +170,8 @@ def _sync_chart_selection(widget_key, event):
         st.session_state.cross_filter_cache[widget_key] = selection
         st.session_state.cross_filter_cache[f"{widget_key}__signature"] = signature
     else:
-        if widget_key in st.session_state.cross_filter_cache:
-            st.session_state.cross_filter_cache.pop(widget_key, None)
-        st.session_state.cross_filter_cache[f"{widget_key}__signature"] = ""
+        if widget_key not in st.session_state.cross_filter_cache:
+            st.session_state.cross_filter_cache[f"{widget_key}__signature"] = ""
 
     return selection and signature != previous_signature
 
@@ -303,10 +303,15 @@ def _collect_cross_filters(source_df):
     return active_filters
 
 
-def _apply_cross_filters(frame, active_filters):
+def _apply_cross_filters(frame, active_filters, exclude_key=None):
     result = frame.copy()
 
     for item in active_filters:
+        # bỏ qua filter nếu đã bị vô hiệu hóa trong session state
+        if item["key"] == exclude_key:
+            continue
+
+
         kind = item["kind"]
         values = item["values"]
 
@@ -333,20 +338,21 @@ def _apply_cross_filters(frame, active_filters):
     return result
 
 
-active_cross_filters = _collect_cross_filters(filtered_df)
+active_cross_filters = _collect_cross_filters(base_filtered_df)
 
 for filter_key, disabled_signature in list(st.session_state.cross_filter_disabled.items()):
     if _current_selection_signature(filter_key) != disabled_signature:
         st.session_state.cross_filter_disabled.pop(filter_key, None)
 
-filtered_df = _apply_cross_filters(filtered_df, active_cross_filters)
+# Tạo filtered_df chứa TẤT CẢ các filter để hiển thị cho phần text, tính toán metric (Tab 1)
+filtered_df = _apply_cross_filters(base_filtered_df, active_cross_filters)
 
 st.sidebar.success(f"Đang hiển thị {len(filtered_df)} video sau khi lọc.")
 
 with st.sidebar.expander("Cross-filters đang áp dụng", expanded=True):
     if active_cross_filters:
         for item in active_cross_filters:
-            cols = st.columns([0.78, 0.22])
+            cols = st.columns([0.75, 0.25])
             cols[0].markdown(f"**{item['label']}**")
             if cols[1].button("Bỏ", key=f"remove_{item['key']}"):
                 st.session_state.cross_filter_disabled[item["key"]] = item["signature"]
@@ -396,8 +402,8 @@ with tab2:
     st.header("Câu 1: Định nghĩa 'Thành công' của một sản phẩm âm nhạc")
 
     # Tiền xử lý dữ liệu cơ bản cho Câu 1
-    df_q1 = filtered_df.dropna(subset=['video_view_count', 'video_like_count', 'video_comment_count']).copy()
-    df_q1['video_licensed_content'] = df_q1['video_licensed_content'].fillna(False).astype(bool)
+    df_bubble = _apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_bubble")
+    df_q1 = df_bubble.dropna(subset=['video_view_count', 'video_like_count', 'video_comment_count']).copy()
 
     # --- BIỂU ĐỒ 1.1: BUBBLE CHART ---
     st.subheader("1. View cao có đi kèm lượng fan tương tác mạnh?")
@@ -429,9 +435,13 @@ with tab2:
             "Lượt bình luận: %{marker.size:,}<extra></extra>"
         )
     )
-    bubble_event = st.plotly_chart(fig1, use_container_width=True, key="cross_bubble", on_select="rerun")
-    if _sync_chart_selection("cross_bubble", bubble_event):
-        st.rerun()
+    bubble_event = st.plotly_chart(
+        fig1, 
+        use_container_width=True, 
+        key="cross_bubble", 
+        on_select="rerun",
+    )
+    _sync_chart_selection("cross_bubble", bubble_event)
     st.caption("💡 **Insight:** Những bong bóng to nhất biểu thị video gây bão bình luận. So sánh màu sắc để xem nhạc có bản quyền hay nhạc tự do đem lại nhiều tương tác hơn.")
 
 
@@ -467,9 +477,12 @@ with tab2:
 
     # --- BIỂU ĐỒ 1.3: LOLLIPOP CHART ---
     st.subheader("3. Top 10 Kênh có Tỷ lệ Tương tác (Engagement Rate) cao nhất")
+    df_lollipop = _apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_lollipop")
+    df_q1_lollipop = df_lollipop.dropna(subset=['video_view_count', 'video_like_count', 'video_comment_count']).copy()
+    
     # Tính toán top 10 kênh có tổng view cao nhất
-    top_10_channels = df_q1.groupby('channel_title')['video_view_count'].sum().nlargest(10).index
-    df_top10 = df_q1[df_q1['channel_title'].isin(top_10_channels)]
+    top_10_channels = df_q1_lollipop.groupby('channel_title')['video_view_count'].sum().nlargest(10).index
+    df_top10 = df_q1_lollipop[df_q1_lollipop['channel_title'].isin(top_10_channels)]
 
     # Group by tính tổng view, like, comment cho top 10
     df_grouped = df_top10.groupby('channel_title')[['video_view_count', 'video_like_count', 'video_comment_count']].sum().reset_index()
@@ -504,9 +517,13 @@ with tab2:
         showlegend=False,
         height=500
     )
-    lollipop_event = st.plotly_chart(fig3, use_container_width=True, key="cross_lollipop", on_select="rerun")
-    if _sync_chart_selection("cross_lollipop", lollipop_event):
-        st.rerun()
+    lollipop_event = st.plotly_chart(
+        fig3, 
+        use_container_width=True, 
+        key="cross_lollipop", 
+        on_select="rerun",
+    )    
+    _sync_chart_selection("cross_lollipop", lollipop_event)
     st.caption("💡 **Insight:** Kênh có thanh kẹo dài nhất là kênh tuy có thể ít View, nhưng sở hữu lượng fan 'cày' like và comment nhiệt tình và trung thành nhất.")
 
 # ================= TAB 3 =================
@@ -567,37 +584,38 @@ with tab3:
 
     # --- BIỂU ĐỒ 2.3: BAR CHART CHO NLP (TỪ KHÓA TRONG TITLE) ---
     st.subheader("3. Sức mạnh Từ khóa trong Tiêu đề (Định dạng nhạc)")
-    
+    df_bar = _apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_keywords")
+    df_q2_bar = df_bar.dropna(subset=['video_view_count', 'video_title']).copy()
     keyword_stats = []
 
     # Chuẩn bị dữ liệu text
-    titles = df_q2['video_title'].dropna().astype(str).tolist()
-    
+    titles = df_q2_bar['video_title'].dropna().astype(str).tolist()
+
     # Định nghĩa các từ dừng (stopwords) tiếng Việt và Anh để thuật toán bỏ qua
     custom_stopwords = ['và', 'của', 'là', 'những', 'các', 'trong', 'với', 'cho', 'để', 'có', 'không', 'bài', 'hát', 'tập', 'phần', 'the', 'of', 'in', 'and', 'to', 'a', 'is', 'that', 'it', 'on', 'for', 'as', 'was', 'but', 'are']
-    
+
     # Chạy thuật toán TF-IDF (lấy top 15 cụm từ quan trọng nhất, có thể là 1 hoặc 2 từ ghép lại)
     try:
         vectorizer = TfidfVectorizer(max_features=15, ngram_range=(1, 2), stop_words=custom_stopwords)
         vectorizer.fit(titles)
         top_keywords = vectorizer.get_feature_names_out()
-        
+
         keyword_stats = []
         for kw in top_keywords:
             # Lọc các video chứa từ khóa này
-            mask = df_q2['video_title'].astype(str).str.contains(kw, case=False, na=False)
+            mask = df_q2_bar['video_title'].astype(str).str.contains(kw, case=False, na=False)
             count = mask.sum()
             if count > 0:
-                avg_views = df_q2[mask]['video_view_count'].mean()
+                avg_views = df_q2_bar[mask]['video_view_count'].mean()
                 keyword_stats.append({
-                    'Keyword': kw.upper(), 
-                    'Avg_Views': avg_views, 
+                    'Keyword': kw.upper(),
+                    'Avg_Views': avg_views,
                     'Video_Count': count
                 })
-        
+
         if keyword_stats:
             df_kw = pd.DataFrame(keyword_stats).sort_values(by='Avg_Views', ascending=True)
-            
+
             fig6 = px.bar(
                 df_kw,
                 x='Avg_Views',
@@ -611,13 +629,17 @@ with tab3:
                 title="Horizontal Bar Chart: Top 15 Cụm từ quan trọng nhất tự động trích xuất bởi TF-IDF"
             )
             fig6.update_traces(texttemplate='%{x:,.0f}')
-            keyword_event = st.plotly_chart(fig6, use_container_width=True, key="cross_keywords", on_select="rerun")
-            if _sync_chart_selection("cross_keywords", keyword_event):
-                st.rerun()
+            keyword_event = st.plotly_chart(
+                fig6, 
+                use_container_width=True, 
+                key="cross_keywords", 
+                on_select="rerun",
+            )
+            _sync_chart_selection("cross_keywords", keyword_event)
             st.caption("💡 **Insight:** Biểu đồ này không dùng danh sách cho trước mà dùng AI (TF-IDF) tự động dò quét toàn bộ text. Những cụm từ có cột mọc dài nhất chính là 'công thức đặt tên' thu hút view khủng nhất trên thị trường.")
         else:
             st.warning("Không trích xuất được từ khóa nào thỏa mãn.")
-            
+
     except Exception as e:
         st.error(f"Lỗi khi chạy TF-IDF: {e}. Vui lòng kiểm tra lại dữ liệu chữ.")
 
@@ -625,22 +647,22 @@ with tab3:
 # ================= TAB 4 =================
 with tab4:
     st.header("Câu 3: Khám phá 'Khung giờ vàng' đăng nhạc")
-    
+
     df_q3 = filtered_df.dropna(subset=['video_view_count', 'hour', 'day']).copy()
-    
+
     # Sắp xếp thứ tự các ngày trong tuần cho chuẩn
     days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     df_q3['day'] = pd.Categorical(df_q3['day'], categories=days_order, ordered=True)
 
     # --- BIỂU ĐỒ 3.1: HEATMAP THỜI GIAN ĐĂNG BÀI ---
     st.subheader("1. Bản đồ nhiệt (Heatmap): Đăng lúc nào dễ có view cao nhất?")
-    
+
     # Tính trung bình view theo ngày và giờ
     heat_data = df_q3.groupby(['day', 'hour'])['video_view_count'].mean().reset_index()
     heat_pivot = heat_data.pivot(index='day', columns='hour', values='video_view_count')
     heat_pivot = heat_pivot.reindex(index=days_order)
     heat_pivot = heat_pivot.reindex(columns=sorted(heat_pivot.columns))
-    
+
     fig7 = px.imshow(
         heat_pivot,
         labels=dict(x="Giờ trong ngày (0-23h)", y="Ngày trong tuần", color="Trung bình View"),
@@ -653,19 +675,18 @@ with tab4:
 
     # --- BIỂU ĐỒ 3.2: LINE/RADAR CHART - CUNG VS CẦU ---
     st.subheader("2. Độ lệch pha: Youtuber thích đăng giờ nào vs Khán giả xem giờ nào?")
-    
+    df_line_radar = _apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_trend")
+    df_q3_line_radar = df_line_radar.dropna(subset=['video_view_count', 'hour']).copy()
+
     # Đếm số lượng video phát hành theo giờ (Nguồn Cung)
-    supply = df_q3.groupby('hour').size().reset_index(name='video_count')
+    supply = df_q3_line_radar.groupby('hour').size().reset_index(name='video_count')
     # Tổng view thu về theo giờ (Nguồn Cầu)
-    demand = df_q3.groupby('hour')['video_view_count'].sum().reset_index(name='total_views')
-    
+    demand = df_q3_line_radar.groupby('hour')['video_view_count'].sum().reset_index(name='total_views')
+
     df_trend = pd.merge(supply, demand, on='hour')
-    
-    from plotly.subplots import make_subplots
-    import plotly.graph_objects as go
 
     fig8 = make_subplots(specs=[[{"secondary_y": True}]])
-    
+
     fig8.add_trace(
         go.Bar(x=df_trend['hour'], y=df_trend['video_count'], name="Số lượng Video đăng (Cung)", marker_color='rgb(158,202,225)'),
         secondary_y=False,
@@ -674,28 +695,32 @@ with tab4:
         go.Scatter(x=df_trend['hour'], y=df_trend['total_views'], name="Tổng lượt xem (Cầu)", marker_color='rgb(227,26,28)', mode='lines+markers', line=dict(width=3)),
         secondary_y=True,
     )
-    
+
     fig8.update_layout(
         title_text="Đối chiếu Số lượng Video phát hành và Tổng View theo Giờ",
         xaxis_title="Giờ trong ngày"
     )
     fig8.update_yaxes(title_text="Số lượng Video", secondary_y=False)
     fig8.update_yaxes(title_text="Tổng lượt xem", secondary_y=True)
-    
-    trend_event = st.plotly_chart(fig8, use_container_width=True, key="cross_trend", on_select="rerun")
-    if _sync_chart_selection("cross_trend", trend_event):
-        st.rerun()
+
+    trend_event = st.plotly_chart(
+        fig8, 
+        use_container_width=True, 
+        key="cross_trend", 
+        on_select="rerun",
+    )
+    _sync_chart_selection("cross_trend", trend_event)
     st.caption("💡 Đường màu đỏ chênh lệch cao tại những cột màu xanh thấp chính là 'Đại dương xanh' - ít người cạnh tranh đăng bài nhưng lượng người xem lại cực lớn.")
 
     # --- BIỂU ĐỒ 3.3: 2D DENSITY CONTOUR PLOT ---
     st.subheader("3. Biểu đồ Đường đồng mức: Sự kết hợp hoàn hảo giữa Thời lượng và Lượt xem")
-    
+
     # Lọc bỏ các video có thời lượng = 0 để tránh lỗi Log scale
     df_contour = df_q3[df_q3['video_duration'] > 0].copy()
 
     df_contour['log_duration'] = np.log10(df_contour['video_duration'])
     df_contour['log_views'] = np.log10(df_contour['video_view_count'])
-    
+
     fig9 = px.density_contour(
         df_contour,
         x='log_duration',
@@ -731,76 +756,78 @@ with tab5:
         df_model[col] = df_model[col].fillna(df_model[col].median())
 
     df_model = df_model.dropna(subset=['video_view_count'])
+    if len(df_model) < 10:
+        st.warning("⚠️ Dữ liệu hiện tại quá ít (ít hơn 10 video) để chạy mô hình Hồi quy đáng tin cậy. Các Cross-filter bạn đang chọn đã thu hẹp dữ liệu. Vui lòng nhấn nút 'Bỏ' bớt bộ lọc ở Sidebar để xem Tab này.")
+    else:
+        def stepwise(data, target, feats):
+            selected = []
+            log = []
 
-    def stepwise(data, target, feats):
-        selected = []
-        log = []
+            data = data.copy()
+            # ép các cột ứng viên về dạng số và thay vô cực bằng giá trị khuyết
+            for c in list(feats) + [target]:
+                if c in data.columns:
+                    data[c] = pd.to_numeric(data[c], errors='coerce')
 
-        data = data.copy()
-        # ép các cột ứng viên về dạng số và thay vô cực bằng giá trị khuyết
-        for c in list(feats) + [target]:
-            if c in data.columns:
-                data[c] = pd.to_numeric(data[c], errors='coerce')
+            data = data.replace([np.inf, -np.inf], np.nan)
 
-        data = data.replace([np.inf, -np.inf], np.nan)
+            while feats:
+                scores = []
+                for f in feats:
+                    cols = selected + [f]
+                    # chuẩn bị biến độc lập và phụ thuộc, rồi bỏ dòng thiếu dữ liệu
+                    X = pd.DataFrame(sm.add_constant(data[cols], has_constant='add'), index=data.index)
+                    y = data[target]
+                    mask = X.notna().all(axis=1) & y.notna()
+                    if mask.sum() == 0:
+                        scores.append((f, np.inf))
+                        continue
+                    try:
+                        model_try = sm.OLS(y[mask], X[mask]).fit()
+                        pval = model_try.pvalues.get(f, np.inf)
+                    except Exception:
+                        pval = np.inf
+                    scores.append((f, pval))
 
-        while feats:
-            scores = []
-            for f in feats:
-                cols = selected + [f]
-                # chuẩn bị biến độc lập và phụ thuộc, rồi bỏ dòng thiếu dữ liệu
-                X = pd.DataFrame(sm.add_constant(data[cols], has_constant='add'), index=data.index)
-                y = data[target]
-                mask = X.notna().all(axis=1) & y.notna()
-                if mask.sum() == 0:
-                    scores.append((f, np.inf))
-                    continue
-                try:
-                    model_try = sm.OLS(y[mask], X[mask]).fit()
-                    pval = model_try.pvalues.get(f, np.inf)
-                except Exception:
-                    pval = np.inf
-                scores.append((f, pval))
+                best = min(scores, key=lambda x: x[1])
 
-            best = min(scores, key=lambda x: x[1])
+                if best[1] < 0.05:
+                    selected.append(best[0])
+                    feats.remove(best[0])
+                    log.append(f"Added {best[0]} (p={best[1]:.4f})")
+                else:
+                    break
 
-            if best[1] < 0.05:
-                selected.append(best[0])
-                feats.remove(best[0])
-                log.append(f"Added {best[0]} (p={best[1]:.4f})")
+            # mô hình cuối cùng: dùng các biến đã chọn, hoặc chỉ hằng số nếu không có biến nào
+            if selected:
+                X_final = pd.DataFrame(sm.add_constant(data[selected], has_constant='add'), index=data.index)
             else:
-                break
+                X_final = pd.DataFrame({'const': np.ones(len(data))}, index=data.index)
 
-        # mô hình cuối cùng: dùng các biến đã chọn, hoặc chỉ hằng số nếu không có biến nào
-        if selected:
-            X_final = pd.DataFrame(sm.add_constant(data[selected], has_constant='add'), index=data.index)
-        else:
-            X_final = pd.DataFrame({'const': np.ones(len(data))}, index=data.index)
+            y_final = data[target]
+            mask_final = X_final.notna().all(axis=1) & y_final.notna()
+            if mask_final.sum() == 0:
+                final_model = None
+            else:
+                final_model = sm.OLS(y_final[mask_final], X_final[mask_final]).fit()
 
-        y_final = data[target]
-        mask_final = X_final.notna().all(axis=1) & y_final.notna()
-        if mask_final.sum() == 0:
-            final_model = None
-        else:
-            final_model = sm.OLS(y_final[mask_final], X_final[mask_final]).fit()
+            return selected, final_model, log
 
-        return selected, final_model, log
+        selected, model, log = stepwise(df_model, 'video_view_count', features.copy())
 
-    selected, model, log = stepwise(df_model, 'video_view_count', features.copy())
+        col1,col2 = st.columns(2)
 
-    col1,col2 = st.columns(2)
+        with col1:
+            st.write("### Biến được chọn")
+            for l in log:
+                st.code(l)
 
-    with col1:
-        st.write("### Biến được chọn")
-        for l in log:
-            st.code(l)
-
-    with col2:
-        st.write("### Tóm tắt mô hình")
-        if model is None:
-            st.info("Không đủ dữ liệu để ước lượng mô hình.")
-        else:
-            st.text(model.summary().tables[1])
+        with col2:
+            st.write("### Tóm tắt mô hình")
+            if model is None:
+                st.info("Không đủ dữ liệu để ước lượng mô hình.")
+            else:
+                st.text(model.summary().tables[1])
 
 # ================= TAB 6 =================
 with tab6:
