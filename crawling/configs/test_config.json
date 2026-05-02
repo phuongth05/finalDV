@@ -1,0 +1,33 @@
+{
+  "test_mode": true,
+  "output_dir": "data/test_run",
+  "api_key_env_var": "YOUTUBE_API_KEY",
+  "api_keys_csv_env_var": "YOUTUBE_API_KEYS",
+  "api_keys_env_vars": [],
+  "region_code": "VN",
+  "relevance_language": "",
+  "music_category_id": "10",
+  "search_query": "official | MV | audio | lyric | karaoke | live | cover | remix | bài hát | nhạc",
+  "search_order": "viewCount",
+  "published_after": "2021-01-01T00:00:00Z",
+  "published_before": "2025-12-31T23:59:59Z",
+  "max_search_pages": 20,
+  "max_videos_to_fetch": 50,
+  "max_videos_after_filter": 50,
+  "video_parts": [
+    "snippet",
+    "contentDetails",
+    "statistics",
+    "status",
+    "topicDetails",
+    "recordingDetails",
+    "player",
+    "liveStreamingDetails",
+    "localizations",
+    "paidProductPlacementDetails"
+  ],
+  "require_music_category": true,
+  "persist_seen_video_ids": true,
+  "seen_video_ids_file": "data/test_run/seen_video_ids.txt",
+  "request_sleep_seconds": 0.15
+}

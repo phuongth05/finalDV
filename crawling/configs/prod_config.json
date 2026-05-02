@@ -1,0 +1,33 @@
+{
+  "test_mode": false,
+  "output_dir": "data/full_run",
+  "api_key_env_var": "YOUTUBE_API_KEY",
+  "api_keys_csv_env_var": "YOUTUBE_API_KEYS",
+  "api_keys_env_vars": [],
+  "region_code": "VN",
+  "relevance_language": "",
+  "music_category_id": "10",
+  "search_query": "nhạc chế",
+  "search_order": "relevance",
+  "published_after": "2021-01-01T00:00:00Z",
+  "published_before": "2025-12-31T23:59:59Z",
+  "max_search_pages": 1200,
+  "max_videos_to_fetch": 60000,
+  "max_videos_after_filter": 10000,
+  "video_parts": [
+    "snippet",
+    "contentDetails",
+    "statistics",
+    "status",
+    "topicDetails",
+    "recordingDetails",
+    "player",
+    "liveStreamingDetails",
+    "localizations",
+    "paidProductPlacementDetails"
+  ],
+  "require_music_category": true,
+  "persist_seen_video_ids": true,
+  "seen_video_ids_file": "data/full_run/seen_video_ids.txt",
+  "request_sleep_seconds": 0.1
+}
