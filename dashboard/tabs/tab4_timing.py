@@ -22,10 +22,13 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     heat_pivot = heat_pivot.reindex(index=days_order)
     heat_pivot = heat_pivot.reindex(columns=sorted(heat_pivot.columns))
 
+    # Drop NaN values to avoid issues with imshow
+    heat_pivot = heat_pivot.fillna(0)
+
     fig7 = px.imshow(
         heat_pivot,
         labels=dict(x="Giờ trong ngày (0-23h)", y="Ngày trong tuần", color="Trung bình View"),
-        color_continuous_scale='Inferno',
+        color_continuous_scale='Viridis',
         aspect="auto",
         title="Heatmap: Tương quan giữa Giờ đăng, Ngày đăng và Lượt xem"
     )

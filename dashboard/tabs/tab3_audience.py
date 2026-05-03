@@ -93,7 +93,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 color='Video_Count',
                 text_auto=True,
                 custom_data=['Keyword'],
-                color_continuous_scale='Plasma',
+                color_continuous_scale='Blues',
                 labels={'Avg_Views': 'Trung bình Lượt xem', 'Keyword': 'Từ khóa (TF-IDF)', 'Video_Count': 'Số Video'},
                 title="Horizontal Bar Chart: Top 15 Cụm từ quan trọng nhất tự động trích xuất bởi TF-IDF"
             )
