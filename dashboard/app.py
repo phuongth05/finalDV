@@ -73,9 +73,64 @@ df["_row_id"] = df.index.astype(str)
 df['video_publish_date'] = pd.to_datetime(df['video_publish_date'], errors='coerce')
 df['hour'] = df['video_publish_date'].dt.hour
 df['day'] = df['video_publish_date'].dt.day_name()
+# Thêm vào app.py, ngay sau khi load df:
+# Kiểm tra và tạo cột genre nếu chưa có
+def extract_genre(query):
+    genre_map = {
+        'bolero': 'Bolero', 'rap': 'Rap',
+        'indie': 'Indie', 'lofi': 'Lofi',
+        'remix': 'Remix', 'trữ tình': 'Trữ tình',
+        'trẻ': 'Nhạc trẻ', 'buồn': 'Nhạc buồn',
+        'chill': 'Chill', 'thiếu nhi': 'Thiếu nhi',
+        'vàng': 'Nhạc vàng', 'đỏ': 'Nhạc đỏ',
+        'quê hương': 'Quê hương', 'dân ca': 'Dân ca',
+        'acoustic': 'Acoustic', 'không lời': 'Không lời',
+        'cải lương': 'Cải lương', 'chế': 'Nhạc chế',
+        'sàn': 'Nhạc sàn', 'tết': 'Nhạc Tết',
+        'đám cưới': 'Nhạc đám cưới',
+        'vui tươi': 'Vui tươi', 'live': 'Live',
+        'nhạc cụ': 'Nhạc cụ',
+    }
+    query_lower = str(query).lower()
+    for key, value in genre_map.items():
+        if key in query_lower:
+            return value
+    return 'Khác'
 
+df['genre'] = df['search_query'].apply(extract_genre)
 # basic features
 df['title_length'] = df['video_title'].astype(str).apply(len)
+
+def detect_video_type(title):
+    title_lower = str(title).lower()
+    if 'official' in title_lower or 'mv' in title_lower:
+        return 'MV Chính thức'
+    elif 'lyric' in title_lower:
+        return 'Lyric Video'
+    elif 'cover' in title_lower:
+        return 'Cover'
+    elif 'live' in title_lower:
+        return 'Live'
+    elif 'remix' in title_lower:
+        return 'Remix'
+    elif 'karaoke' in title_lower:
+        return 'Karaoke'
+    else:
+        return 'Khác'
+
+df['video_type'] = df['video_title'].apply(detect_video_type)
+
+df['engagement_rate'] = (
+    (pd.to_numeric(df['video_like_count'], errors='coerce')
+     + pd.to_numeric(df['video_comment_count'], errors='coerce'))
+    / pd.to_numeric(df['video_view_count'], errors='coerce')
+).replace([np.inf, -np.inf], np.nan)
+
+df['channel_size'] = pd.qcut(
+    df['channel_subscriber_count'].rank(method='first'),
+    q=3,
+    labels=['Small', 'Medium', 'Large']
+)
 
 # ================= SIDEBAR =================
         # <h1>Điều khiển</h1>
@@ -378,7 +433,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "Khẩu vị khán giả & Từ khóa",
     "Điểm ngọt thời gian phát hành",
     "Mô hình hóa",
-    "Yếu tố gây nhiễu",
+    "Chatbot AI",
 ])
 
 # ================= TAB 1 =================
@@ -405,7 +460,7 @@ with tab5:
 
 # ================= TAB 6 =================
 with tab6:
-    render_tab6()
+    render_tab6(filtered_df)
 
 # ================= CHATBOT =================
 st.markdown("---")
