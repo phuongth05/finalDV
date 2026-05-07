@@ -1,0 +1,260 @@
+
+[2026-05-03 19:11:09.164244]
+- Yêu cầu: ẽ biểu đồ top 5 kênh có nhiều view nhất
+- Code thực thi:
+# Tạo một bản sao của DataFrame để tránh thay đổi dữ liệu gốc
+df_copy = filtered_df.copy()
+
+# Nhóm dữ liệu theo 'channel_id' và tính tổng 'channel_view_count' cho mỗi kênh
+channel_view_count = df_copy.groupby('channel_id')['channel_view_count'].sum().reset_index()
+
+# Sắp xếp dữ liệu theo 'channel_view_count' giảm dần và chọn top 5 kênh có nhiều view nhất
+top_5_channels = channel_view_count.sort_values(by='channel_view_count', ascending=False).head(5)
+
+# Hiển thị kết quả dưới dạng biểu đồ cột
+st.write("Biểu đồ top 5 kênh có nhiều view nhất:")
+st.bar_chart(data=top_5_channels, x='channel_id', y='channel_view_count')
+
+# Hiển thị kết quả dưới dạng dataframe
+st.write("Dữ liệu top 5 kênh có nhiều view nhất:")
+st.dataframe(top_5_channels)
+----------------------------------------
+[2026-05-03 22:07:45.311945]
+- Yêu cầu:  Vẽ biểu đồ top 5 kênh có nhiều view nhất
+- Code thực thi:
+# Tính tổng số view cho từng kênh
+channel_view_count_df = filtered_df.groupby('channel_id')['channel_view_count'].sum().reset_index()
+
+# Sắp xếp các kênh theo tổng số view giảm dần
+channel_view_count_df = channel_view_count_df.sort_values(by='channel_view_count', ascending=False)
+
+# Lấy top 5 kênh có nhiều view nhất
+top_5_channel_view_count_df = channel_view_count_df.head(5)
+
+# Vẽ biểu đồ top 5 kênh có nhiều view nhất
+st.write("Biểu đồ top 5 kênh có nhiều view nhất:")
+st.bar_chart(data=top_5_channel_view_count_df, x='channel_id', y='channel_view_count')
+----------------------------------------
+[2026-05-03 22:40:39.650694]
+- Yêu cầu: kênh ít lượt view nhất
+- Code thực thi:
+# Tìm kênh ít lượt view nhất
+# Đầu tiên, chúng ta cần nhóm dữ liệu theo channel_id và tính tổng lượt view cho mỗi kênh
+channel_view_count_df = filtered_df.groupby('channel_id')['channel_view_count'].sum().reset_index()
+
+# Sau đó, chúng ta sắp xếp dữ liệu theo tổng lượt view tăng dần để tìm kênh ít lượt view nhất
+channel_view_count_df = channel_view_count_df.sort_values(by='channel_view_count')
+
+# Lấy kênh ít lượt view nhất
+min_view_channel = channel_view_count_df.head(1)
+
+# Hiển thị kết quả
+st.write("Kênh ít lượt view nhất:")
+st.dataframe(min_view_channel)
+
+# Hiển thị biểu đồ so sánh lượt view của kênh ít lượt view nhất với các kênh khác
+st.bar_chart(channel_view_count_df.set_index('channel_id')['channel_view_count'])
+----------------------------------------
+[2026-05-03 22:42:05.950983]
+- Yêu cầu: View cao có đi kèm lượng fan tương tác mạnh?
+- Code thực thi:
+# Tạo tiêu đề cho trang web
+st.title("Phân tích tương tác của người dùng trên YouTube")
+
+# Tính toán trung bình của video_view_count, video_like_count, video_comment_count
+# Để hiểu về mức độ tương tác trung bình của người dùng
+trung_binh_view = filtered_df['video_view_count'].mean()
+trung_binh_like = filtered_df['video_like_count'].mean()
+trung_binh_comment = filtered_df['video_comment_count'].mean()
+
+# Hiển thị kết quả trung bình
+st.write("Trung bình của video_view_count: ", trung_binh_view)
+st.write("Trung bình của video_like_count: ", trung_binh_like)
+st.write("Trung bình của video_comment_count: ", trung_binh_comment)
+
+# Tạo biểu đồ cột để so sánh mức độ tương tác
+# Biểu đồ này sẽ giúp chúng ta hiểu về mối quan hệ giữa view và tương tác
+st.write("Biểu đồ so sánh mức độ tương tác")
+st.bar_chart(filtered_df[['video_view_count', 'video_like_count', 'video_comment_count']].mean())
+
+# Tính toán hệ số tương quan giữa video_view_count và các chỉ số tương tác khác
+# Hệ số tương quan sẽ giúp chúng ta hiểu về mối quan hệ giữa các biến
+tong_quan_he_so = filtered_df[['video_view_count', 'video_like_count', 'video_comment_count']].corr()
+
+# Hiển thị kết quả hệ số tương quan
+st.write("Kết quả hệ số tương quan")
+st.dataframe(tong_quan_he_so)
+
+# Tạo biểu đồ đường để hiển thị mối quan hệ giữa video_view_count và video_like_count
+# Biểu đồ này sẽ giúp chúng ta hiểu về xu hướng của dữ liệu
+st.write("Biểu đồ đường của video_view_count và video_like_count")
+st.line_chart(filtered_df[['video_view_count', 'video_like_count']])
+
+# Tính toán và hiển thị kết quả phân tích
+# Kết quả này sẽ giúp chúng ta trả lời câu hỏi về việc view cao có đi kèm lượng fan tương tác mạnh
+st.write("Kết quả phân tích")
+if trung_binh_view > trung_binh_like and trung_binh_view > trung_binh_comment:
+    st.write("View cao có đi kèm lượng fan tương tác mạnh")
+else:
+    st.write("View cao không đi kèm lượng fan tương tác mạnh")
+----------------------------------------
+[2026-05-03 22:44:05.667020]
+- Yêu cầu: vẽ heatmap biến numeric
+- Code thực thi:
+# Lọc các cột numeric trong DataFrame
+numeric_df = filtered_df.select_dtypes(include=['int64', 'float64'])
+
+# Hiển thị các cột numeric
+st.write("Các cột numeric:")
+st.dataframe(numeric_df.head())
+
+# Vẽ heatmap các cột numeric
+st.write("Heatmap các cột numeric:")
+import seaborn as sns
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10,8))
+sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', square=True)
+st.pyplot(plt)
+----------------------------------------
+[2026-05-03 22:54:45.361470]
+- Yêu cầu: kênh ít view nhất
+- Code thực thi:
+# Tìm kênh ít view nhất
+# Lọc dữ liệu để tìm kênh có ít view nhất
+channel_view_count_min = filtered_df['channel_view_count'].min()
+# Tìm kênh có view count bằng với giá trị min
+channel_id_min_view = filtered_df.loc[filtered_df['channel_view_count'] == channel_view_count_min, 'channel_id'].values[0]
+# Hiển thị kết quả
+st.write("Kênh ít view nhất là kênh có ID: ", channel_id_min_view)
+st.write("Số view của kênh này là: ", channel_view_count_min)
+
+# Hiển thị biểu đồ để so sánh số view của các kênh
+# Nhóm dữ liệu theo channel_id và tính tổng số view
+channel_view_count_group = filtered_df.groupby('channel_id')['channel_view_count'].sum().reset_index()
+# Sắp xếp dữ liệu theo số view tăng dần
+channel_view_count_group = channel_view_count_group.sort_values(by='channel_view_count')
+# Hiển thị biểu đồ
+st.bar_chart(channel_view_count_group, x='channel_id', y='channel_view_count')
+
+# Hiển thị dataframe của kênh ít view nhất
+# Lọc dữ liệu để tìm kênh có ID bằng với kênh ít view nhất
+channel_min_view_df = filtered_df.loc[filtered_df['channel_id'] == channel_id_min_view]
+# Hiển thị dataframe
+st.dataframe(channel_min_view_df)
+----------------------------------------
+[2026-05-03 22:55:46.967299]
+- Yêu cầu:  Cơ cấu lượt xem: Đối tượng, Bản quyền và Chất lượng
+- Code thực thi:
+# Tạo tiêu đề cho trang web
+st.title("Cơ cấu lượt xem: Đối tượng, Bản quyền và Chất lượng")
+
+# Lọc dữ liệu theo đối tượng (video_made_for_kids)
+# Tính tổng số lượt xem cho từng loại đối tượng
+view_count_by_object = filtered_df.groupby('video_made_for_kids')['video_view_count'].sum().reset_index()
+
+# Hiển thị biểu đồ cột cho số lượt xem theo đối tượng
+st.subheader("Số lượt xem theo đối tượng")
+st.bar_chart(view_count_by_object, x='video_made_for_kids', y='video_view_count')
+
+# Lọc dữ liệu theo bản quyền (video_licensed_content)
+# Tính tổng số lượt xem cho từng loại bản quyền
+view_count_by_license = filtered_df.groupby('video_licensed_content')['video_view_count'].sum().reset_index()
+
+# Hiển thị biểu đồ cột cho số lượt xem theo bản quyền
+st.subheader("Số lượt xem theo bản quyền")
+st.bar_chart(view_count_by_license, x='video_licensed_content', y='video_view_count')
+
+# Lọc dữ liệu theo chất lượng (video_definition)
+# Tính tổng số lượt xem cho từng loại chất lượng
+view_count_by_definition = filtered_df.groupby('video_definition')['video_view_count'].sum().reset_index()
+
+# Hiển thị biểu đồ cột cho số lượt xem theo chất lượng
+st.subheader("Số lượt xem theo chất lượng")
+st.bar_chart(view_count_by_definition, x='video_definition', y='video_view_count')
+
+# Hiển thị dữ liệu gốc
+st.subheader("Dữ liệu gốc")
+st.dataframe(filtered_df)
+----------------------------------------
+[2026-05-03 23:30:56.422723]
+- Yêu cầu: cho tôi code heatmap các biến numeric
+- Code thực thi:
+# Lọc các cột numeric từ DataFrame 'filtered_df'
+numeric_df = filtered_df.select_dtypes(include=['int64', 'float64'])
+
+# Hiển thị thông tin về các cột numeric
+st.write("Thông tin về các cột numeric:")
+st.dataframe(numeric_df.describe())
+
+# Tạo heatmap cho các cột numeric
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Tạo figure và axis
+fig, ax = plt.subplots(figsize=(10, 8))
+
+# Tạo heatmap
+sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', ax=ax)
+
+# Hiển thị heatmap
+st.write("Heatmap các biến numeric:")
+st.pyplot(fig)
+----------------------------------------
+[2026-05-04 08:26:08.079802]
+- Yêu cầu: yếu tố nào ảnh hưởng tới lượt view nhất
+- Code: # Import thư viện cần thiết
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+
+# Tạo một bản sao của DataFrame để tránh thay đổi dữ liệu gốc
+df = filtered_df.copy()
+
+# Chuyển đổi dữ liệu ngày tháng sang định dạng datetime
+df['video_publish_date'] = pd.to_datetime(df['video_publish_date'])
+df['publish_date'] = pd.to_datetime(df['publish_date'])
+
+# Tính toán độ tương quan giữa các cột và lượt view
+df_numeric = df.select_dtypes(include=[np.number])
+corr_matrix = df_numeric.corr()
+
+# Lọc các cột có độ tương quan cao với lượt view
+corr_with_view = corr_matrix['video_view_count'].sort_values(ascending=False)
+
+# Lọc các cột có độ tương quan cao hơn 0.1
+high_corr_cols = corr_with_view[corr_with_view > 0.1].index.tolist()
+
+# Thêm cột 'video_view_count' vào danh sách các cột có độ tương quan cao
+high_corr_cols.append('video_view_count')
+
+# Tạo một DataFrame mới chỉ chứa các cột có độ tương quan cao
+df_high_corr = df[high_corr_cols]
+
+# Tạo một mô hình hồi quy ngẫu nhiên để dự đoán lượt view
+X = df_high_corr.drop('video_view_count', axis=1)
+y = df_high_corr['video_view_count']
+
+# Chia dữ liệu thành tập huấn luyện và tập kiểm tra
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Tạo mô hình hồi quy ngẫu nhiên
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+# Huấn luyện mô hình
+model.fit(X_train, y_train)
+
+# Dự đoán lượt view cho tập kiểm tra
+y_pred = model.predict(X_test)
+
+# Tính toán độ quan trọng của từng cột
+feature_importances = model.feature_importances_
+
+# Tạo một dictionary để lưu trữ kết quả
+ai_extracted_data = {
+    'corr_matrix': corr_matrix.to_dict(),
+    'high_corr_cols': high_corr_cols,
+    'feature_importances': dict(zip(X.columns, feature_importances))
+}
+- Data: {'corr_matrix': {'video_category_id': {'video_category_id': nan, 'video_view_count': nan, 'video_like_count': nan, 'video_comment_count': nan, 'video_duration': nan, 'video_tags_count': nan, 'channel_subscriber_count': nan, 'channel_view_count': nan, 'channel_video_count': nan, 'hour': nan, 'title_length': nan}, 'video_view_count': {'video_category_id': nan, 'video_view_count': 1.0, 'video_like_count': 0.7787294755577333, 'video_comment_count': 0.3019998941162481, 'video_duration': -0.05240492936504112, 'video_tags_count': 0.12889309453755685, 'channel_subscriber_count': 0.19550266070600292, 'channel_view_count': 0.1429292687148421, 'channel_video_count': 0.013065266906534376, 'hour': 0.021100191289135005, 'title_length': -0.08308388355064791}, 'video_like_count': {'video_category_id': nan, 'video_view_count': 0.7787294755577333, 'video_like_count': 1.0, 'video_comment_count': 0.5650226195472645, 'video_duration': -0.03699008394471473, 'video_tags_count': 0.10689981505755218, 'channel_subscriber_count': 0.21549993871978604, 'channel_view_count': 0.13207727791901694, 'channel_video_count': 0.010171136363857814, 'hour': 0.04295317808692352, 'title_length': -0.10985513525595303}, 'video_comment_count': {'video_category_id': nan, 'video_view_count': 0.3019998941162481, 'video_like_count': 0.5650226195472645, 'video_comment_count': 1.0, 'video_duration': -0.010314364815698565, 'video_tags_count': 0.038910829497975453, 'channel_subscriber_count': 0.10140763114087617, 'channel_view_count': 0.030160374824570933, 'channel_video_count': -0.013928174993269227, 'hour': 0.01850166305645828, 'title_length': -0.030838009968063403}, 'video_duration': {'video_category_id': nan, 'video_view_count': -0.05240492936504112, 'video_like_count': -0.03699008394471473, 'video_comment_count': -0.010314364815698565, 'video_duration': 1.0, 'video_tags_count': 0.16685015502522824, 'channel_subscriber_count': -0.02373104750625041, 'channel_view_count': -0.03696573003778312, 'channel_video_count': -0.049941235579196254, 'hour': 0.18890629701861994, 'title_length': 0.33070489224216737}, 'video_tags_count': {'video_category_id': nan, 'video_view_count': 0.12889309453755685, 'video_like_count': 0.10689981505755218, 'video_comment_count': 0.038910829497975453, 'video_duration': 0.16685015502522824, 'video_tags_count': 1.0, 'channel_subscriber_count': 0.05516078263773829, 'channel_view_count': 0.01654990056280239, 'channel_video_count': -0.01613370654115885, 'hour': 0.06975047866597024, 'title_length': 0.17025140805227645}, 'channel_subscriber_count': {'video_category_id': nan, 'video_view_count': 0.19550266070600292, 'video_like_count': 0.21549993871978604, 'video_comment_count': 0.10140763114087617, 'video_duration': -0.02373104750625041, 'video_tags_count': 0.05516078263773829, 'channel_subscriber_count': 1.0, 'channel_view_count': 0.9574042517537829, 'channel_video_count': 0.7421344954986104, 'hour': -0.11284362297507171, 'title_length': -0.011549085347031429}, 'channel_view_count': {'video_category_id': nan, 'video_view_count': 0.1429292687148421, 'video_like_count': 0.13207727791901694, 'video_comment_count': 0.030160374824570933, 'video_duration': -0.03696573003778312, 'video_tags_count': 0.01654990056280239, 'channel_subscriber_count': 0.9574042517537829, 'channel_view_count': 1.0, 'channel_video_count': 0.7636661140368032, 'hour': -0.12423194839253034, 'title_length': -0.015320033300288227}, 'channel_video_count': {'video_category_id': nan, 'video_view_count': 0.013065266906534376, 'video_like_count': 0.010171136363857814, 'video_comment_count': -0.013928174993269227, 'video_duration': -0.049941235579196254, 'video_tags_count': -0.01613370654115885, 'channel_subscriber_count': 0.7421344954986104, 'channel_view_count': 0.7636661140368032, 'channel_video_count': 1.0, 'hour': -0.15664244356530097, 'title_length': 0.020380998027023225}, 'hour': {'video_category_id': nan, 'video_view_count': 0.021100191289135005, 'video_like_count': 0.04295317808692352, 'video_comment_count': 0.01850166305645828, 'video_duration': 0.18890629701861994, 'video_tags_count': 0.06975047866597024, 'channel_subscriber_count': -0.11284362297507171, 'channel_view_count': -0.12423194839253034, 'channel_video_count': -0.15664244356530097, 'hour': 1.0, 'title_length': 0.0239332929614893}, 'title_length': {'video_category_id': nan, 'video_view_count': -0.08308388355064791, 'video_like_count': -0.10985513525595303, 'video_comment_count': -0.030838009968063403, 'video_duration': 0.33070489224216737, 'video_tags_count': 0.17025140805227645, 'channel_subscriber_count': -0.011549085347031429, 'channel_view_count': -0.015320033300288227, 'channel_video_count': 0.020380998027023225, 'hour': 0.0239332929614893, 'title_length': 1.0}}, 'high_corr_cols': ['video_view_count', 'video_like_count', 'video_comment_count', 'channel_subscriber_count', 'channel_view_count', 'video_tags_count', 'video_view_count'], 'feature_importances': {'video_like_count': np.float64(0.7602895428636408), 'video_comment_count': np.float64(0.08115240549514918), 'channel_subscriber_count': np.float64(0.052616954643252244), 'channel_view_count': np.float64(0.06347151882720797), 'video_tags_count': np.float64(0.04246957817074988)}}
+----------------------------------------

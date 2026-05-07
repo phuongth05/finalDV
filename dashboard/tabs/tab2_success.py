@@ -1,11 +1,12 @@
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
 
 def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync_chart_selection):
-    st.header("Câu 1: Định nghĩa 'Thành công' của một sản phẩm âm nhạc")
+    st.header("Câu 1: Thế nào là một video nhạc thành công: view cao, tương tác cao, hay cả hai?")
 
     # Tiền xử lý dữ liệu cơ bản cho Câu 1
     df_bubble = apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_bubble")
@@ -48,7 +49,11 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         on_select="rerun",
     )
     sync_chart_selection("cross_bubble", bubble_event)
-    st.caption("💡 **Insight:** Những bong bóng to nhất biểu thị video gây bão bình luận. So sánh màu sắc để xem nhạc có bản quyền hay nhạc tự do đem lại nhiều tương tác hơn.")
+    st.caption(
+        "Mỗi bong bóng là một video; trục X/Y dùng thang log để dễ so sánh các mức view/like. "
+        "Kích thước bong bóng biểu thị số bình luận và màu sắc phân biệt video có bản quyền hay không. "
+        "Quan sát cụm điểm giúp đánh giá mối quan hệ giữa lượt xem và mức tương tác." 
+    )
 
     # --- BIỂU ĐỒ 1.2: DENSITY HEATMAP ---
     st.subheader("2. Ma trận Thành công: Mật độ phân bổ Video")
@@ -74,7 +79,11 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         title="2D Density Heatmap: Đa số video rơi vào nhóm 'Viral' hay 'Mì ăn liền'?"
     )
     st.plotly_chart(fig2, use_container_width=True)
-    st.caption("💡 **Insight:** Các ô vuông sáng màu (vàng/xanh lá) thể hiện nơi tập trung đông đúc nhất. Nếu đỉnh tập trung nằm ở góc phải phía trên, thị trường đang có nhiều video 'Siêu phẩm' (View cao + Tương tác mạnh).")
+    st.caption(
+        "Mỗi ô thể hiện mật độ video theo lượt xem và tỷ lệ tương tác (đã log). "
+        "Ô càng sáng nghĩa là càng nhiều video rơi vào vùng đó. "
+        "Tâm của vùng sáng cho biết mặt bằng chung của thị trường đang nghiêng về nhóm nào." 
+    )
 
     # --- BIỂU ĐỒ 1.3: LOLLIPOP CHART ---
     st.subheader("3. Top 10 Kênh có Tỷ lệ Tương tác (Engagement Rate) cao nhất")
@@ -120,4 +129,61 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         on_select="rerun",
     )
     sync_chart_selection("cross_lollipop", lollipop_event)
-    st.caption("💡 **Insight:** Kênh có thanh kẹo dài nhất là kênh tuy có thể ít View, nhưng sở hữu lượng fan 'cày' like và comment nhiệt tình và trung thành nhất.")
+    st.caption(
+        "Mỗi đường ngang biểu thị một kênh trong top 10 theo tổng view; điểm càng xa 0 thì tỷ lệ tương tác càng cao. "
+        "Biểu đồ này nhấn mạnh chất lượng tương tác thay vì chỉ nhìn vào tổng lượt xem." 
+    )
+
+    st.subheader("4. So sánh nhóm view cao và view thấp theo các đặc trưng")
+    df_compare_source = apply_cross_filters(base_filtered_df, active_cross_filters)
+    if df_compare_source.empty or 'video_view_count' not in df_compare_source.columns:
+        st.info("Không đủ dữ liệu để so sánh nhóm view cao và view thấp.")
+    else:
+        q_low = df_compare_source['video_view_count'].quantile(0.2)
+        q_high = df_compare_source['video_view_count'].quantile(0.8)
+        bottom_df = df_compare_source[df_compare_source['video_view_count'] <= q_low]
+        top_df = df_compare_source[df_compare_source['video_view_count'] >= q_high]
+
+        feature_specs = [
+            ('video_like_count', 'Lượt thích'),
+            ('video_comment_count', 'Bình luận'),
+            ('video_tags_count', 'Số thẻ'),
+            ('channel_subscriber_count', 'Subscriber kênh'),
+            ('channel_view_count', 'Tổng view kênh'),
+            ('channel_video_count', 'Số video kênh'),
+            ('title_length', 'Độ dài tiêu đề'),
+            ('video_duration', 'Thời lượng (giây)')
+        ]
+
+        rows = []
+        for col, label in feature_specs:
+            if col not in df_compare_source.columns:
+                continue
+            top_val = pd.to_numeric(top_df[col], errors='coerce').mean()
+            bottom_val = pd.to_numeric(bottom_df[col], errors='coerce').mean()
+            if pd.isna(top_val) and pd.isna(bottom_val):
+                continue
+            rows.append({'Đặc trưng': label, 'Nhóm': f'Top 20% (n={len(top_df)})', 'Giá trị': top_val})
+            rows.append({'Đặc trưng': label, 'Nhóm': f'Bottom 20% (n={len(bottom_df)})', 'Giá trị': bottom_val})
+
+        if rows:
+            compare_df = pd.DataFrame(rows)
+            compare_df['Giá trị'] = compare_df['Giá trị'].clip(lower=1)
+            fig_compare = px.bar(
+                compare_df,
+                x='Đặc trưng',
+                y='Giá trị',
+                color='Nhóm',
+                barmode='group',
+                labels={'Giá trị': 'Giá trị (log)'},
+                title="So sánh trung bình đặc trưng giữa nhóm view cao và view thấp"
+            )
+            fig_compare.update_yaxes(type='log', title_text='Giá trị (log)')
+            st.plotly_chart(fig_compare, use_container_width=True)
+            st.caption(
+                "Biểu đồ so sánh giá trị trung bình của các đặc trưng giữa nhóm view cao (top 20%) "
+                "và nhóm view thấp (bottom 20%) trên thang log để dễ nhìn các chênh lệch lớn. "
+                "Đặc trưng có khoảng cách lớn giữa hai nhóm là ứng viên có tác động mạnh đến hiệu quả." 
+            )
+        else:
+            st.info("Không đủ đặc trưng số để tạo biểu đồ so sánh.")
