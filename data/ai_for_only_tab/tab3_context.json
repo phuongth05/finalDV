@@ -1,103 +1,304 @@
 {
   "tab": 3,
-  "name": "Hành vi người dùng",
-  "rows": 6769,
-  "time_context": {
+  "name": "Hành vi người dùng & Từ khóa",
+  "rows": 6772,
+  "active_filters": [],
+  "supply_vs_demand": {
     "status": "ok",
-    "best_day_heatmap_cells": [
+    "oversupplied_genres": [
       {
-        "day": "Thursday",
-        "hour": 16,
-        "video_view_count": 21152569.833333332
+        "genre": "Không lời",
+        "video_count": 342,
+        "total_views": 345522833,
+        "avg_views": 1010300.6812865497,
+        "count_share": 0.05050206733608978,
+        "view_share": 0.012220327835592126,
+        "demand_gap": -0.03828173950049765
       },
       {
-        "day": "Thursday",
-        "hour": 13,
-        "video_view_count": 10594111.765100671
+        "genre": "Bolero",
+        "video_count": 351,
+        "total_views": 411868379,
+        "avg_views": 1173414.1851851852,
+        "count_share": 0.05183106910809215,
+        "view_share": 0.014566813350056976,
+        "demand_gap": -0.03726425575803517
       },
       {
-        "day": "Friday",
-        "hour": 13,
-        "video_view_count": 10462049.957264958
+        "genre": "Nhạc chế",
+        "video_count": 386,
+        "total_views": 745048317,
+        "avg_views": 1930176.9870466322,
+        "count_share": 0.056999409332545777,
+        "view_share": 0.02635060209493063,
+        "demand_gap": -0.030648807237615146
       },
       {
-        "day": "Wednesday",
-        "hour": 13,
-        "video_view_count": 10361327.436363636
+        "genre": "Trữ tình",
+        "video_count": 272,
+        "total_views": 421620862,
+        "avg_views": 1550076.6985294118,
+        "count_share": 0.04016538688718252,
+        "view_share": 0.014911735676712706,
+        "demand_gap": -0.025253651210469814
       },
       {
-        "day": "Sunday",
-        "hour": 16,
-        "video_view_count": 10116302.0
+        "genre": "Nhạc vàng",
+        "video_count": 163,
+        "total_views": 116148532,
+        "avg_views": 712567.6809815951,
+        "count_share": 0.024069698759598347,
+        "view_share": 0.00410789969027246,
+        "demand_gap": -0.019961799069325888
       }
     ],
-    "best_days": [
+    "undersupplied_genres": [
       {
-        "day": "Thursday",
-        "video_view_count": 4610887.122989593
+        "genre": "Nhạc buồn",
+        "video_count": 317,
+        "total_views": 2464628050,
+        "avg_views": 7774851.89274448,
+        "count_share": 0.04681039574719433,
+        "view_share": 0.08716808235881807,
+        "demand_gap": 0.040357686611623735
       },
       {
-        "day": "Friday",
-        "video_view_count": 4167281.051948052
+        "genre": "Rap",
+        "video_count": 153,
+        "total_views": 1655152046,
+        "avg_views": 10817987.22875817,
+        "count_share": 0.022593030124040167,
+        "view_share": 0.058538824899803533,
+        "demand_gap": 0.035945794775763366
       },
       {
-        "day": "Wednesday",
-        "video_view_count": 4112184.286966046
+        "genre": "Nhạc trẻ",
+        "video_count": 282,
+        "total_views": 1868626861,
+        "avg_views": 6626336.386524823,
+        "count_share": 0.041642055522740695,
+        "view_share": 0.06608892571743136,
+        "demand_gap": 0.024446870194690662
+      },
+      {
+        "genre": "Acoustic",
+        "video_count": 156,
+        "total_views": 1342423009,
+        "avg_views": 8605275.698717948,
+        "count_share": 0.02303603071470762,
+        "view_share": 0.04747833629860878,
+        "demand_gap": 0.02444230558390116
+      },
+      {
+        "genre": "Thiếu nhi",
+        "video_count": 277,
+        "total_views": 1759788612,
+        "avg_views": 6353027.480144404,
+        "count_share": 0.04090372120496161,
+        "view_share": 0.062239573498697354,
+        "demand_gap": 0.021335852293735746
       }
     ],
-    "best_hours": [
+    "market_opportunities": [
       {
-        "hour": 13,
-        "video_view_count": 8715730.86340852
+        "genre": "Rap",
+        "video_count": 153,
+        "total_views": 1655152046,
+        "avg_views": 10817987.22875817,
+        "count_share": 0.022593030124040167,
+        "view_share": 0.058538824899803533,
+        "demand_gap": 0.035945794775763366
       },
       {
-        "hour": 12,
-        "video_view_count": 5719454.575691412
+        "genre": "Remix",
+        "video_count": 121,
+        "total_views": 1108371724,
+        "avg_views": 9160096.892561983,
+        "count_share": 0.017867690490253985,
+        "view_share": 0.039200494257872774,
+        "demand_gap": 0.02133280376761879
       },
       {
-        "hour": 14,
-        "video_view_count": 4277079.897196262
+        "genre": "Acoustic",
+        "video_count": 156,
+        "total_views": 1342423009,
+        "avg_views": 8605275.698717948,
+        "count_share": 0.02303603071470762,
+        "view_share": 0.04747833629860878,
+        "demand_gap": 0.02444230558390116
+      },
+      {
+        "genre": "Live",
+        "video_count": 105,
+        "total_views": 855006744,
+        "avg_views": 8142921.371428572,
+        "count_share": 0.015505020673360898,
+        "view_share": 0.030239572368064575,
+        "demand_gap": 0.014734551694703677
+      },
+      {
+        "genre": "Nhạc sàn",
+        "video_count": 140,
+        "total_views": 1031559723,
+        "avg_views": 7368283.735714286,
+        "count_share": 0.02067336089781453,
+        "view_share": 0.03648383491070937,
+        "demand_gap": 0.01581047401289484
       }
     ]
   },
-  "selected_chart_state": {},
-  "duration_summary": [
-    {
-      "duration_group": "< 5 phút",
-      "avg_views": 3889102.417225951,
-      "video_count": 4470
-    },
-    {
-      "duration_group": "5-10 phút",
-      "avg_views": 6823537.464962902,
-      "video_count": 1213
-    },
-    {
-      "duration_group": "> 10 phút",
-      "avg_views": 1728177.301227573,
-      "video_count": 1059
-    }
-  ],
-  "top_videos_by_views": [
-    {
-      "video_title": "karik bạn đời ft gducky official music video",
-      "video_view_count": 200212896.0
-    },
-    {
-      "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
-      "video_view_count": 187343056.0
-    },
-    {
-      "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
-      "video_view_count": 171751332.0
-    },
-    {
-      "video_title": "tăng phúc ft trương thảo nhi chỉ là không cùng nhau nhạc hoa lời việt mây in the nest 2832021",
-      "video_view_count": 156107588.0
-    },
-    {
-      "video_title": "đám cưới nha hồng thanh x mie lần đầu biểu diễn cực sung",
-      "video_view_count": 150560353.0
-    }
-  ]
+  "caption_impact": {
+    "status": "ok",
+    "median_performance_comparison": [
+      {
+        "has_caption": false,
+        "median_views": 221090.0,
+        "median_likes": 1383.0,
+        "median_comments": 36.0,
+        "median_engagement": 0.0074415175781145666
+      },
+      {
+        "has_caption": true,
+        "median_views": 7688598.0,
+        "median_likes": 45072.0,
+        "median_comments": 1822.0,
+        "median_engagement": 0.005965780737423144
+      }
+    ]
+  },
+  "audience_segments": {
+    "status": "ok",
+    "dominant_segments": [
+      {
+        "channel_size": "Large",
+        "genre": "Khác",
+        "video_count": 402,
+        "avg_views": 9557479.935323384,
+        "total_views": 3842106934
+      },
+      {
+        "channel_size": "Medium",
+        "genre": "Khác",
+        "video_count": 402,
+        "avg_views": 3959700.771144279,
+        "total_views": 1591799710
+      },
+      {
+        "channel_size": "Large",
+        "genre": "Thiếu nhi",
+        "video_count": 138,
+        "avg_views": 11001223.347826088,
+        "total_views": 1518168822
+      },
+      {
+        "channel_size": "Large",
+        "genre": "Nhạc buồn",
+        "video_count": 100,
+        "avg_views": 14186762.49,
+        "total_views": 1418676249
+      },
+      {
+        "channel_size": "Large",
+        "genre": "Nhạc trẻ",
+        "video_count": 104,
+        "avg_views": 12567352.913461538,
+        "total_views": 1307004703
+      }
+    ],
+    "niche_segments": [
+      {
+        "channel_size": "Medium",
+        "genre": "Indie",
+        "video_count": 7,
+        "avg_views": 10451322.0,
+        "total_views": 73159254
+      },
+      {
+        "channel_size": "Small",
+        "genre": "Remix",
+        "video_count": 9,
+        "avg_views": 3169486.111111111,
+        "total_views": 28525375
+      },
+      {
+        "channel_size": "Large",
+        "genre": "Indie",
+        "video_count": 11,
+        "avg_views": 11464523.545454545,
+        "total_views": 126109759
+      },
+      {
+        "channel_size": "Medium",
+        "genre": "Live",
+        "video_count": 21,
+        "avg_views": 14020711.61904762,
+        "total_views": 294434944
+      },
+      {
+        "channel_size": "Medium",
+        "genre": "Remix",
+        "video_count": 21,
+        "avg_views": 11471411.666666666,
+        "total_views": 240899645
+      }
+    ]
+  },
+  "upload_trends": {
+    "status": "ok",
+    "growth_period": [
+      {
+        "month": "2025-12-01 00:00:00",
+        "video_count": 294,
+        "growth": 121.0
+      },
+      {
+        "month": "2025-10-01 00:00:00",
+        "video_count": 325,
+        "growth": 89.0
+      },
+      {
+        "month": "2025-03-01 00:00:00",
+        "video_count": 176,
+        "growth": 61.0
+      }
+    ],
+    "consistent_genres": [
+      {
+        "genre": "Lofi",
+        "mean": 2.82,
+        "std": 1.335389570920205,
+        "count": 50,
+        "cv": 0.47354240103553374
+      },
+      {
+        "genre": "Nhạc vàng",
+        "mean": 3.0754716981132075,
+        "std": 1.719224518874421,
+        "count": 53,
+        "cv": 0.5590116533763455
+      },
+      {
+        "genre": "Dân ca",
+        "mean": 4.368421052631579,
+        "std": 2.5955427380922003,
+        "count": 57,
+        "cv": 0.5941603858283351
+      },
+      {
+        "genre": "Nhạc buồn",
+        "mean": 5.4655172413793105,
+        "std": 3.261769604959533,
+        "count": 58,
+        "cv": 0.596790653273353
+      },
+      {
+        "genre": "Vui tươi",
+        "mean": 4.450980392156863,
+        "std": 2.7518264879181324,
+        "count": 51,
+        "cv": 0.6182517660080386
+      }
+    ]
+  },
+  "selected_chart_state": {}
 }

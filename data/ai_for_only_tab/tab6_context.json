@@ -1,0 +1,72 @@
+{
+  "tab": 6,
+  "name": "Confounding & Synergy",
+  "rows": 6772,
+  "active_filters": [],
+  "simpsons_paradox": {
+    "target": "log_views",
+    "main_variable": "channel_video_count",
+    "confounder_variable": "channel_subscriber_count",
+    "coefficient_before_control": 0.3150053336463967,
+    "coefficient_after_control": -0.6695760077333497,
+    "sign_flipping": true
+  },
+  "synergy_analysis": {
+    "pairs": [
+      {
+        "pair": "subscriber_caption",
+        "var1": "channel_subscriber_count",
+        "var2": "has_caption",
+        "individual_r2": 0.06020541426701709,
+        "combined_r2": 0.11023232138227468,
+        "synergy_jump": 0.05002690711525759,
+        "complementary_variables": [
+          "channel_subscriber_count",
+          "has_caption"
+        ]
+      },
+      {
+        "pair": "licensed_caption",
+        "var1": "is_licensed",
+        "var2": "has_caption",
+        "individual_r2": 0.18961677537474442,
+        "combined_r2": 0.23825963745613143,
+        "synergy_jump": 0.04864286208138702,
+        "complementary_variables": [
+          "is_licensed",
+          "has_caption"
+        ]
+      },
+      {
+        "pair": "licensed_age",
+        "var1": "is_licensed",
+        "var2": "video_age_days",
+        "individual_r2": 0.18961677537474442,
+        "combined_r2": 0.23707916941978502,
+        "synergy_jump": 0.0474623940450406,
+        "complementary_variables": [
+          "is_licensed",
+          "video_age_days"
+        ]
+      }
+    ],
+    "best_pair": {
+      "pair": "subscriber_caption",
+      "var1": "channel_subscriber_count",
+      "var2": "has_caption",
+      "individual_r2": 0.06020541426701709,
+      "combined_r2": 0.11023232138227468,
+      "synergy_jump": 0.05002690711525759,
+      "complementary_variables": [
+        "channel_subscriber_count",
+        "has_caption"
+      ]
+    }
+  },
+  "causal_interpretation": {
+    "hidden_relationship": "Một số mối tương quan có thể thay đổi khi kiểm soát quy mô kênh hoặc các biến nền tảng.",
+    "misleading_correlation": "Nếu chỉ nhìn hệ số đơn biến, ta có thể hiểu sai tác động của một biến do confounder che khuất.",
+    "true_effect_explanation": "Hãy ưu tiên diễn giải hệ số sau kiểm soát và các cặp có synergy jump dương khi muốn chọn biến cho mô hình."
+  },
+  "selected_chart_state": {}
+}

@@ -1,97 +1,300 @@
 {
   "tab": 2,
   "name": "Định nghĩa thành công",
-  "rows": 6769,
+  "rows": 6772,
   "active_filters": [],
-  "selected_chart_state": {},
-  "caption_vs_no_caption": [
-    {
-      "has_caption": false,
-      "video_view_count": 2997140.975267801
+  "correlation": {
+    "pairs": [
+      {
+        "pair": [
+          "video_view_count",
+          "video_like_count"
+        ],
+        "corr": 0.7787294755577333
+      },
+      {
+        "pair": [
+          "video_like_count",
+          "video_comment_count"
+        ],
+        "corr": 0.5650226195472645
+      },
+      {
+        "pair": [
+          "video_view_count",
+          "video_comment_count"
+        ],
+        "corr": 0.3019998941162481
+      },
+      {
+        "pair": [
+          "video_view_count",
+          "engagement_rate"
+        ],
+        "corr": -0.10355453723788237
+      },
+      {
+        "pair": [
+          "video_like_count",
+          "engagement_rate"
+        ],
+        "corr": -0.03242735494860222
+      },
+      {
+        "pair": [
+          "video_comment_count",
+          "engagement_rate"
+        ],
+        "corr": 0.00639312843110073
+      }
+    ],
+    "views_vs_likes": 0.7787294755577333,
+    "views_vs_comments": 0.3019998941162481,
+    "engagement_correlation": -0.10355453723788237
+  },
+  "density_heatmap": {
+    "status": "ok",
+    "hotspot_region": {
+      "log_views_bin": "(5.941, 6.224]",
+      "log_engagement_bin": "(-2.422, -2.136]",
+      "count": 160
     },
-    {
-      "has_caption": true,
-      "video_view_count": 20170739.463182896
+    "success_zone": {
+      "count": 120,
+      "share": 0.01774622892635315,
+      "views_threshold": 2329957.75,
+      "engagement_threshold": 0.014411684741204129
     }
-  ],
-  "official_vs_free_avg_views": [
-    {
-      "is_licensed": false,
-      "video_view_count": 1612489.096513076
+  },
+  "comparative_analysis": {
+    "status": "ok",
+    "top_20_vs_bottom_20": {
+      "top_count": 1355,
+      "bottom_count": 1355,
+      "comparisons": [
+        {
+          "feature": "channel_views",
+          "top": 290828078.0,
+          "bottom": 825031.0,
+          "diff": 290003047.0,
+          "abs_diff": 290003047.0
+        },
+        {
+          "feature": "channel_subscribers",
+          "top": 543000.0,
+          "bottom": 4730.0,
+          "diff": 538270.0,
+          "abs_diff": 538270.0
+        },
+        {
+          "feature": "likes",
+          "top": 40021.0,
+          "bottom": 13.0,
+          "diff": 40008.0,
+          "abs_diff": 40008.0
+        },
+        {
+          "feature": "comments",
+          "top": 1089.0,
+          "bottom": 1.0,
+          "diff": 1088.0,
+          "abs_diff": 1088.0
+        },
+        {
+          "feature": "video_duration",
+          "top": 269.0,
+          "bottom": 83.0,
+          "diff": 186.0,
+          "abs_diff": 186.0
+        },
+        {
+          "feature": "channel_videos",
+          "top": 305.0,
+          "bottom": 352.0,
+          "diff": -47.0,
+          "abs_diff": 47.0
+        },
+        {
+          "feature": "tags",
+          "top": 19.0,
+          "bottom": 10.0,
+          "diff": 9.0,
+          "abs_diff": 9.0
+        },
+        {
+          "feature": "title_length",
+          "top": 64.0,
+          "bottom": 65.0,
+          "diff": -1.0,
+          "abs_diff": 1.0
+        },
+        {
+          "feature": "engagement_rate",
+          "top": 0.003935922709567418,
+          "bottom": 0.015780371811500216,
+          "diff": -0.011844449101932797,
+          "abs_diff": 0.011844449101932797
+        }
+      ]
     },
-    {
-      "is_licensed": true,
-      "video_view_count": 4828215.133836917
+    "viral_vs_flop": {
+      "viral_median_views": 9348765.0,
+      "flop_median_views": 1006.0,
+      "viral_median_engagement": 0.003935922709567418,
+      "flop_median_engagement": 0.015780371811500216
+    },
+    "key_findings": {
+      "strongest_differentiators": [
+        {
+          "feature": "channel_views",
+          "top": 290828078.0,
+          "bottom": 825031.0,
+          "diff": 290003047.0,
+          "abs_diff": 290003047.0
+        },
+        {
+          "feature": "channel_subscribers",
+          "top": 543000.0,
+          "bottom": 4730.0,
+          "diff": 538270.0,
+          "abs_diff": 538270.0
+        },
+        {
+          "feature": "likes",
+          "top": 40021.0,
+          "bottom": 13.0,
+          "diff": 40008.0,
+          "abs_diff": 40008.0
+        },
+        {
+          "feature": "comments",
+          "top": 1089.0,
+          "bottom": 1.0,
+          "diff": 1088.0,
+          "abs_diff": 1088.0
+        },
+        {
+          "feature": "video_duration",
+          "top": 269.0,
+          "bottom": 83.0,
+          "diff": 186.0,
+          "abs_diff": 186.0
+        }
+      ],
+      "weak_differentiators": [
+        {
+          "feature": "engagement_rate",
+          "top": 0.003935922709567418,
+          "bottom": 0.015780371811500216,
+          "diff": -0.011844449101932797,
+          "abs_diff": 0.011844449101932797
+        },
+        {
+          "feature": "title_length",
+          "top": 64.0,
+          "bottom": 65.0,
+          "diff": -1.0,
+          "abs_diff": 1.0
+        },
+        {
+          "feature": "tags",
+          "top": 19.0,
+          "bottom": 10.0,
+          "diff": 9.0,
+          "abs_diff": 9.0
+        },
+        {
+          "feature": "channel_videos",
+          "top": 305.0,
+          "bottom": 352.0,
+          "diff": -47.0,
+          "abs_diff": 47.0
+        },
+        {
+          "feature": "video_duration",
+          "top": 269.0,
+          "bottom": 83.0,
+          "diff": 186.0,
+          "abs_diff": 186.0
+        }
+      ]
     }
-  ],
-  "top_genres_by_views": [
-    {
-      "genre": "Khác",
-      "video_view_count": 5627146750
-    },
-    {
-      "genre": "Nhạc buồn",
-      "video_view_count": 2464628050
-    },
-    {
-      "genre": "Nhạc trẻ",
-      "video_view_count": 1868626861
-    },
-    {
-      "genre": "Thiếu nhi",
-      "video_view_count": 1759788612
-    },
-    {
-      "genre": "Rap",
-      "video_view_count": 1655152046
-    },
-    {
-      "genre": "Chill",
-      "video_view_count": 1360443158
-    }
-  ],
-  "top_videos_by_views": [
-    {
-      "video_title": "karik bạn đời ft gducky official music video",
-      "video_view_count": 200212896.0
-    },
-    {
-      "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
-      "video_view_count": 187343056.0
-    },
-    {
-      "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
-      "video_view_count": 171751332.0
-    },
-    {
-      "video_title": "tăng phúc ft trương thảo nhi chỉ là không cùng nhau nhạc hoa lời việt mây in the nest 2832021",
-      "video_view_count": 156107588.0
-    },
-    {
-      "video_title": "đám cưới nha hồng thanh x mie lần đầu biểu diễn cực sung",
-      "video_view_count": 150560353.0
-    }
-  ],
-  "top_videos_by_likes": [
-    {
-      "video_title": "đen mang tiền về cho mẹ ft nguyên thảo mv",
-      "video_like_count": 1440305.0
-    },
-    {
-      "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
-      "video_like_count": 1419016.0
-    },
-    {
-      "video_title": "jack laylalay official music video",
-      "video_like_count": 1267103.0
-    },
-    {
-      "video_title": "singing see tình in 6 languages dabincha vietnam",
-      "video_like_count": 1018574.0
-    },
-    {
-      "video_title": "đen trốn tìm ft mtv band mv",
-      "video_like_count": 927188.0
-    }
-  ]
+  },
+  "key_findings": {
+    "strongest_differentiators": [
+      {
+        "feature": "channel_views",
+        "top": 290828078.0,
+        "bottom": 825031.0,
+        "diff": 290003047.0,
+        "abs_diff": 290003047.0
+      },
+      {
+        "feature": "channel_subscribers",
+        "top": 543000.0,
+        "bottom": 4730.0,
+        "diff": 538270.0,
+        "abs_diff": 538270.0
+      },
+      {
+        "feature": "likes",
+        "top": 40021.0,
+        "bottom": 13.0,
+        "diff": 40008.0,
+        "abs_diff": 40008.0
+      },
+      {
+        "feature": "comments",
+        "top": 1089.0,
+        "bottom": 1.0,
+        "diff": 1088.0,
+        "abs_diff": 1088.0
+      },
+      {
+        "feature": "video_duration",
+        "top": 269.0,
+        "bottom": 83.0,
+        "diff": 186.0,
+        "abs_diff": 186.0
+      }
+    ],
+    "weak_differentiators": [
+      {
+        "feature": "engagement_rate",
+        "top": 0.003935922709567418,
+        "bottom": 0.015780371811500216,
+        "diff": -0.011844449101932797,
+        "abs_diff": 0.011844449101932797
+      },
+      {
+        "feature": "title_length",
+        "top": 64.0,
+        "bottom": 65.0,
+        "diff": -1.0,
+        "abs_diff": 1.0
+      },
+      {
+        "feature": "tags",
+        "top": 19.0,
+        "bottom": 10.0,
+        "diff": 9.0,
+        "abs_diff": 9.0
+      },
+      {
+        "feature": "channel_videos",
+        "top": 305.0,
+        "bottom": 352.0,
+        "diff": -47.0,
+        "abs_diff": 47.0
+      },
+      {
+        "feature": "video_duration",
+        "top": 269.0,
+        "bottom": 83.0,
+        "diff": 186.0,
+        "abs_diff": 186.0
+      }
+    ]
+  },
+  "selected_chart_state": {}
 }

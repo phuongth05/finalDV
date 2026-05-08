@@ -1,78 +1,152 @@
 {
   "tab": 1,
   "name": "Tổng quan",
-  "rows": 6769,
+  "rows": 6772,
   "active_filters": [],
-  "metrics": {
-    "total_views": 27517732225.0,
-    "total_likes": 135397679.0,
-    "total_comments": 7095004.0,
-    "mean_views": 4065258.1215836904,
-    "median_views": 291083.0,
-    "max_views": 200212896.0,
-    "mean_tags": 14.7398434037524,
-    "mean_subscribers": 716620.9472595657,
-    "engagement_rate": 0.005178213154881443,
-    "licensed_rate": 0.7627419116560792,
-    "caption_rate": 0.06219530211257202
+  "kpi": {
+    "total_views": 28274432376.0,
+    "total_likes": 140991929.0,
+    "total_comments": 9592068.0,
+    "mean_views": 4175196.747784997,
+    "median_views": 291817.0,
+    "max_views": 307499819.0,
+    "engagement_rate": 0.0053258008860266005,
+    "licensed_ratio": 0.7628470171293562,
+    "caption_ratio": 0.06246308328411104
+  },
+  "distribution": {
+    "view_distribution_shape": {
+      "status": "ok",
+      "shape": "right_skewed",
+      "skewness": 7.888920817925534,
+      "kurtosis": 96.86527171221513,
+      "p25": 13944.5,
+      "median": 291817.0,
+      "p75": 2327774.75
+    },
+    "duration_distribution": {
+      "status": "ok",
+      "shape": "right_skewed",
+      "skewness": 4.829365235147468,
+      "kurtosis": 50.350845086603584,
+      "p25": 0.9166666666666666,
+      "median": 3.85,
+      "p75": 5.633333333333334
+    },
+    "outlier_existence": {
+      "views": {
+        "status": "ok",
+        "exists": true,
+        "outlier_count": 965,
+        "outlier_share": 0.14249852333136445,
+        "lower_bound": -3456800.875,
+        "upper_bound": 5798520.125
+      },
+      "duration_minutes": {
+        "status": "ok",
+        "exists": true,
+        "outlier_count": 1014,
+        "outlier_share": 0.14973419964559953,
+        "lower_bound": -6.158333333333333,
+        "upper_bound": 12.708333333333334
+      }
+    }
+  },
+  "top_entities": {
+    "top_channels": [
+      {
+        "channel_title": "Kênh Thiếu Nhi - BHMEDIA",
+        "video_view_count": 1064134866.0
+      },
+      {
+        "channel_title": "Nal Official",
+        "video_view_count": 591676381.0
+      },
+      {
+        "channel_title": "Hòa Minzy",
+        "video_view_count": 587086195.0
+      },
+      {
+        "channel_title": "Sơn Tùng M-TP Official",
+        "video_view_count": 438379860.0
+      },
+      {
+        "channel_title": "Đen Vâu Official",
+        "video_view_count": 328213404.0
+      }
+    ],
+    "top_videos": [
+      {
+        "video_title": "bắc bling bắc ninh official mv hoà minzy ft ns xuân hinh x masew x tuấn cry",
+        "video_view_count": 307499819.0
+      },
+      {
+        "video_title": "sơn tùng mtp muộn rồi mà sao còn official music video",
+        "video_view_count": 236872844.0
+      },
+      {
+        "video_title": "rồi tới luôn nal mv audio lyric official",
+        "video_view_count": 212327488.0
+      },
+      {
+        "video_title": "karik bạn đời ft gducky official music video",
+        "video_view_count": 200212896.0
+      },
+      {
+        "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
+        "video_view_count": 187343056.0
+      }
+    ]
+  },
+  "trend": {
+    "peak_periods": [
+      {
+        "period": "2021-04-01 00:00:00",
+        "video_view_count": 1056173479,
+        "mom_change_pct": 42.23964566511553,
+        "mom_change_abs": 313642468.0
+      },
+      {
+        "period": "2023-10-01 00:00:00",
+        "video_view_count": 1005427174,
+        "mom_change_pct": 164.72310795549427,
+        "mom_change_abs": 625623846.0
+      },
+      {
+        "period": "2025-03-01 00:00:00",
+        "video_view_count": 819970410,
+        "mom_change_pct": 100.92346236473162,
+        "mom_change_abs": 411869534.0
+      }
+    ],
+    "fluctuation": {
+      "avg_monthly_change_pct": 52.547355692117854,
+      "max_monthly_change_pct": 314.2527719326651,
+      "most_volatile_months": [
+        {
+          "period": "2021-05-01 00:00:00",
+          "video_view_count": 339098896,
+          "mom_change_pct": -67.89363653392778,
+          "mom_change_abs": 717074583.0
+        },
+        {
+          "period": "2023-11-01 00:00:00",
+          "video_view_count": 367167156,
+          "mom_change_pct": -63.48147677973939,
+          "mom_change_abs": 638260018.0
+        },
+        {
+          "period": "2023-10-01 00:00:00",
+          "video_view_count": 1005427174,
+          "mom_change_pct": 164.72310795549427,
+          "mom_change_abs": 625623846.0
+        }
+      ]
+    }
   },
   "top_channel_by_views": {
     "channel_title": "Kênh Thiếu Nhi - BHMEDIA",
     "video_view_count": 1064134866
-  },
-  "top_videos_by_views": [
-    {
-      "video_title": "karik bạn đời ft gducky official music video",
-      "video_view_count": 200212896.0
-    },
-    {
-      "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
-      "video_view_count": 187343056.0
-    },
-    {
-      "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
-      "video_view_count": 171751332.0
-    },
-    {
-      "video_title": "tăng phúc ft trương thảo nhi chỉ là không cùng nhau nhạc hoa lời việt mây in the nest 2832021",
-      "video_view_count": 156107588.0
-    },
-    {
-      "video_title": "đám cưới nha hồng thanh x mie lần đầu biểu diễn cực sung",
-      "video_view_count": 150560353.0
-    }
-  ],
-  "top_videos_by_likes": [
-    {
-      "video_title": "đen mang tiền về cho mẹ ft nguyên thảo mv",
-      "video_like_count": 1440305.0
-    },
-    {
-      "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
-      "video_like_count": 1419016.0
-    },
-    {
-      "video_title": "jack laylalay official music video",
-      "video_like_count": 1267103.0
-    },
-    {
-      "video_title": "singing see tình in 6 languages dabincha vietnam",
-      "video_like_count": 1018574.0
-    },
-    {
-      "video_title": "đen trốn tìm ft mtv band mv",
-      "video_like_count": 927188.0
-    }
-  ],
-  "bubble_relation_hint": {
-    "status": "ok",
-    "log_view_like_slope": 0.8338,
-    "log_view_comment_slope": 0.6046,
-    "log_view_like_corr": 0.9527,
-    "log_view_comment_corr": 0.7753,
-    "direction_like": "tăng",
-    "direction_comment": "tăng",
-    "selected_points": 6625
   },
   "selected_chart_state": {}
 }

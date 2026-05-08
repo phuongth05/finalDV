@@ -1,14 +1,48 @@
 {
   "tab": 4,
-  "name": "Nền tảng & Thuật toán",
-  "rows": 6769,
-  "time_context": {
+  "name": "Thuật toán & Tối ưu nền tảng",
+  "rows": 6772,
+  "active_filters": [],
+  "timing_optimization": {
     "status": "ok",
-    "best_day_heatmap_cells": [
+    "best_day": [
+      {
+        "day": "Thursday",
+        "video_view_count": 4830416.382797732
+      },
+      {
+        "day": "Saturday",
+        "video_view_count": 4371735.893637227
+      },
+      {
+        "day": "Friday",
+        "video_view_count": 4167281.051948052
+      }
+    ],
+    "best_hour": [
+      {
+        "hour": 13,
+        "video_view_count": 8715730.86340852
+      },
+      {
+        "hour": 12,
+        "video_view_count": 6088922.888081395
+      },
+      {
+        "hour": 14,
+        "video_view_count": 5358920.660465117
+      }
+    ],
+    "peak_slots": [
       {
         "day": "Thursday",
         "hour": 16,
         "video_view_count": 21152569.833333332
+      },
+      {
+        "day": "Thursday",
+        "hour": 14,
+        "video_view_count": 15371330.04
       },
       {
         "day": "Thursday",
@@ -24,222 +58,239 @@
         "day": "Wednesday",
         "hour": 13,
         "video_view_count": 10361327.436363636
-      },
-      {
-        "day": "Sunday",
-        "hour": 16,
-        "video_view_count": 10116302.0
-      }
-    ],
-    "best_days": [
-      {
-        "day": "Thursday",
-        "video_view_count": 4610887.122989593
-      },
-      {
-        "day": "Friday",
-        "video_view_count": 4167281.051948052
-      },
-      {
-        "day": "Wednesday",
-        "video_view_count": 4112184.286966046
-      }
-    ],
-    "best_hours": [
-      {
-        "hour": 13,
-        "video_view_count": 8715730.86340852
-      },
-      {
-        "hour": 12,
-        "video_view_count": 5719454.575691412
-      },
-      {
-        "hour": 14,
-        "video_view_count": 4277079.897196262
       }
     ]
   },
-  "selected_chart_state": {},
-  "duration_vs_views_corr": -0.054807551214151595,
-  "duration_top_groups": [
-    {
-      "duration_group": "< 5 phút",
-      "video_view_count": 3889102.417225951
+  "duration_optimization": {
+    "status": "ok",
+    "sweet_spot_duration": [
+      {
+        "duration_group": "5-10 phút",
+        "video_view_count": 6823537.464962902
+      }
+    ],
+    "low_performance_duration": [
+      {
+        "duration_group": "> 15 phút",
+        "video_view_count": 1497705.4623115577
+      }
+    ],
+    "all_groups": [
+      {
+        "duration_group": "5-10 phút",
+        "video_view_count": 6823537.464962902
+      },
+      {
+        "duration_group": "10-15 phút",
+        "video_view_count": 5311294.171875
+      },
+      {
+        "duration_group": "< 5 phút",
+        "video_view_count": 4055664.6447574333
+      },
+      {
+        "duration_group": "> 15 phút",
+        "video_view_count": 1497705.4623115577
+      }
+    ]
+  },
+  "seo_nlp": {
+    "keyword_impacts": {
+      "status": "ok",
+      "high_impact_keywords": [
+        {
+          "token": "kido",
+          "occurrences": 1,
+          "avg_views": 118618056.0,
+          "total_views": 118618056
+        },
+        {
+          "token": "gducky",
+          "occurrences": 2,
+          "avg_views": 101890926.5,
+          "total_views": 203781853
+        },
+        {
+          "token": "lou",
+          "occurrences": 1,
+          "avg_views": 98504147.0,
+          "total_views": 98504147
+        },
+        {
+          "token": "drum7",
+          "occurrences": 2,
+          "avg_views": 93929716.0,
+          "total_views": 187859432
+        },
+        {
+          "token": "monstar",
+          "occurrences": 1,
+          "avg_views": 93323415.0,
+          "total_views": 93323415
+        },
+        {
+          "token": "lầu",
+          "occurrences": 1,
+          "avg_views": 86007797.0,
+          "total_views": 86007797
+        },
+        {
+          "token": "nấu",
+          "occurrences": 1,
+          "avg_views": 85111933.0,
+          "total_views": 85111933
+        },
+        {
+          "token": "giếng",
+          "occurrences": 1,
+          "avg_views": 82407446.0,
+          "total_views": 82407446
+        },
+        {
+          "token": "boyzed",
+          "occurrences": 1,
+          "avg_views": 81444621.0,
+          "total_views": 81444621
+        },
+        {
+          "token": "vsoul",
+          "occurrences": 1,
+          "avg_views": 81444621.0,
+          "total_views": 81444621
+        }
+      ],
+      "emotional_keywords": [
+        {
+          "token": "live",
+          "occurrences": 228,
+          "avg_views": 9341889.087719299,
+          "total_views": 2129950712
+        },
+        {
+          "token": "đau",
+          "occurrences": 67,
+          "avg_views": 7374258.2835820895,
+          "total_views": 494075305
+        },
+        {
+          "token": "nỗi",
+          "occurrences": 74,
+          "avg_views": 6197118.22972973,
+          "total_views": 458586749
+        },
+        {
+          "token": "buồn",
+          "occurrences": 508,
+          "avg_views": 5356897.37007874,
+          "total_views": 2721303864
+        },
+        {
+          "token": "love",
+          "occurrences": 17,
+          "avg_views": 5276779.176470588,
+          "total_views": 89705246
+        },
+        {
+          "token": "vui",
+          "occurrences": 460,
+          "avg_views": 4023241.3673913046,
+          "total_views": 1850691029
+        },
+        {
+          "token": "cưới",
+          "occurrences": 429,
+          "avg_views": 3712095.6200466203,
+          "total_views": 1592489021
+        },
+        {
+          "token": "chill",
+          "occurrences": 453,
+          "avg_views": 3475332.2604856514,
+          "total_views": 1574325514
+        },
+        {
+          "token": "tết",
+          "occurrences": 588,
+          "avg_views": 3428487.576530612,
+          "total_views": 2015950695
+        },
+        {
+          "token": "đám",
+          "occurrences": 360,
+          "avg_views": 3175239.375,
+          "total_views": 1143086175
+        }
+      ]
     },
-    {
-      "duration_group": "5-10 phút",
-      "video_view_count": 6823537.464962902
+    "metadata_effectiveness": [
+      {
+        "feature": "caption",
+        "with_true": 7688598.0,
+        "with_false": 221090.0
+      },
+      {
+        "feature": "licensed",
+        "with_true": 542713.5,
+        "with_false": 7679.0
+      },
+      {
+        "feature": "official_title",
+        "with_true": 795136.0,
+        "with_false": 213549.0
+      },
+      {
+        "feature": "remix_title",
+        "with_true": 1165655.0,
+        "with_false": 249547.5
+      }
+    ]
+  },
+  "platform_behavior": {
+    "status": "ok",
+    "upload_view_synchronization": {
+      "correlation": 0.9263117164597432,
+      "preferred_hours": [
+        {
+          "hour": 12,
+          "upload_count": 1376,
+          "total_views": 8378357894
+        },
+        {
+          "hour": 13,
+          "upload_count": 798,
+          "total_views": 6955153229
+        },
+        {
+          "hour": 11,
+          "upload_count": 758,
+          "total_views": 2095922589
+        }
+      ],
+      "most_active_upload_hours": [
+        {
+          "hour": 12,
+          "upload_count": 1376,
+          "total_views": 8378357894
+        },
+        {
+          "hour": 13,
+          "upload_count": 798,
+          "total_views": 6955153229
+        },
+        {
+          "hour": 11,
+          "upload_count": 758,
+          "total_views": 2095922589
+        }
+      ]
     },
-    {
-      "duration_group": "> 10 phút",
-      "video_view_count": 1728177.301227573
+    "algorithmic_preference": {
+      "best_hours": [
+        12,
+        13,
+        11
+      ]
     }
-  ],
-  "supply_demand_hours": [
-    {
-      "hour": 0,
-      "video_count": 191,
-      "total_views": 569373323,
-      "gap": 569373132
-    },
-    {
-      "hour": 1,
-      "video_count": 160,
-      "total_views": 448744216,
-      "gap": 448744056
-    },
-    {
-      "hour": 2,
-      "video_count": 285,
-      "total_views": 919618829,
-      "gap": 919618544
-    },
-    {
-      "hour": 3,
-      "video_count": 406,
-      "total_views": 1510816670,
-      "gap": 1510816264
-    },
-    {
-      "hour": 4,
-      "video_count": 329,
-      "total_views": 881349085,
-      "gap": 881348756
-    },
-    {
-      "hour": 5,
-      "video_count": 177,
-      "total_views": 324892213,
-      "gap": 324892036
-    },
-    {
-      "hour": 6,
-      "video_count": 153,
-      "total_views": 253221306,
-      "gap": 253221153
-    },
-    {
-      "hour": 7,
-      "video_count": 174,
-      "total_views": 510026565,
-      "gap": 510026391
-    },
-    {
-      "hour": 8,
-      "video_count": 269,
-      "total_views": 862110416,
-      "gap": 862110147
-    },
-    {
-      "hour": 9,
-      "video_count": 341,
-      "total_views": 1031520458,
-      "gap": 1031520117
-    },
-    {
-      "hour": 10,
-      "video_count": 375,
-      "total_views": 1213139901,
-      "gap": 1213139526
-    },
-    {
-      "hour": 11,
-      "video_count": 758,
-      "total_views": 2095922589,
-      "gap": 2095921831
-    },
-    {
-      "hour": 12,
-      "video_count": 1374,
-      "total_views": 7858530587,
-      "gap": 7858529213
-    },
-    {
-      "hour": 13,
-      "video_count": 798,
-      "total_views": 6955153229,
-      "gap": 6955152431
-    },
-    {
-      "hour": 14,
-      "video_count": 214,
-      "total_views": 915295098,
-      "gap": 915294884
-    },
-    {
-      "hour": 15,
-      "video_count": 80,
-      "total_views": 95015872,
-      "gap": 95015792
-    },
-    {
-      "hour": 16,
-      "video_count": 59,
-      "total_views": 251381269,
-      "gap": 251381210
-    },
-    {
-      "hour": 17,
-      "video_count": 53,
-      "total_views": 140265580,
-      "gap": 140265527
-    },
-    {
-      "hour": 18,
-      "video_count": 65,
-      "total_views": 35209470,
-      "gap": 35209405
-    },
-    {
-      "hour": 19,
-      "video_count": 55,
-      "total_views": 76538261,
-      "gap": 76538206
-    },
-    {
-      "hour": 20,
-      "video_count": 15,
-      "total_views": 6294579,
-      "gap": 6294564
-    },
-    {
-      "hour": 21,
-      "video_count": 19,
-      "total_views": 11999285,
-      "gap": 11999266
-    },
-    {
-      "hour": 22,
-      "video_count": 136,
-      "total_views": 234307219,
-      "gap": 234307083
-    },
-    {
-      "hour": 23,
-      "video_count": 283,
-      "total_views": 317006205,
-      "gap": 317005922
-    }
-  ],
-  "largest_gap_hour": [
-    {
-      "hour": 12,
-      "video_count": 1374,
-      "total_views": 7858530587,
-      "gap": 7858529213
-    },
-    {
-      "hour": 13,
-      "video_count": 798,
-      "total_views": 6955153229,
-      "gap": 6955152431
-    },
-    {
-      "hour": 11,
-      "video_count": 758,
-      "total_views": 2095922589,
-      "gap": 2095921831
-    }
-  ]
+  },
+  "selected_chart_state": {}
 }

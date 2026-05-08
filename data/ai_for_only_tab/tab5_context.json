@@ -1,30 +1,469 @@
 {
-  "tab": 5,
-  "name": "Mô hình hóa",
-  "rows": 6769,
-  "high_vif_vars": [
+  "status": "ok",
+  "high_corr_pairs": [
+    {
+      "feature_1": "channel_subscriber_count",
+      "feature_2": "channel_view_count",
+      "corr": 0.9574042517537829
+    },
+    {
+      "feature_1": "channel_subscriber_count",
+      "feature_2": "channel_video_count",
+      "corr": 0.7421344954986104
+    },
+    {
+      "feature_1": "channel_view_count",
+      "feature_2": "channel_video_count",
+      "corr": 0.7636661140368032
+    }
+  ],
+  "vif_analysis": [
+    {
+      "feature": "video_duration",
+      "vif": 1.3762878228291267
+    },
+    {
+      "feature": "video_tags_count",
+      "vif": 3.6806877983181905
+    },
+    {
+      "feature": "title_length",
+      "vif": 6.800014822540166
+    },
+    {
+      "feature": "description_length",
+      "vif": 3.2205986533866975
+    },
+    {
+      "feature": "channel_subscriber_count",
+      "vif": 14.289383694422813
+    },
+    {
+      "feature": "channel_view_count",
+      "vif": 14.415910188598923
+    },
+    {
+      "feature": "channel_video_count",
+      "vif": 3.1560938119577546
+    },
+    {
+      "feature": "hour",
+      "vif": 3.9797715521304653
+    },
+    {
+      "feature": "video_age_days",
+      "vif": 2.9697931707167484
+    }
+  ],
+  "removed_variables": [
+    "channel_subscriber_count",
     "channel_view_count",
-    "channel_subscriber_count"
+    "genre_Chill",
+    "genre_Nhạc Tết",
+    "genre_Nhạc vàng",
+    "genre_Nhạc đỏ",
+    "genre_Quê hương",
+    "genre_Thiếu nhi",
+    "genre_Vui tươi",
+    "hour",
+    "is_hd",
+    "is_lyric",
+    "is_official",
+    "posted_morning",
+    "title_length"
+  ],
+  "model_results": {
+    "r2": 0.390586855252374,
+    "adjusted_r2": 0.38778391645605703,
+    "selected_features": [
+      "is_licensed",
+      "has_caption",
+      "video_age_days",
+      "is_remix",
+      "is_collab",
+      "video_duration",
+      "genre_Nhạc cụ",
+      "is_for_kids",
+      "posted_afternoon",
+      "genre_Rap",
+      "posted_evening",
+      "genre_Nhạc trẻ",
+      "genre_Khác",
+      "genre_Live",
+      "genre_Remix",
+      "genre_Nhạc buồn",
+      "genre_Nhạc đám cưới",
+      "genre_Nhạc chế",
+      "video_tags_count",
+      "genre_Nhạc sàn",
+      "genre_Không lời",
+      "description_length",
+      "genre_Dân ca",
+      "genre_Lofi",
+      "genre_Bolero",
+      "genre_Trữ tình",
+      "is_weekend",
+      "genre_Cải lương",
+      "channel_video_count",
+      "is_cover",
+      "genre_Indie"
+    ],
+    "rejected_features": [
+      "title_length",
+      "hour",
+      "is_hd",
+      "is_official",
+      "is_lyric",
+      "posted_morning",
+      "genre_Chill",
+      "genre_Nhạc Tết",
+      "genre_Nhạc vàng",
+      "genre_Nhạc đỏ",
+      "genre_Quê hương",
+      "genre_Thiếu nhi",
+      "genre_Vui tươi"
+    ]
+  },
+  "factor_importance": [
+    {
+      "feature": "is_licensed",
+      "std_coef": 1.2745630217830815,
+      "p_value": 2.7470034767518463e-244,
+      "abs_coef": 1.2745630217830815
+    },
+    {
+      "feature": "video_age_days",
+      "std_coef": 0.7872135260240445,
+      "p_value": 4.5433580372985016e-104,
+      "abs_coef": 0.7872135260240445
+    },
+    {
+      "feature": "has_caption",
+      "std_coef": 0.5988182661903151,
+      "p_value": 1.4413543211936634e-59,
+      "abs_coef": 0.5988182661903151
+    },
+    {
+      "feature": "genre_Khác",
+      "std_coef": 0.5516257258218518,
+      "p_value": 1.0490837188306226e-39,
+      "abs_coef": 0.5516257258218518
+    },
+    {
+      "feature": "is_for_kids",
+      "std_coef": 0.4709563371310345,
+      "p_value": 8.647090013323041e-37,
+      "abs_coef": 0.4709563371310345
+    },
+    {
+      "feature": "video_duration",
+      "std_coef": 0.45579659168967246,
+      "p_value": 4.815791180098975e-34,
+      "abs_coef": 0.45579659168967246
+    },
+    {
+      "feature": "genre_Nhạc trẻ",
+      "std_coef": 0.42191562104930735,
+      "p_value": 2.8073242060924492e-31,
+      "abs_coef": 0.42191562104930735
+    },
+    {
+      "feature": "genre_Rap",
+      "std_coef": 0.39425618107397076,
+      "p_value": 1.548649329804033e-28,
+      "abs_coef": 0.39425618107397076
+    }
+  ],
+  "statistical_interpretation": {
+    "multicollinearity_explanation": "Một số biến numeric có VIF cao hoặc tương quan mạnh, nên hệ số dễ biến động khi thêm/bớt biến.",
+    "significance_explanation": "Có 31 biến có p-value < 0.05 trong mô hình cuối.",
+    "positive_effects": [
+      {
+        "feature": "is_licensed",
+        "std_coef": 1.2745630217830815,
+        "p_value": 2.7470034767518463e-244,
+        "abs_coef": 1.2745630217830815
+      },
+      {
+        "feature": "video_age_days",
+        "std_coef": 0.7872135260240445,
+        "p_value": 4.5433580372985016e-104,
+        "abs_coef": 0.7872135260240445
+      },
+      {
+        "feature": "has_caption",
+        "std_coef": 0.5988182661903151,
+        "p_value": 1.4413543211936634e-59,
+        "abs_coef": 0.5988182661903151
+      },
+      {
+        "feature": "genre_Khác",
+        "std_coef": 0.5516257258218518,
+        "p_value": 1.0490837188306226e-39,
+        "abs_coef": 0.5516257258218518
+      },
+      {
+        "feature": "is_for_kids",
+        "std_coef": 0.4709563371310345,
+        "p_value": 8.647090013323041e-37,
+        "abs_coef": 0.4709563371310345
+      }
+    ],
+    "negative_effects": [
+      {
+        "feature": "posted_evening",
+        "std_coef": -0.2892444054370776,
+        "p_value": 4.53493563523548e-16,
+        "abs_coef": 0.2892444054370776
+      },
+      {
+        "feature": "genre_Nhạc cụ",
+        "std_coef": -0.17966406193799145,
+        "p_value": 4.778384587671157e-07,
+        "abs_coef": 0.17966406193799145
+      },
+      {
+        "feature": "is_weekend",
+        "std_coef": -0.110784879311428,
+        "p_value": 0.001078962318952444,
+        "abs_coef": 0.110784879311428
+      }
+    ]
+  },
+  "stepwise_history": [
+    {
+      "Step": 1,
+      "Action": "➕ is_licensed",
+      "p-value": 0.0,
+      "R²": 0.1896,
+      "Số biến": 1
+    },
+    {
+      "Step": 2,
+      "Action": "➕ has_caption",
+      "p-value": 0.0,
+      "R²": 0.2383,
+      "Số biến": 2
+    },
+    {
+      "Step": 3,
+      "Action": "➕ video_age_days",
+      "p-value": 0.0,
+      "R²": 0.2776,
+      "Số biến": 3
+    },
+    {
+      "Step": 4,
+      "Action": "➕ is_remix",
+      "p-value": 0.0,
+      "R²": 0.2943,
+      "Số biến": 4
+    },
+    {
+      "Step": 5,
+      "Action": "➕ is_collab",
+      "p-value": 0.0,
+      "R²": 0.3046,
+      "Số biến": 5
+    },
+    {
+      "Step": 6,
+      "Action": "➕ video_duration",
+      "p-value": 0.0,
+      "R²": 0.316,
+      "Số biến": 6
+    },
+    {
+      "Step": 7,
+      "Action": "➕ genre_Nhạc cụ",
+      "p-value": 0.0,
+      "R²": 0.3259,
+      "Số biến": 7
+    },
+    {
+      "Step": 8,
+      "Action": "➕ is_for_kids",
+      "p-value": 0.0,
+      "R²": 0.3347,
+      "Số biến": 8
+    },
+    {
+      "Step": 9,
+      "Action": "➕ posted_afternoon",
+      "p-value": 0.0,
+      "R²": 0.3414,
+      "Số biến": 9
+    },
+    {
+      "Step": 10,
+      "Action": "➕ genre_Rap",
+      "p-value": 0.0,
+      "R²": 0.3466,
+      "Số biến": 10
+    },
+    {
+      "Step": 11,
+      "Action": "➕ posted_evening",
+      "p-value": 0.0,
+      "R²": 0.3515,
+      "Số biến": 11
+    },
+    {
+      "Step": 12,
+      "Action": "➕ genre_Nhạc trẻ",
+      "p-value": 0.0,
+      "R²": 0.3561,
+      "Số biến": 12
+    },
+    {
+      "Step": 13,
+      "Action": "➕ genre_Khác",
+      "p-value": 0.0,
+      "R²": 0.3605,
+      "Số biến": 13
+    },
+    {
+      "Step": 14,
+      "Action": "➕ genre_Live",
+      "p-value": 0.0,
+      "R²": 0.365,
+      "Số biến": 14
+    },
+    {
+      "Step": 15,
+      "Action": "➕ genre_Remix",
+      "p-value": 0.0,
+      "R²": 0.3689,
+      "Số biến": 15
+    },
+    {
+      "Step": 16,
+      "Action": "➕ genre_Nhạc buồn",
+      "p-value": 0.0,
+      "R²": 0.3716,
+      "Số biến": 16
+    },
+    {
+      "Step": 17,
+      "Action": "➕ genre_Nhạc đám cưới",
+      "p-value": 0.0,
+      "R²": 0.3737,
+      "Số biến": 17
+    },
+    {
+      "Step": 18,
+      "Action": "➕ genre_Nhạc chế",
+      "p-value": 0.0,
+      "R²": 0.3757,
+      "Số biến": 18
+    },
+    {
+      "Step": 19,
+      "Action": "➕ video_tags_count",
+      "p-value": 0.0,
+      "R²": 0.3776,
+      "Số biến": 19
+    },
+    {
+      "Step": 20,
+      "Action": "➕ genre_Nhạc sàn",
+      "p-value": 0.0,
+      "R²": 0.3796,
+      "Số biến": 20
+    },
+    {
+      "Step": 21,
+      "Action": "➕ genre_Không lời",
+      "p-value": 0.0,
+      "R²": 0.3816,
+      "Số biến": 21
+    },
+    {
+      "Step": 22,
+      "Action": "➕ description_length",
+      "p-value": 0.0004,
+      "R²": 0.3828,
+      "Số biến": 22
+    },
+    {
+      "Step": 23,
+      "Action": "➕ genre_Dân ca",
+      "p-value": 0.0004,
+      "R²": 0.3839,
+      "Số biến": 23
+    },
+    {
+      "Step": 24,
+      "Action": "➕ genre_Lofi",
+      "p-value": 0.0005,
+      "R²": 0.385,
+      "Số biến": 24
+    },
+    {
+      "Step": 25,
+      "Action": "➕ genre_Bolero",
+      "p-value": 0.0003,
+      "R²": 0.3862,
+      "Số biến": 25
+    },
+    {
+      "Step": 26,
+      "Action": "➕ genre_Trữ tình",
+      "p-value": 0.0009,
+      "R²": 0.3872,
+      "Số biến": 26
+    },
+    {
+      "Step": 27,
+      "Action": "➕ is_weekend",
+      "p-value": 0.0014,
+      "R²": 0.3881,
+      "Số biến": 27
+    },
+    {
+      "Step": 28,
+      "Action": "➕ genre_Cải lương",
+      "p-value": 0.0016,
+      "R²": 0.389,
+      "Số biến": 28
+    },
+    {
+      "Step": 29,
+      "Action": "➕ channel_video_count",
+      "p-value": 0.0094,
+      "R²": 0.3896,
+      "Số biến": 29
+    },
+    {
+      "Step": 30,
+      "Action": "➕ is_cover",
+      "p-value": 0.0149,
+      "R²": 0.3902,
+      "Số biến": 30
+    },
+    {
+      "Step": 31,
+      "Action": "➕ genre_Indie",
+      "p-value": 0.032,
+      "R²": 0.3906,
+      "Số biến": 31
+    }
+  ],
+  "high_vif_vars": [
+    "channel_subscriber_count",
+    "channel_view_count"
   ],
   "ok_vif_vars": [
-    "hour",
+    "video_duration",
     "video_tags_count",
     "description_length",
     "channel_video_count",
-    "video_age_days",
-    "video_duration"
+    "hour",
+    "video_age_days"
   ],
-  "selected_chart_state": {},
-  "top_view_correlations": {
-    "video_like_count": 0.7467,
-    "video_comment_count": 0.2252,
-    "channel_subscriber_count": 0.192,
-    "description_length": 0.1639,
-    "channel_view_count": 0.1482,
-    "engagement_rate": -0.1116,
-    "title_length": -0.086,
-    "video_duration": -0.0543
-  },
-  "genre_dummy_count": 24,
-  "numeric_feature_count": 8
+  "tab": 5,
+  "name": "Mô hình hóa",
+  "rows": 6772,
+  "active_filters": [],
+  "selected_chart_state": {}
 }
