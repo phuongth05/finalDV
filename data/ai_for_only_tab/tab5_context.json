@@ -1,0 +1,29 @@
+{
+  "tab": 5,
+  "name": "Mô hình hóa",
+  "rows": 6772,
+  "high_vif_vars": [
+    "channel_view_count",
+    "channel_subscriber_count"
+  ],
+  "ok_vif_vars": [
+    "hour",
+    "video_tags_count",
+    "description_length",
+    "channel_video_count",
+    "video_duration"
+  ],
+  "selected_chart_state": {},
+  "top_view_correlations": {
+    "video_like_count": 0.7787,
+    "video_comment_count": 0.302,
+    "channel_subscriber_count": 0.1955,
+    "description_length": 0.1746,
+    "channel_view_count": 0.1429,
+    "engagement_rate": -0.1036,
+    "title_length": -0.0831,
+    "video_duration": -0.0524
+  },
+  "genre_dummy_count": 24,
+  "numeric_feature_count": 8
+}

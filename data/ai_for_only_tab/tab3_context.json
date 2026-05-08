@@ -1,0 +1,103 @@
+{
+  "tab": 3,
+  "name": "Hành vi người dùng",
+  "rows": 6772,
+  "time_context": {
+    "status": "ok",
+    "best_day_heatmap_cells": [
+      {
+        "day": "Thursday",
+        "hour": 16,
+        "video_view_count": 21152569.833333332
+      },
+      {
+        "day": "Thursday",
+        "hour": 14,
+        "video_view_count": 15371330.04
+      },
+      {
+        "day": "Thursday",
+        "hour": 13,
+        "video_view_count": 10594111.765100671
+      },
+      {
+        "day": "Friday",
+        "hour": 13,
+        "video_view_count": 10462049.957264958
+      },
+      {
+        "day": "Wednesday",
+        "hour": 13,
+        "video_view_count": 10361327.436363636
+      }
+    ],
+    "best_days": [
+      {
+        "day": "Thursday",
+        "video_view_count": 4830416.382797732
+      },
+      {
+        "day": "Saturday",
+        "video_view_count": 4371735.893637227
+      },
+      {
+        "day": "Friday",
+        "video_view_count": 4167281.051948052
+      }
+    ],
+    "best_hours": [
+      {
+        "hour": 13,
+        "video_view_count": 8715730.86340852
+      },
+      {
+        "hour": 12,
+        "video_view_count": 6088922.888081395
+      },
+      {
+        "hour": 14,
+        "video_view_count": 5358920.660465117
+      }
+    ]
+  },
+  "selected_chart_state": {},
+  "duration_summary": [
+    {
+      "duration_group": "< 5 phút",
+      "avg_views": 4055664.6447574333,
+      "video_count": 4473
+    },
+    {
+      "duration_group": "5-10 phút",
+      "avg_views": 6823537.464962902,
+      "video_count": 1213
+    },
+    {
+      "duration_group": "> 10 phút",
+      "avg_views": 1728177.301227573,
+      "video_count": 1059
+    }
+  ],
+  "top_videos_by_views": [
+    {
+      "video_title": "bắc bling bắc ninh official mv hoà minzy ft ns xuân hinh x masew x tuấn cry",
+      "video_view_count": 307499819.0
+    },
+    {
+      "video_title": "sơn tùng mtp muộn rồi mà sao còn official music video",
+      "video_view_count": 236872844.0
+    },
+    {
+      "video_title": "rồi tới luôn nal mv audio lyric official",
+      "video_view_count": 212327488.0
+    },
+    {
+      "video_title": "karik bạn đời ft gducky official music video",
+      "video_view_count": 200212896.0
+    },
+    {
+      "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
+      "video_view_count": 187343056.0
+    }
+  ]
+}

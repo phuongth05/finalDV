@@ -1,0 +1,97 @@
+{
+  "tab": 2,
+  "name": "Định nghĩa thành công",
+  "rows": 6772,
+  "active_filters": [],
+  "selected_chart_state": {},
+  "caption_vs_no_caption": [
+    {
+      "has_caption": false,
+      "video_view_count": 3030111.576468735
+    },
+    {
+      "has_caption": true,
+      "video_view_count": 21362302.54609929
+    }
+  ],
+  "official_vs_free_avg_views": [
+    {
+      "is_licensed": false,
+      "video_view_count": 1612489.096513076
+    },
+    {
+      "is_licensed": true,
+      "video_view_count": 4971888.286295006
+    }
+  ],
+  "top_genres_by_views": [
+    {
+      "genre": "Khác",
+      "video_view_count": 5839474238
+    },
+    {
+      "genre": "Nhạc buồn",
+      "video_view_count": 2464628050
+    },
+    {
+      "genre": "Nhạc trẻ",
+      "video_view_count": 1868626861
+    },
+    {
+      "genre": "Thiếu nhi",
+      "video_view_count": 1759788612
+    },
+    {
+      "genre": "Rap",
+      "video_view_count": 1655152046
+    },
+    {
+      "genre": "Chill",
+      "video_view_count": 1360443158
+    }
+  ],
+  "top_videos_by_views": [
+    {
+      "video_title": "bắc bling bắc ninh official mv hoà minzy ft ns xuân hinh x masew x tuấn cry",
+      "video_view_count": 307499819.0
+    },
+    {
+      "video_title": "sơn tùng mtp muộn rồi mà sao còn official music video",
+      "video_view_count": 236872844.0
+    },
+    {
+      "video_title": "rồi tới luôn nal mv audio lyric official",
+      "video_view_count": 212327488.0
+    },
+    {
+      "video_title": "karik bạn đời ft gducky official music video",
+      "video_view_count": 200212896.0
+    },
+    {
+      "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
+      "video_view_count": 187343056.0
+    }
+  ],
+  "top_videos_by_likes": [
+    {
+      "video_title": "sơn tùng mtp muộn rồi mà sao còn official music video",
+      "video_like_count": 2655980.0
+    },
+    {
+      "video_title": "bắc bling bắc ninh official mv hoà minzy ft ns xuân hinh x masew x tuấn cry",
+      "video_like_count": 1963145.0
+    },
+    {
+      "video_title": "đen mang tiền về cho mẹ ft nguyên thảo mv",
+      "video_like_count": 1440305.0
+    },
+    {
+      "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
+      "video_like_count": 1419016.0
+    },
+    {
+      "video_title": "jack laylalay official music video",
+      "video_like_count": 1267103.0
+    }
+  ]
+}
