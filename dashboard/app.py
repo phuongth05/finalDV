@@ -8,6 +8,8 @@ import streamlit as st
 from dotenv import load_dotenv
 from groq import Groq
 
+from tabs.tab5_modeling import _build_df_model
+
 from tabs.tab1_overview import render_tab as render_tab1
 from tabs.tab2_success import render_tab as render_tab2
 from tabs.tab3_audience import render_tab as render_tab3
@@ -15,7 +17,7 @@ from tabs.tab4_timing import render_tab as render_tab4
 from tabs.tab5_modeling import render_tab as render_tab5
 from tabs.tab6_confounders import render_tab as render_tab6
 from tabs.tab7_ai import render_tab as render_tab7
-from tabs.tab5_modeling import _build_df_model
+
 
 # ================= CONFIG =================
 st.set_page_config(
@@ -807,14 +809,13 @@ def _render_tab_chatbot(tab_key, tab_label, context_builder, frame):
             st.info("Hãy nhập câu hỏi. Ví dụ: 'Vì sao bubble chart này tăng mạnh ở nhóm nào?' hoặc 'Khung giờ nào tốt nhất?'")
 
 # ================= TABS =================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "Tổng quan",
     "Định nghĩa thành công",
     "Hành vi người dùng",
     "Nền tảng & Thuật toán",
     "Mô hình hóa",
     "Yếu tố gây nhiễu",
-    "AI Phân tích",
     "Chatbot AI"
     ])
 

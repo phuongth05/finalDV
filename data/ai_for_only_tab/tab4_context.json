@@ -1,7 +1,7 @@
 {
   "tab": 4,
   "name": "Nền tảng & Thuật toán",
-  "rows": 6772,
+  "rows": 6769,
   "time_context": {
     "status": "ok",
     "best_day_heatmap_cells": [
@@ -9,11 +9,6 @@
         "day": "Thursday",
         "hour": 16,
         "video_view_count": 21152569.833333332
-      },
-      {
-        "day": "Thursday",
-        "hour": 14,
-        "video_view_count": 15371330.04
       },
       {
         "day": "Thursday",
@@ -29,20 +24,25 @@
         "day": "Wednesday",
         "hour": 13,
         "video_view_count": 10361327.436363636
+      },
+      {
+        "day": "Sunday",
+        "hour": 16,
+        "video_view_count": 10116302.0
       }
     ],
     "best_days": [
       {
         "day": "Thursday",
-        "video_view_count": 4830416.382797732
-      },
-      {
-        "day": "Saturday",
-        "video_view_count": 4371735.893637227
+        "video_view_count": 4610887.122989593
       },
       {
         "day": "Friday",
         "video_view_count": 4167281.051948052
+      },
+      {
+        "day": "Wednesday",
+        "video_view_count": 4112184.286966046
       }
     ],
     "best_hours": [
@@ -52,20 +52,20 @@
       },
       {
         "hour": 12,
-        "video_view_count": 6088922.888081395
+        "video_view_count": 5719454.575691412
       },
       {
         "hour": 14,
-        "video_view_count": 5358920.660465117
+        "video_view_count": 4277079.897196262
       }
     ]
   },
   "selected_chart_state": {},
-  "duration_vs_views_corr": -0.052847430045502256,
+  "duration_vs_views_corr": -0.054807551214151595,
   "duration_top_groups": [
     {
       "duration_group": "< 5 phút",
-      "video_view_count": 4055664.6447574333
+      "video_view_count": 3889102.417225951
     },
     {
       "duration_group": "5-10 phút",
@@ -151,9 +151,9 @@
     },
     {
       "hour": 12,
-      "video_count": 1376,
-      "total_views": 8378357894,
-      "gap": 8378356518
+      "video_count": 1374,
+      "total_views": 7858530587,
+      "gap": 7858529213
     },
     {
       "hour": 13,
@@ -163,9 +163,9 @@
     },
     {
       "hour": 14,
-      "video_count": 215,
-      "total_views": 1152167942,
-      "gap": 1152167727
+      "video_count": 214,
+      "total_views": 915295098,
+      "gap": 915294884
     },
     {
       "hour": 15,
@@ -225,9 +225,9 @@
   "largest_gap_hour": [
     {
       "hour": 12,
-      "video_count": 1376,
-      "total_views": 8378357894,
-      "gap": 8378356518
+      "video_count": 1374,
+      "total_views": 7858530587,
+      "gap": 7858529213
     },
     {
       "hour": 13,

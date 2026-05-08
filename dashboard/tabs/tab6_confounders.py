@@ -1,468 +1,208 @@
-
 # tabs/tab6_confounders.py
 
+import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import statsmodels.api as sm
 import streamlit as st
-from groq import Groq
+from sklearn.preprocessing import StandardScaler
 
+def _prep_confounder_data(filtered_df: pd.DataFrame):
+    """Tiền xử lý các cột cần thiết cho phân tích Confounder."""
+    df_c = filtered_df.copy()
+    df_c = df_c.loc[:, ~df_c.columns.duplicated()]
 
-def create_data_summary(_df):
-    """Tóm tắt dữ liệu để gửi cho AI"""
-    summary = f"""
-    BẠN LÀ DATA ANALYST PHÂN TÍCH DỮ LIỆU YOUTUBE ÂM NHẠC VIỆT NAM.
-    Trả lời BẰNG TIẾNG VIỆT, ngắn gọn, có số liệu cụ thể.
+    # Tạo target
+    df_c['log_views'] = np.log1p(pd.to_numeric(df_c.get('video_view_count', np.nan), errors='coerce'))
 
-    THÔNG TIN DATASET:
-    - Tổng số video: {len(_df):,}
-    - Tổng số kênh: {_df['channel_id'].nunique():,}
-    - Khoảng thời gian: {_df['video_publish_date'].min().strftime('%Y-%m-%d')} đến {_df['video_publish_date'].max().strftime('%Y-%m-%d')}
+    # Tạo các biến Binary cần thiết
+    df_c['has_caption'] = (df_c.get('video_caption_status', '').astype(str).str.lower().str.strip().isin(['true', '1', 'yes'])).astype(int)
+    df_c['is_licensed'] = (df_c.get('video_licensed_content', '').astype(str).str.lower().str.strip().isin(['true', '1', 'yes'])).astype(int)
+    
+    if 'video_publish_date' in df_c.columns:
+        df_c['video_publish_date'] = pd.to_datetime(df_c['video_publish_date'], errors='coerce')
+        ref_date = pd.Timestamp.today().normalize()
+        df_c['video_age_days'] = (ref_date - df_c['video_publish_date']).dt.days.clip(lower=0)
 
-    THỐNG KÊ VIEWS:
-    - Trung bình: {_df['video_view_count'].mean():,.0f}
-    - Trung vị: {_df['video_view_count'].median():,.0f}
-    - Cao nhất: {_df['video_view_count'].max():,.0f}
-    - Thấp nhất: {_df['video_view_count'].min():,.0f}
+    # Đảm bảo numeric
+    for col in ['channel_subscriber_count', 'channel_video_count', 'video_age_days']:
+        if col in df_c.columns:
+            df_c[col] = pd.to_numeric(df_c[col], errors='coerce')
+            df_c[col] = df_c[col].fillna(df_c[col].median())
 
-    THỐNG KÊ LIKES:
-    - Trung bình: {_df['video_like_count'].mean():,.0f}
-    - Cao nhất: {_df['video_like_count'].max():,.0f}
+    df_c = df_c.replace([np.inf, -np.inf], np.nan).dropna(subset=['log_views'])
+    return df_c
 
-    THỐNG KÊ COMMENTS:
-    - Trung bình: {_df['video_comment_count'].mean():,.0f}
+def _run_models_for_flip(df, target, var_main, var_confounder):
+    """Chạy mô hình chuẩn hóa để lấy hệ số đơn và đa biến."""
+    df_valid = df[[target, var_main, var_confounder]].dropna()
+    if len(df_valid) < 3:
+        return None, None
+        
+    scaler = StandardScaler()
+    X_scaled = pd.DataFrame(scaler.fit_transform(df_valid[[var_main, var_confounder]]), 
+                            columns=[var_main, var_confounder], index=df_valid.index)
+    y = df_valid[target]
 
-    TOP 10 KÊNH (theo tổng views):
-    {_df.groupby('channel_title')['video_view_count'].sum().nlargest(10).to_string()}
+    # Mô hình đơn
+    X1_c = sm.add_constant(X_scaled[[var_main]], has_constant='add')
+    model_single = sm.OLS(y, X1_c).fit()
+    coef_single = model_single.params.get(var_main, 0)
 
-    TOP 5 THỂ LOẠI (theo số video):
-    {_df['genre'].value_counts().head(5).to_string()}
+    # Mô hình đa
+    X2_c = sm.add_constant(X_scaled[[var_main, var_confounder]], has_constant='add')
+    model_multi = sm.OLS(y, X2_c).fit()
+    coef_multi = model_multi.params.get(var_main, 0)
+    
+    return coef_single, coef_multi
 
-    TOP 5 THỂ LOẠI (theo views trung bình):
-    {_df.groupby('genre')['video_view_count'].mean().nlargest(5).round(0).to_string()}
+def _run_models_for_r2(df, target, var1, var2):
+    """Chạy mô hình để lấy R2 đơn và đa biến."""
+    df_valid = df[[target, var1, var2]].dropna()
+    if len(df_valid) < 3:
+        return 0, 0, 0
+        
+    scaler = StandardScaler()
+    X_scaled = pd.DataFrame(scaler.fit_transform(df_valid[[var1, var2]]), 
+                            columns=[var1, var2], index=df_valid.index)
+    y = df_valid[target]
 
-    PHÂN BỐ VIDEO TYPE:
-    {_df['video_type'].value_counts().to_string()}
-
-    GIỜ ĐĂNG PHỔ BIẾN NHẤT:
-    {_df['hour'].value_counts().head(5).to_string()}
-
-    ENGAGEMENT RATE TRUNG BÌNH THEO THỂ LOẠI: {_df.groupby('genre')['engagement_rate'].mean().to_string()}
-
-    TOP 10 VIDEO NHIỀU VIEW NHẤT:
-    {_df.nlargest(10, 'video_view_count')[['video_title', 'channel_title', 'video_view_count']].to_string(index=False)}
-
-    THÔNG TIN CHANNEL SIZE:
-    {_df.groupby('channel_size', observed=True).agg(
-        count=('video_id', 'count'),
-        avg_views=('video_view_count', 'mean')
-    ).round(0).to_string()}
-    """
-    return summary
-
-
-def ask_groq(question, data_context):
-    """Gọi Groq API với câu hỏi + context dữ liệu"""
-    try:
-        # Lấy API key từ secrets hoặc hardcode (không khuyến nghị)
-        api_key = st.secrets["GROQ_API_KEY"]
-        client = Groq(api_key=api_key)
-
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": data_context},
-                {"role": "user", "content": question}
-            ],
-            temperature=0.3,
-            max_tokens=1024
-        )
-
-        return response.choices[0].message.content
-
-    except Exception as e:
-        return f"❌ Lỗi khi gọi AI: {str(e)}"
-
-
-def auto_chart(question, data):
-    """Tự động tạo chart phù hợp với câu hỏi"""
-    q = question.lower()
-
-    # ── Top video / viral ──────────────────────
-    if any(kw in q for kw in [
-        'top video', 'viral', 'video nào',
-        'nhiều view nhất', 'hot nhất','nổi bật',"lượt xem nhất"
-    ]):
-        top_df = data.nlargest(
-            10, 'video_view_count'
-        )[['video_title', 'channel_title',
-           'video_view_count']].copy()
-        top_df['video_title'] = (
-            top_df['video_title'].astype(str).str[:40] + '...'
-        )
-        fig = px.bar(
-            top_df,
-            x='video_view_count',
-            y='video_title',
-            orientation='h',
-            color='channel_title',
-            title='🔥 Top 10 Video nhiều view nhất',
-            labels={
-                'video_view_count': 'Lượt xem',
-                'video_title': 'Video',
-                'channel_title': 'Kênh'
-            },
-            height=450
-        )
-        fig.update_layout(yaxis={'autorange': 'reversed'})
-        return fig
-
-    # ── Thể loại / genre ──────────────────────
-    elif any(kw in q for kw in [
-        'view trung bình', 'genre', 'loại nhạc',
-        'bolero', 'rap', 'indie', 'remix',
-        'nhạc nào'
-    ]):
-        genre_stats = data.groupby('genre').agg(
-            count=('video_id', 'count'),
-            avg_views=('video_view_count', 'mean')
-        ).reset_index().sort_values(
-            'avg_views', ascending=False
-        )
-        fig = px.bar(
-            genre_stats,
-            x='genre', y='avg_views',
-            color='count',
-            title='🎵 Views trung bình theo thể loại',
-            labels={
-                'genre': 'Thể loại',
-                'avg_views': 'Views trung bình',
-                'count': 'Số video'
-            },
-            text=genre_stats['avg_views'].apply(
-                lambda x: f'{x:,.0f}'
-            ),
-            height=450
-        )
-        fig.update_traces(textposition='outside')
-        return fig
-
-    # ── Giờ đăng / thời gian ─────────────────
-    elif any(kw in q for kw in [
-        'giờ', 'thời gian', 'time', 'khi nào',
-        'lúc nào', 'đăng khi', 'best time'
-    ]):
-        hour_stats = data.groupby('hour').agg(
-            avg_views=('video_view_count', 'mean'),
-            count=('video_id', 'count')
-        ).reset_index()
-        fig = px.bar(
-            hour_stats,
-            x='hour', y='avg_views',
-            title='⏰ Views trung bình theo giờ đăng',
-            labels={
-                'hour': 'Giờ đăng',
-                'avg_views': 'Views trung bình'
-            },
-            color='avg_views',
-            color_continuous_scale='Blues',
-            height=400
-        )
-        return fig
-
-    # ── Kênh / channel ────────────────────────
-    elif any(kw in q for kw in [
-        'kênh', 'channel', 'ca sĩ', 'nghệ sĩ',
-        'ai có', 'top kênh'
-    ]):
-        ch_stats = data.groupby(
-            'channel_title'
-        ).agg(
-            total_views=(
-                'video_view_count', 'sum'
-            ),
-            videos=('video_id', 'count'),
-            avg_views=(
-                'video_view_count', 'mean'
-            )
-        ).nlargest(
-            10, 'total_views'
-        ).reset_index()
-
-        fig = px.bar(
-            ch_stats,
-            x='total_views',
-            y='channel_title',
-            orientation='h',
-            color='videos',
-            title='📺 Top 10 Kênh theo tổng views',
-            labels={
-                'total_views': 'Tổng views',
-                'channel_title': 'Kênh',
-                'videos': 'Số video'
-            },
-            height=450
-        )
-        fig.update_layout(
-            yaxis={'autorange': 'reversed'}
-        )
-        return fig
-
-    # ── Engagement ────────────────────────────
-    elif any(kw in q for kw in [
-        'engagement', 'tương tác', 'like',
-        'comment', 'bình luận', 'thích'
-    ]):
-        eng_by_genre = data.groupby(
-            'genre'
-        )['engagement_rate'].mean().reset_index()
-        eng_by_genre = eng_by_genre.sort_values(
-            'engagement_rate', ascending=False
-        )
-        fig = px.bar(
-            eng_by_genre,
-            x='genre',
-            y='engagement_rate',
-            title=(
-                '💬 Engagement Rate '
-                'theo thể loại'
-            ),
-            labels={
-                'genre': 'Thể loại',
-                'engagement_rate':
-                    'Engagement Rate'
-            },
-            color='engagement_rate',
-            color_continuous_scale='Greens',
-            height=400
-        )
-        return fig
-
-    # ── So sánh ──────────────────────────────
-    elif any(kw in q for kw in [
-        'so sánh', 'khác nhau', 'vs',
-        'hơn', 'thua', 'compare'
-    ]):
-        fig = px.box(
-            data,
-            x='genre',
-            y='video_view_count',
-            title='📊 So sánh Views theo thể loại',
-            labels={
-                'genre': 'Thể loại',
-                'video_view_count': 'Lượt xem'
-            },
-            height=450
-        )
-        return fig
-
-    # ── Phân bố / distribution ────────────────
-    elif any(kw in q for kw in [
-        'phân bố', 'distribution',
-        'histogram', 'biểu đồ'
-    ]):
-        fig = px.histogram(
-            data,
-            x='video_view_count',
-            nbins=50,
-            title='📊 Phân bố lượt xem',
-            labels={
-                'video_view_count': 'Lượt xem'
-            },
-            height=400
-        )
-        return fig
-
-    # ── Duration / thời lượng ─────────────────
-    elif any(kw in q for kw in [
-        'thời lượng', 'duration', 'dài',
-        'ngắn', 'phút', 'giây'
-    ]):
-        fig = px.scatter(
-            data.sample(
-                min(1000, len(data))
-            ),
-            x='video_duration',
-            y='video_view_count',
-            color='genre',
-            opacity=0.4,
-            title=(
-                '⏱️ Thời lượng vs '
-                'Lượt xem'
-            ),
-            labels={
-                'video_duration':
-                    'Thời lượng (giây)',
-                'video_view_count':
-                    'Lượt xem'
-            },
-            height=450
-        )
-        return fig
-
-    # ── Confounder ────────────────────────────
-    elif any(kw in q for kw in [
-        'confounder', 'nhiễu', 'ẩn',
-        'stepwise'
-    ]):
-        fig = px.scatter(
-            data.sample(
-                min(1000, len(data))
-            ),
-            x='video_duration',
-            y='video_view_count',
-            color='channel_size',
-            trendline='ols',
-            opacity=0.3,
-            title=(
-                '🔍 Confounder: '
-                'Duration vs Views '
-                '(theo Channel Size)'
-            ),
-            labels={
-                'video_duration':
-                    'Thời lượng (giây)',
-                'video_view_count':
-                    'Lượt xem',
-                'channel_size':
-                    'Quy mô kênh'
-            },
-            height=450
-        )
-        return fig
-
-    # ── Không match → không vẽ chart ──────────
-    return None
-
+    m1 = sm.OLS(y, sm.add_constant(X_scaled[[var1]], has_constant='add')).fit()
+    m2 = sm.OLS(y, sm.add_constant(X_scaled[[var2]], has_constant='add')).fit()
+    m_both = sm.OLS(y, sm.add_constant(X_scaled[[var1, var2]], has_constant='add')).fit()
+    
+    return m1.rsquared, m2.rsquared, m_both.rsquared
 
 def render_tab(filtered_df: pd.DataFrame):
-    """Hàm chính được gọi từ app.py"""
+    st.subheader("Phân tích Yếu tố Gây nhiễu & Cộng hưởng")
+    
+    df_model = _prep_confounder_data(filtered_df)
 
-    st.subheader("🤖 AI Data Assistant")
+    if len(df_model) < 50:
+        st.warning("Dữ liệu hiện tại quá ít để phân tích Confounder chính xác. Hãy mở rộng bộ lọc.")
+        return
 
-    # Tạo data summary
-    data_summary = create_data_summary(filtered_df)
+    sub6a, sub6b = st.tabs([
+        "A: Hiện tượng Đảo Dấu (Confounding)",
+        "B: Cặp Biến Cộng Hưởng (Synergy R²)"
+    ])
 
-    # Khởi tạo session state
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "current_chart" not in st.session_state:
-        st.session_state.current_chart = None
+    # =================================================
+    # SUB-TAB 6A: SIMPSON'S PARADOX
+    # =================================================
+    with sub6a:
+        st.markdown("### 🎭 Kẻ Hai Mặt: Nghịch lý Simpson (Đảo dấu)")
+        st.info(
+            "**Nghịch lý Simpson** xảy ra khi một biến có vẻ tác động tích cực đến lượt xem (đứng một mình), "
+            "nhưng khi ghép chung với biến kiểm soát quy mô (Confounder), bản chất tiêu cực của nó mới lộ diện."
+        )
 
-    # Layout: Chat + Chart
-    chat_col, chart_col = st.columns([1, 1])
+        st.markdown("#### Ví dụ kinh điển: Số lượng Video vs Quy mô Kênh")
+        st.caption(
+            "Phân tích hệ số của biến **Số lượng Video (channel_video_count)** lên Lượt xem, "
+            "trước và sau khi đưa **Quy mô Kênh (channel_subscriber_count)** vào kiểm soát."
+        )
 
-    # ── Cột trái: Chat ───────────────────────────────
-    with chat_col:
-        st.markdown("#### 💬 Chat")
+        coef_single, coef_multi = _run_models_for_flip(
+            df_model, 'log_views', 'channel_video_count', 'channel_subscriber_count'
+        )
 
-        chat_container = st.container(height=500)
-        with chat_container:
-            if not st.session_state.messages:
-                st.markdown(
-                    "🤖 Xin chào! Tôi là trợ lý "
-                    "phân tích dữ liệu YouTube "
-                    "âm nhạc Việt Nam. Hãy hỏi "
-                    "tôi bất cứ điều gì về dữ liệu!"
-                )
+        if coef_single is not None:
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Hệ số khi đứng 1 mình", f"{coef_single:.4f}", "Đánh lừa")
+            col2.metric("Hệ số khi bị kiểm soát", f"{coef_multi:.4f}", "Sự thật", delta_color="inverse")
+            
+            flip_detected = np.sign(coef_single) != np.sign(coef_multi)
+            if flip_detected:
+                col3.error("🔴 PHÁT HIỆN ĐẢO DẤU!")
+            else:
+                col3.success("➖ Không bị đảo dấu trong tệp dữ liệu này")
 
-            for msg in st.session_state.messages:
-                with st.chat_message(msg["role"]):
-                    st.markdown(msg["content"])
+            # Vẽ biểu đồ Bar Chart
+            fig_flip = go.Figure()
+            fig_flip.add_trace(go.Bar(
+                x=['Đứng một mình (Đơn biến)', 'Ghép với Quy mô Kênh (Đa biến)'],
+                y=[coef_single, coef_multi],
+                marker_color=['#2ecc71' if coef_single > 0 else '#e74c3c', 
+                              '#2ecc71' if coef_multi > 0 else '#e74c3c'],
+                text=[f"{coef_single:.4f}", f"{coef_multi:.4f}"],
+                textposition='auto'
+            ))
+            fig_flip.add_hline(y=0, line_dash='solid', line_color='black', line_width=2)
+            fig_flip.update_layout(
+                title='Sự thay đổi Hệ số của "Số lượng Video" tác động lên Lượt xem',
+                yaxis_title='Hệ số Chuẩn hóa (Std Coef)',
+                height=400
+            )
+            st.plotly_chart(fig_flip, use_container_width=True)
 
-        # Input câu hỏi
-        if prompt := st.chat_input(
-            "Hỏi về dữ liệu YouTube âm nhạc VN..."
-        ):
-            st.session_state.messages.append(
-                {"role": "user", "content": prompt}
+            st.markdown(
+                "> **💡 Insight Thực Chiến:** Đừng lầm tưởng đăng càng nhiều video thì view càng cao. "
+                "Thực chất, các kênh lớn thường đăng nhiều, nhưng nếu xét hai kênh có cùng lượng Sub, "
+                "kênh nào **spam quá nhiều video** sẽ làm **GIẢM** lượt xem trung bình của từng video. "
+                "*(Chất lượng quan trọng hơn Số lượng!)*"
             )
 
-            with st.spinner("🤖 Đang phân tích..."):
-                ai_response = ask_groq(
-                    prompt, data_summary
-                )
+    # =================================================
+    # SUB-TAB 6B: SYNERGISTIC PAIRS
+    # =================================================
+    with sub6b:
+        st.markdown("### 🤝 Sức mạnh Cặp đôi (R² Synergy)")
+        st.info(
+            "Những biến khi đứng một mình có thể giải thích dữ liệu tốt, nhưng khi **ghép chung với nhau**, "
+            "chúng không hề 'giẫm chân nhau' mà cộng hưởng để tạo ra khả năng giải thích R² tăng vọt."
+        )
 
-            st.session_state.messages.append(
-                {"role": "assistant", "content": ai_response}
+        # Các cặp mặc định từ insight
+        pair_options = {
+            "Bản quyền + Phụ đề (Combo Chuẩn SEO)": ['is_licensed', 'has_caption'],
+            "Bản quyền + Tuổi thọ (Nhạc lâu năm)": ['is_licensed', 'video_age_days'],
+            "Quy mô Kênh + Phụ đề (Tiếp cận quốc tế)": ['channel_subscriber_count', 'has_caption']
+        }
+
+        selected_pair_name = st.selectbox("Chọn Cặp biến để phân tích:", list(pair_options.keys()))
+        var1, var2 = pair_options[selected_pair_name]
+
+        if var1 in df_model.columns and var2 in df_model.columns:
+            r2_1, r2_2, r2_both = _run_models_for_r2(df_model, 'log_views', var1, var2)
+            max_single = max(r2_1, r2_2)
+            r2_jump = r2_both - max_single
+
+            col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+            col_r1.metric(f"R² ({var1})", f"{r2_1:.4f}")
+            col_r2.metric(f"R² ({var2})", f"{r2_2:.4f}")
+            col_r3.metric("R² (Khi Ghép chung)", f"{r2_both:.4f}", f"+{r2_jump:.4f} so với mức cao nhất")
+
+            if r2_jump > 0.02:
+                col_r4.success("🌟 Cộng hưởng Rất Tốt")
+            elif r2_jump > 0.005:
+                col_r4.info("✅ Cộng hưởng Khá")
+            else:
+                col_r4.warning("⚠️ Giẫm chân nhau (Trùng lặp thông tin)")
+
+            # Biểu đồ Waterfall (Thác nước) thể hiện sự gia tăng
+            fig_waterfall = go.Figure(go.Waterfall(
+                name="20", orientation="v",
+                measure=["relative", "relative", "total"],
+                x=[f"Chỉ dùng {var1}", f"Thêm {var2}", "Tổng sức mạnh (R² Cặp)"],
+                textposition="outside",
+                text=[f"{r2_1:.4f}", f"+{r2_both - r2_1:.4f}", f"{r2_both:.4f}"],
+                y=[r2_1, r2_both - r2_1, r2_both],
+                connector={"line":{"color":"rgb(63, 63, 63)"}},
+                decreasing={"marker":{"color":"#e74c3c"}},
+                increasing={"marker":{"color":"#3498db"}},
+                totals={"marker":{"color":"#2ecc71"}}
+            ))
+
+            fig_waterfall.update_layout(
+                title=f"Sức mạnh giải thích (R²) tăng lên khi kết hợp: {var1} + {var2}",
+                yaxis_title="R-Squared",
+                height=450,
+                showlegend=False
             )
-
-            chart = auto_chart(prompt, filtered_df)
-            if chart is not None:
-                st.session_state.current_chart = chart
-
-            st.rerun()
-
-        # Gợi ý câu hỏi
-        st.markdown("**💡 Gợi ý:**")
-        sug_col1, sug_col2 = st.columns(2)
-
-        suggestions = [
-            ("🔥 Top video viral", "Top 10 video có nhiều lượt xem nhất?"),
-            ("🎵 Thể loại hot", "Thể loại nhạc nào có view cao nhất?"),
-            ("⏰ Giờ đăng phổ biến", "Giờ nào là video được đăng nhiều nhất?"),
-            ("📺 Top kênh", "Kênh nào có tổng lượt xem nhiều nhất?"),
-            ("💬 Tỷ lệ tương tác", "Thể loại nào có tỷ lệ tương tác cao nhất?"),
-        ]
-
-        for i, (label, question) in enumerate(suggestions):
-            col = sug_col1 if i % 2 == 0 else sug_col2
-            if col.button(
-                label,
-                key=f"sug_ai_{i}",
-                use_container_width=True
-            ):
-                st.session_state.messages.append(
-                    {"role": "user", "content": question}
-                )
-
-                with st.spinner("🤖 Đang phân tích..."):
-                    ai_resp = ask_groq(
-                        question, data_summary
-                    )
-
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": ai_resp}
-                )
-
-                chart = auto_chart(question, filtered_df)
-                if chart is not None:
-                    st.session_state.current_chart = chart
-
-                st.rerun()
-
-    # ── Cột phải: Chart panel ─────────────────────────
-    with chart_col:
-        st.markdown("#### 📊 Biểu đồ")
-
-        if st.session_state.current_chart is not None:
-            st.plotly_chart(
-                st.session_state.current_chart,
-                use_container_width=True
-            )
-
-            if st.button(
-                "🗑️ Xóa biểu đồ",
-                key="clear_chart"
-            ):
-                st.session_state.current_chart = None
-                st.rerun()
+            st.plotly_chart(fig_waterfall, use_container_width=True)
+            
+            st.markdown(f"> **💡 Khuyến nghị Model:** Cặp `{var1}` và `{var2}` là mảnh ghép bổ sung hoàn hảo, nên cùng xuất hiện trong mô hình tối ưu.")
         else:
-            st.info(
-                "📌 Biểu đồ sẽ tự động hiển thị "
-                "khi bạn hỏi câu hỏi liên quan.\n\n"
-                "**Thử hỏi:**\n"
-                "- \"Top video viral nhất?\"\n"
-                "- \"Thể loại nào hot nhất?\"\n"
-                "- \"Giờ đăng tốt nhất?\"\n"
-                "- \"So sánh views theo genre\""
-            )
-
-    # ── Nút xóa chat ─────────────────────────────────
-    st.markdown("---")
-    if st.button(
-        "🗑️ Xóa toàn bộ cuộc hội thoại",
-        key="clear_all"
-    ):
-        st.session_state.messages = []
-        st.session_state.current_chart = None
-        st.rerun()
+            st.error("Dữ liệu hiện tại bị thiếu biến để phân tích cặp này.")
