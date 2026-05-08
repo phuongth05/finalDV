@@ -18,6 +18,7 @@ NUMERIC_COLS = [
     'channel_view_count',
     'channel_video_count',
     'hour',
+    'video_age_days'
 ]
 
 BINARY_COLS = [
@@ -112,6 +113,8 @@ def _build_df_model(filtered_df: pd.DataFrame):
     ).astype(int)
 
     
+    ref_date = pd.Timestamp.today().normalize()  # hoặc ngày crawl nếu bạn có
+    df_model['video_age_days'] = (ref_date - df_model['video_publish_date']).dt.days.clip(lower=0)
 
     
     # ── Genre one-hot ────────────────────────────────
@@ -521,19 +524,30 @@ def render_tab(filtered_df: pd.DataFrame):
             genre_exist = [c for c in genre_dummy_cols if c in df_model.columns]
 
             use_binary = st.checkbox(
-                f"Binary ({len(bin_exist)} biến: is_hd, is_official...)",
+                f"Dùng Binary ({len(bin_exist)} biến)",
                 value=True
             )
-            use_genre = st.checkbox(
-                f"Genre one-hot ({len(genre_exist)} biến)",
-                value=True
-            )
+            selected_binary = []
+            if use_binary and bin_exist:
+                selected_binary = st.multiselect(
+                    "Chọn biến binary",
+                    options=bin_exist,
+                    default=bin_exist,   # mặc định chọn hết
+                )
 
-            selected_encoded = []
-            if use_binary:
-                selected_encoded += bin_exist
-            if use_genre:
-                selected_encoded += genre_exist
+            use_genre = st.checkbox(
+                f"Dùng Genre one-hot ({len(genre_exist)} biến)",
+                value=True
+            )
+            selected_genre = []
+            if use_genre and genre_exist:
+                selected_genre = st.multiselect(
+                    "Chọn biến genre",
+                    options=genre_exist,
+                    default=genre_exist,  # mặc định chọn hết
+                )
+
+            selected_encoded = selected_binary + selected_genre
 
         final_pool = [
             c for c in (selected_numeric + selected_encoded)
