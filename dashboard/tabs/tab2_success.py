@@ -25,7 +25,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         log_x=True,
         log_y=True,
         size_max=60,
-        color_discrete_map={True: '#1DB954', False: '#E50914'},
+        color_discrete_map={True: '#1f77b4', False: '#E50914'},
         labels={
             'video_view_count': 'Lượt xem',
             'video_like_count': 'Lượt thích',
@@ -70,7 +70,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         y='log_er',
         nbinsx=30,
         nbinsy=30,
-        color_continuous_scale="Viridis",
+        color_continuous_scale="Blues",
         text_auto=True,
         labels={
             'log_view': 'Lượt xem (Log)',
@@ -110,7 +110,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         y=df_grouped['channel_title'],
         mode='markers',
         customdata=df_grouped['channel_title'],
-        marker=dict(color='#FF5722', size=12),
+        marker=dict(color='#1f77b4', size=12),
         name='Engagement Rate',
         hovertemplate="Kênh: %{y}<br>Tỷ lệ tương tác: %{x:.4f}<extra></extra>"
     ))

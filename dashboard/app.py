@@ -168,12 +168,46 @@ date_range = st.sidebar.date_input(
     [df['video_publish_date'].min().date(), df['video_publish_date'].max().date()]
 )
 
-view_range = st.sidebar.slider(
-    "Khoảng lượt xem",
-    int(df['video_view_count'].min()),
-    int(df['video_view_count'].max()),
-    (int(df['video_view_count'].min()), int(df['video_view_count'].max()))
+raw_view_min = int(df['video_view_count'].min())
+raw_view_max = int(df['video_view_count'].max())
+view_unit = 1_000_000
+raw_view_min_m = raw_view_min // view_unit
+raw_view_max_m = (raw_view_max + view_unit - 1) // view_unit
+view_span_m = max(raw_view_max_m - raw_view_min_m, 1)
+
+# Rule 1-2-5 x 10^n để tạo step/bound "đẹp" và ổn định.
+def _nice_125(x: int) -> int:
+    if x <= 0:
+        return 1
+    exp = int(np.floor(np.log10(x)))
+    base = 10 ** exp
+    frac = x / base
+    if frac <= 1:
+        nice_frac = 1
+    elif frac <= 2:
+        nice_frac = 2
+    elif frac <= 5:
+        nice_frac = 5
+    else:
+        nice_frac = 10
+    return int(nice_frac * base)
+
+target_ticks = 80
+raw_step_m = max(view_span_m // target_ticks, 1)
+view_step_m = _nice_125(raw_step_m)
+
+view_min_bound_m = (raw_view_min_m // view_step_m) * view_step_m
+view_max_bound_m = ((raw_view_max_m + view_step_m - 1) // view_step_m) * view_step_m
+
+view_range_m = st.sidebar.slider(
+    "Khoảng lượt xem (triệu)",
+    view_min_bound_m,
+    view_max_bound_m,
+    (view_min_bound_m, view_max_bound_m),
+    step=view_step_m,
 )
+view_range = (view_range_m[0] * view_unit, view_range_m[1] * view_unit)
+st.sidebar.caption(f"Tương đương: {view_range[0]:,} - {view_range[1]:,} lượt xem")
 
 # convert to date
 df['publish_date'] = df['video_publish_date'].dt.date

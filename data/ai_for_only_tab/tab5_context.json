@@ -20,39 +20,39 @@
   "vif_analysis": [
     {
       "feature": "video_duration",
-      "vif": 1.3762878228291267
+      "vif": 1.3763283393023118
     },
     {
       "feature": "video_tags_count",
-      "vif": 3.6806877983181905
+      "vif": 3.680724900622041
     },
     {
       "feature": "title_length",
-      "vif": 6.800014822540166
+      "vif": 6.801653815978925
     },
     {
       "feature": "description_length",
-      "vif": 3.2205986533866975
+      "vif": 3.2206251797001366
     },
     {
       "feature": "channel_subscriber_count",
-      "vif": 14.289383694422813
+      "vif": 14.289348642011138
     },
     {
       "feature": "channel_view_count",
-      "vif": 14.415910188598923
+      "vif": 14.415883941118617
     },
     {
       "feature": "channel_video_count",
-      "vif": 3.1560938119577546
+      "vif": 3.1561136468027198
     },
     {
       "feature": "hour",
-      "vif": 3.9797715521304653
+      "vif": 3.980027368709544
     },
     {
       "feature": "video_age_days",
-      "vif": 2.9697931707167484
+      "vif": 2.9741118284303965
     }
   ],
   "removed_variables": [

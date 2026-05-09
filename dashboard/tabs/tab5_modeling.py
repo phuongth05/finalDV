@@ -364,7 +364,9 @@ def render_tab(filtered_df: pd.DataFrame):
         fig_corr = px.imshow(
             corr_matrix,
             text_auto='.2f',
-            color_continuous_scale='RdBu_r',
+            color_continuous_scale='RdBu',
+            zmin=-1,
+            zmax=1,
             aspect='auto',
             title='Ma trận tương quan – Biến Numeric'
         )
@@ -433,7 +435,7 @@ def render_tab(filtered_df: pd.DataFrame):
         with col_v1:
             vif_plot = vif_data.dropna(subset=['VIF']).sort_values('VIF')
             colors_vif = [
-                '#2ecc71' if v < 5 else '#f39c12' if v < 10 else '#e74c3c'
+                '#1f77b4' if v < 5 else '#ff6b6b' if v < 10 else '#d62728'
                 for v in vif_plot['VIF']
             ]
             fig_vif = go.Figure(go.Bar(
@@ -444,8 +446,8 @@ def render_tab(filtered_df: pd.DataFrame):
                 text=vif_plot['VIF'].round(2).values,
                 textposition='outside'
             ))
-            fig_vif.add_vline(x=5, line_dash='dash', line_color='orange', annotation_text='VIF = 5')
-            fig_vif.add_vline(x=10, line_dash='dash', line_color='red', annotation_text='VIF = 10')
+            fig_vif.add_vline(x=5, line_dash='dash', line_color='#1f77b4', annotation_text='VIF = 5')
+            fig_vif.add_vline(x=10, line_dash='dash', line_color='#d62728', annotation_text='VIF = 10')
             fig_vif.update_layout(title='VIF – Biến Numeric', xaxis_title='VIF Score', height=420)
             st.plotly_chart(fig_vif, use_container_width=True)
 

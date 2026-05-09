@@ -135,39 +135,16 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     for genre, keywords in MUSIC_GENRES.items():
         if not keywords:
             continue
-        pattern = r'(' + '|'.join(re.escape(k) for k in keywords) + r')'
+        pattern = r'(?:' + '|'.join(re.escape(k) for k in keywords) + r')'
         matched = combined_text.str.contains(pattern, regex=True)
         genre_label = genre_label.mask(matched & (genre_label == 'Giai điệu Khác'), genre)
 
     df_q2['genre_label'] = genre_label
 
-    # --- BIỂU ĐỒ 2.1: TREEMAP TRỰC QUAN HÓA THỊ PHẦN ---
-    st.subheader("1. Cơ cấu lượt xem: Đối tượng, Bản quyền và Chất lượng")
+    # Treemap section removed as requested.
 
-    df_q2['Doi_tuong'] = df_q2['video_made_for_kids'].map({True: 'Nhạc Trẻ Em', False: 'Nhạc Đại Chúng'})
-    df_q2['Ban_quyen'] = df_q2['video_licensed_content'].map({True: 'Chính thức (Official)', False: 'Tự do (Cover/Remix)'})
-    df_q2['Chat_luong'] = df_q2['video_definition'].astype(str).str.upper()
-
-    df_q2['path_kids_license'] = df_q2['Doi_tuong'] + " - " + df_q2['Ban_quyen']
-
-    fig4 = px.treemap(
-        df_q2,
-        path=['Doi_tuong', 'Ban_quyen', 'Chat_luong'],
-        values='video_view_count',
-        color='Doi_tuong',
-        color_discrete_map={'Nhạc Trẻ Em': '#FF9900', 'Nhạc Đại Chúng': '#3366CC'},
-        title="Treemap: Miếng bánh thị phần View trên YouTube Music VN"
-    )
-    fig4.update_traces(root_color="lightgrey", textinfo="label+percent parent")
-    st.plotly_chart(fig4, use_container_width=True)
-    st.caption(
-        "Treemap cho thấy tỷ trọng lượt xem theo nhóm đối tượng, bản quyền và chất lượng. "
-        "Ô càng lớn nghĩa là nhóm đó đóng góp càng nhiều lượt xem. "
-        "Dùng biểu đồ này để nhìn nhanh cấu trúc thị phần nội dung trong toàn bộ dữ liệu." 
-    )
-
-    # --- BIỂU ĐỒ 2.2: BOXPLOT CHO PHỤ ĐỀ ---
-    st.subheader("2. Vai trò của Phụ đề (Lyrics/CC) đối với lượt xem")
+    # --- BIỂU ĐỒ: BOXPLOT CHO PHỤ ĐỀ ---
+    st.subheader("1. Vai trò của Phụ đề (Lyrics/CC) đối với lượt xem")
     df_q2['has_caption'] = df_q2['video_caption_status'].astype(str).str.lower() == 'true'
 
     fig5 = px.box(
@@ -176,7 +153,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
         y='video_view_count',
         color='has_caption',
         log_y=True,
-        color_discrete_sequence=['#9C27B0', '#00BCD4'],
+        color_discrete_sequence=['#1f77b4', '#AED6F1'],
         labels={'has_caption': 'Có phụ đề (CC)', 'video_view_count': 'Lượt xem (Log)'},
         title="Box Plot: Phân phối lượt xem của video Có vs Không có phụ đề"
     )
@@ -194,7 +171,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     # --- BIỂU ĐỒ 2.3: TOP VIDEO THEO LƯỢT XEM / LƯỢT THÍCH ---
-    st.subheader("3. Top video theo lượt xem và lượt thích (hành vi người xem)")
+    st.subheader("2. Top video theo lượt xem và lượt thích (hành vi người xem)")
     col_view, col_like = st.columns(2)
 
     with col_view:
@@ -240,7 +217,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     # --- BIỂU ĐỒ 2.4: PHÂN PHỐI THỂ LOẠI / FORMAT UPLOAD ---
-    st.subheader("4. Phân phối thể loại và format video được upload nhiều nhất (hành vi người đăng)")
+    st.subheader("3. Phân phối thể loại và format video được upload nhiều nhất (hành vi người đăng)")
     format_candidates = ['video_definition', 'video_dimension', 'format']
     genre_col = 'genre_label'
     format_col = next((col for col in format_candidates if col in df_q2.columns), None)
@@ -284,7 +261,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     # --- BIỂU ĐỒ 2.5: SO SÁNH UPLOAD VS VIEW THEO NHÓM ---
-    st.subheader("5. So sánh phân phối upload và phân phối lượt xem")
+    st.subheader("4. So sánh phân phối upload và phân phối lượt xem")
     compare_col = genre_col
     if compare_col:
         compare_df = df_q2[[compare_col, 'video_view_count']].dropna().copy()
@@ -332,7 +309,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     else:
         st.info("Không có cột thể loại hoặc format để so sánh phân phối.")
 
-    st.subheader("6. Xu hướng thể loại theo thời gian (stacked area)")
+    st.subheader("5. Xu hướng thể loại theo thời gian (stacked area)")
     if 'video_publish_date' in df_q2.columns:
         df_time = df_q2.dropna(subset=['video_publish_date']).copy()
         df_time['month'] = df_time['video_publish_date'].dt.to_period('M').dt.to_timestamp()

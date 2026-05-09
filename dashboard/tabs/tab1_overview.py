@@ -2,17 +2,27 @@ import streamlit as st
 import plotly.express as px
 
 
+def _fmt_k(value, decimals=0):
+    try:
+        v = float(value)
+    except Exception:
+        return value
+    sign = '-' if v < 0 else ''
+    v_abs = abs(v)
+    return f"{sign}{v_abs/1000:,.{decimals}f}K"
+
+
 def render_tab(filtered_df):
     st.subheader("Tổng quan")
 
     col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-    col1.metric("Số video", len(filtered_df))
-    col2.metric("Lượt xem trung bình", f"{filtered_df['video_view_count'].mean():,.0f}")
-    col3.metric("Lượt xem trung vị", f"{filtered_df['video_view_count'].median():,.0f}")
-    col4.metric("Lượt xem cao nhất", f"{filtered_df['video_view_count'].max():,.0f}")
-    col5.metric("Số thẻ trung bình", f"{filtered_df['video_tags_count'].mean():.1f}")
-    col6.metric("Số người đăng ký trung bình", f"{filtered_df['channel_subscriber_count'].mean():,.0f}")
+    col1.metric("Số video", f"{len(filtered_df):,}")
+    col2.metric("Lượt xem trung bình", _fmt_k(filtered_df['video_view_count'].mean(), decimals=0))
+    col3.metric("Lượt xem trung vị", _fmt_k(filtered_df['video_view_count'].median(), decimals=0))
+    col4.metric("Lượt xem cao nhất", _fmt_k(filtered_df['video_view_count'].max(), decimals=0))
+    col5.metric("Số tags trung bình", f"{filtered_df['video_tags_count'].mean():.1f}")
+    col6.metric("Số người đăng ký trung bình", _fmt_k(filtered_df['channel_subscriber_count'].mean(), decimals=0))
 
     total_views = filtered_df['video_view_count'].sum()
     total_likes = filtered_df['video_like_count'].sum() if 'video_like_count' in filtered_df.columns else 0
@@ -30,12 +40,14 @@ def render_tab(filtered_df):
     )
 
     col7, col8, col9, col10, col11, col12 = st.columns(6)
-    col7.metric("Tổng lượt xem", f"{total_views:,.0f}")
-    col8.metric("Tổng lượt thích", f"{total_likes:,.0f}")
-    col9.metric("Tổng bình luận", f"{total_comments:,.0f}")
+    col7.metric("Tổng lượt xem", _fmt_k(total_views, decimals=0))
+    col8.metric("Tổng lượt thích", _fmt_k(total_likes, decimals=0))
+    col9.metric("Tổng bình luận", _fmt_k(total_comments, decimals=0))
     col10.metric("Tỷ lệ tương tác", f"{engagement_rate * 100:.2f}%")
     col11.metric("Tỷ lệ bản quyền", f"{licensed_rate * 100:.1f}%")
     col12.metric("Tỷ lệ có phụ đề", f"{caption_rate * 100:.1f}%")
+
+    st.caption("Ghi chú: Các chỉ số KPI ở trên được hiển thị theo đơn vị K (K = nghìn).")
 
     st.markdown("### Phân bố lượt xem")
 

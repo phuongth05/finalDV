@@ -1001,11 +1001,9 @@ def _ask_groq(user_question, tab_context, tab_label):
 def _render_tab_chatbot(tab_key, tab_label, context_builder, frame, active_cross_filters):
     st.markdown("---")
     with st.expander(f"🤖 Chatbot AI cho {tab_label}", expanded=False):
-        st.caption("Chatbot này không giữ lịch sử hội thoại. Nó chỉ dùng context JSON của đúng tab hiện tại.")
         tab_context = context_builder(frame, active_cross_filters)
         st.session_state[f"{tab_key}_context"] = tab_context
         context_file = _persist_tab_context(tab_key, tab_context)
-        st.caption(f"Context JSON: {context_file}")
 
         user_question = st.chat_input(f"Hỏi về {tab_label}...", key=f"{tab_key}_chat_input")
         if user_question:
