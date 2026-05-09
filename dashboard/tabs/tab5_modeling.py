@@ -366,26 +366,25 @@ def render_tab(filtered_df: pd.DataFrame):
 
     # 3 sub-tabs
     sub4a, sub4b, sub4c = st.tabs([
-    "A: Correlation & VIF",
-    "B: Stepwise Regression",
-    "C: Confounding",
+    "A: Tương quan và VIF",
+    "B: Hồi quy từng bước",
+    "C: Biến gây nhiễu",
 ])
 
     # =================================================
     # SUB-TAB 4A
     # =================================================
     with sub4a:
-        st.markdown("### 📊 Correlation & VIF")
+        st.markdown("### Tương quan và VIF")
         st.caption(
             "Phân tích các biến **số** để phát hiện "
-            "đa cộng tuyến. Kết quả giúp quyết định "
-            "loại biến nào trước khi đưa vào 4B."
+            "đa cộng tuyến. Kết quả giúp xem xét loại các biến đa cộng tuyến trước khi đưa vào mô hình hóa."
         )
 
         num_exist = [c for c in NUMERIC_COLS if c in df_model.columns]
 
         # Correlation Matrix
-        st.markdown("#### 🔥 Correlation Matrix")
+        st.markdown("#### Ma trận tương quan")
         corr_cols = [
             c for c in num_exist + ['video_view_count']
             if c in df_model.columns
@@ -399,7 +398,7 @@ def render_tab(filtered_df: pd.DataFrame):
             zmin=-1,
             zmax=1,
             aspect='auto',
-            title='Ma trận tương quan – Biến Numeric'
+            title='Ma trận tương quan – Các biến numberic'
         )
         fig_corr.update_layout(height=550)
         st.plotly_chart(fig_corr, use_container_width=True)
@@ -417,7 +416,7 @@ def render_tab(filtered_df: pd.DataFrame):
                         'Biến 2': cols_list[j],
                         'r': round(r, 4),
                         'Mức độ': '🔴 Rất cao' if abs(r) > 0.85 else '🟠 Cao',
-                        'Khuyến nghị': 'Cân nhắc loại 1 trong 2 ở 4B'
+                        'Khuyến nghị': 'Cân nhắc loại 1 trong 2 trước khi đưa vào mô hình'
                     })
 
         if high_corr_pairs:
@@ -431,7 +430,7 @@ def render_tab(filtered_df: pd.DataFrame):
 
         # VIF
         st.markdown("---")
-        st.markdown("#### 📐 VIF – Variance Inflation Factor")
+        st.markdown("#### VIF – Variance Inflation Factor")
         st.info(
             "- VIF = 1: Hoàn toàn độc lập ✅  \n"
             "- VIF < 5: Chấp nhận được ✅  \n"
@@ -493,18 +492,18 @@ def render_tab(filtered_df: pd.DataFrame):
             with col_v2:
                 st.dataframe(vif_data, hide_index=True, height=380)
 
-            st.markdown("#### 📌 Nhận xét & Gợi ý cho 4B")
+            st.markdown("#### 📌 Nhận xét & Gợi ý khi đưa vào mô hình hóa")
 
             high_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 10)]['Biến'].tolist()
             med_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 5) & (vif_data['VIF'] < 10)]['Biến'].tolist()
             ok_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] < 5)]['Biến'].tolist()
 
             if high_vif_list:
-                st.error(f"❌ **VIF ≥ 10 – nên loại ở 4B:** `{'`, `'.join(high_vif_list)}`")
+                st.error(f"❌ **VIF ≥ 10 – nên loại ở mô hình hóa:** `{'`, `'.join(high_vif_list)}`")
             if med_vif_list:
-                st.warning(f"⚠️ **VIF 5–10 – cần xem xét:** `{'`, `'.join(med_vif_list)}`")
+                st.warning(f"⚠️ **VIF 5–10 – cần xem xét nếu đưa vào mô hình:** `{'`, `'.join(med_vif_list)}`")
             if ok_vif_list:
-                st.success(f"✅ **VIF < 5 – an toàn:** `{'`, `'.join(ok_vif_list)}`")
+                st.success(f"✅ **VIF < 5 – an toàn khi đưa vào mô hình:** `{'`, `'.join(ok_vif_list)}`")
 
             st.session_state['high_vif_vars'] = high_vif_list
             st.session_state['ok_vif_vars'] = ok_vif_list
@@ -513,16 +512,16 @@ def render_tab(filtered_df: pd.DataFrame):
     # SUB-TAB 4B
     # =================================================
     with sub4b:
-        st.markdown("### 🔄 Stepwise Regression")
+        st.markdown("### 🔄 Hồi quy từng bước")
         st.info(
             "Dùng cả biến **numeric** (đã lọc VIF) "
-            "và biến **encoding** từ các cột categorical có sẵn."
+            "và các biến **encoding**."
         )
 
         high_vif_from_4a = st.session_state.get('high_vif_vars', [])
         if high_vif_from_4a:
             st.warning(
-                f"💡 **Từ 4A:** Biến VIF cao đã bỏ chọn mặc định: "
+                f"💡 **Từ A (Tương quan và VIF):** Biến VIF cao đã bỏ chọn mặc định: "
                 f"`{'`, `'.join(high_vif_from_4a)}`"
             )
 
@@ -550,7 +549,7 @@ def render_tab(filtered_df: pd.DataFrame):
         col_g1, col_g2 = st.columns(2)
 
         with col_g1:
-            st.markdown("**📐 Biến Numeric**")
+            st.markdown("**Biến Numeric**")
             num_exist_4b = [c for c in NUMERIC_COLS if c in df_model.columns]
             num_default = [c for c in num_exist_4b if c not in high_vif_from_4a]
             selected_numeric = st.multiselect(
@@ -560,30 +559,30 @@ def render_tab(filtered_df: pd.DataFrame):
             )
 
         with col_g2:
-            st.markdown("**🔘 Biến Encoding**")
+            st.markdown("**Biến Encoding**")
             bin_exist = [c for c in BINARY_COLS if c in df_model.columns]
             genre_exist = [c for c in genre_dummy_cols if c in df_model.columns]
 
             use_binary = st.checkbox(
-                f"Dùng Binary ({len(bin_exist)} biến)",
+                f"Dùng các biến nhị phân ({len(bin_exist)} biến)",
                 value=True
             )
             selected_binary = []
             if use_binary and bin_exist:
                 selected_binary = st.multiselect(
-                    "Chọn biến binary",
+                    "Chọn biến nhị phân",
                     options=bin_exist,
                     default=bin_exist,   # mặc định chọn hết
                 )
 
             use_genre = st.checkbox(
-                f"Dùng Genre one-hot ({len(genre_exist)} biến)",
+                f"Dùng các biến thể loại one-hot ({len(genre_exist)} biến)",
                 value=True
             )
             selected_genre = []
             if use_genre and genre_exist:
                 selected_genre = st.multiselect(
-                    "Chọn biến genre",
+                    "Chọn biến thể loại",
                     options=genre_exist,
                     default=genre_exist,  # mặc định chọn hết
                 )
@@ -596,17 +595,17 @@ def render_tab(filtered_df: pd.DataFrame):
         ]
 
         st.caption(
-            f"✅ **{len(final_pool)} biến** sẽ vào Stepwise | "
-            f"Numeric: {len(selected_numeric)} | "
-            f"Binary: {len(bin_exist) if use_binary else 0} | "
-            f"Genre: {len(genre_exist) if use_genre else 0}"
+            f"✅ **{len(final_pool)} biến** sẽ được chạy hồi quy từng bước| "
+            f"Số biến numberic: {len(selected_numeric)} | "
+            f"Số biến nhị phân: {len(bin_exist) if use_binary else 0} | "
+            f"Số biến thể loại: {len(genre_exist) if use_genre else 0}"
         )
 
-        if st.button("▶️ Chạy Stepwise", type="primary"):
+        if st.button("▶️ Chạy hồi quy từng bước", type="primary"):
             if not final_pool:
                 st.error("Vui lòng chọn ít nhất 1 biến!")
             else:
-                with st.spinner("Đang chạy Stepwise..."):
+                with st.spinner("Đang chạy hồi quy từng bước..."):
                     selected, model, hist_df = _stepwise_selection(
                         df_model, target_var, final_pool,
                         direction=method,
@@ -614,7 +613,7 @@ def render_tab(filtered_df: pd.DataFrame):
                         sl_remove=p_enter + 0.05
                     )
 
-                st.markdown("#### 📋 Quá trình chọn biến")
+                st.markdown("#### Quá trình chọn biến")
                 if len(hist_df) > 0:
                     st.dataframe(hist_df, hide_index=True, use_container_width=True)
 
@@ -632,7 +631,7 @@ def render_tab(filtered_df: pd.DataFrame):
                 if model is not None:
                     c1, c2, c3 = st.columns(3)
                     c1.metric("R²", f"{model.rsquared:.4f}")
-                    c2.metric("Adj R²", f"{model.rsquared_adj:.4f}")
+                    c2.metric("R² hiệu chỉnh", f"{model.rsquared_adj:.4f}")
                     c3.metric("Biến được chọn", len(selected))
 
                     sel_num = [v for v in selected if v in NUMERIC_COLS]
@@ -648,19 +647,19 @@ def render_tab(filtered_df: pd.DataFrame):
                             for v in var_list:
                                 st.code(
                                     f"{v}\n"
-                                    f"coef={model.params.get(v, 0):.4f}\n"
+                                    f"Hệ số={model.params.get(v, 0):.4f}\n"
                                     f"p={model.pvalues.get(v, 1):.4f}"
                                 )
                             if not var_list:
                                 st.caption("Không có")
 
-                    _show_vars(cs1, "**📐 Numeric**", sel_num, model)
-                    _show_vars(cs2, "**🔘 Binary**", sel_bin, model)
-                    _show_vars(cs3, "**🎵 Genre**", sel_genre, model)
+                    _show_vars(cs1, "** Numeric**", sel_num, model)
+                    _show_vars(cs2, "** Biến nhị phân**", sel_bin, model)
+                    _show_vars(cs3, "** Thể loại**", sel_genre, model)
 
                     # Standardized Coefficient
                     st.markdown("---")
-                    st.markdown("#### 📊 Tầm quan trọng (Standardized Coefficient)")
+                    st.markdown("#### Hệ số đã chuẩn hóa")
 
                     try:
                         selected_unique = list(dict.fromkeys(selected))
@@ -728,7 +727,7 @@ def render_tab(filtered_df: pd.DataFrame):
                                         'Binary': '#2ecc71',
                                         'Genre': '#e74c3c'
                                     },
-                                    title='Tầm quan trọng của từng biến (Standardized Coefficient)',
+                                    title='Hệ số đã chuẩn hóa của từng biến',
                                     text=coef_df['Std Coef'].round(3),
                                     height=max(400, len(coef_df) * 32)
                                 )
@@ -750,7 +749,7 @@ def render_tab(filtered_df: pd.DataFrame):
 
                                 st.caption(
                                     f"R² = {m_std.rsquared:.4f} | "
-                                    f"Adj R² = {m_std.rsquared_adj:.4f} | "
+                                    f"R² hiệu chỉnh = {m_std.rsquared_adj:.4f} | "
                                     f"Số biến: {len(selected_unique)}"
                                 )
 
@@ -766,10 +765,11 @@ def render_tab(filtered_df: pd.DataFrame):
 # SUB-TAB 4C: CONFUNDING (SIMSON)
 # =================================================
     with sub4c:
-        st.markdown("### 🎭 Kẻ Hai Mặt: Nghịch lý Simpson (Đảo dấu)")
+        st.markdown("### Đảo dấu do biến gây nhiễu ")
         st.info(
-            "**Nghịch lý Simpson** xảy ra khi một biến có vẻ tác động tích cực đến lượt xem (đứng một mình), "
-            "nhưng khi ghép chung với biến kiểm soát quy mô (Confounder), bản chất thực sự của nó mới lộ diện."
+            "Hệ số của “số lượng video” dương khi xem một mình, "
+            "nhưng đảo sang âm khi kiểm soát “quy mô kênh (subscriber)”. "
+            "Đây là dấu hiệu điển hình của biến gây nhiễu: kênh lớn làm ta hiểu nhầm rằng đăng nhiều giúp tăng view."
         )
 
         st.markdown("#### Ví dụ kinh điển: Số lượng Video vs Quy mô Kênh")
@@ -790,15 +790,15 @@ def render_tab(filtered_df: pd.DataFrame):
         else:
             col1, col2, col3 = st.columns(3)
 
-            col1.metric("Hệ số khi đứng 1 mình", f"{coef_single:.4f}", "Đánh lừa")
-            col2.metric("Hệ số khi bị kiểm soát", f"{coef_multi:.4f}", "Sự thật", delta_color="inverse")
+            col1.metric("Hệ số khi đứng 1 mình", f"{coef_single:.4f}", "Chưa kiểm soát số lượng đăng kí")
+            col2.metric("Hệ số (có kiểm soát số lượng đăng kí)", f"{coef_multi:.4f}", "So sánh công bằng hơn", delta_color="inverse")
 
             flip_detected = np.sign(coef_single) != np.sign(coef_multi)
 
             if flip_detected:
-                col3.error("🔴 PHÁT HIỆN ĐẢO DẤU!")
+                col3.warning("Hệ số đổi dấu sau khi thêm subscriber (dấu hiệu confounding).")
             else:
-                col3.success("➖ Không bị đảo dấu trong tập dữ liệu này")
+                col3.info("Hệ số không đổi dấu khi thêm subscriber.")
 
             # Biểu đồ
             fig_flip = go.Figure()
@@ -824,8 +824,8 @@ def render_tab(filtered_df: pd.DataFrame):
             st.plotly_chart(fig_flip, use_container_width=True)
 
             st.markdown(
-                "> **💡 Insight Thực Chiến:** Đừng lầm tưởng đăng càng nhiều video thì view càng cao. "
-                "Thực chất, các kênh lớn thường đăng nhiều, nhưng nếu xét hai kênh có cùng lượng Sub, "
+                "> **💡 Insight:** Đừng lầm tưởng đăng càng nhiều video thì lượt xem càng cao. "
+                "Thực tế, các kênh lớn thường đăng nhiều, nhưng nếu xét hai kênh có cùng lượng đăng kí, "
                 "kênh nào spam quá nhiều video có thể làm GIẢM lượt xem trung bình mỗi video. "
-                "*(Chất lượng quan trọng hơn số lượng!)*"
+
             )

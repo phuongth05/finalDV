@@ -461,6 +461,25 @@
     "hour",
     "video_age_days"
   ],
+  "simpson_confounding": {
+    "status": "ok",
+    "n": 6772,
+    "setup": {
+      "y": "log_views",
+      "x": "channel_video_count",
+      "z": "channel_subscriber_count"
+    },
+    "coef_single_std": 0.3150053336463967,
+    "coef_multi_std": -0.6695760077333497,
+    "p_single": 2.532729023569065e-13,
+    "p_multi": 6.219957052830826e-27,
+    "r2_single": 0.007877932079130345,
+    "r2_multi": 0.07065330653261725,
+    "pct_change": 3.125602128645128,
+    "flip_detected": "True",
+    "corr_x_z": 0.7421344954986105,
+    "interpretation": "So sánh Std Coef của channel_video_count khi chạy đơn biến và khi kiểm soát channel_subscriber_count để phát hiện confounding."
+  },
   "tab": 5,
   "name": "Mô hình hóa",
   "rows": 6772,
