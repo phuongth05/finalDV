@@ -293,7 +293,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 format_df,
                 names='Format',
                 values='SoVideo',
-                title="Tỷ trọng format upload"
+                title="Tỷ trọng format đăng tải"
             )
             fig_format.update_traces(textposition='inside', textinfo='percent+label')
             st.plotly_chart(fig_format, use_container_width=True)
@@ -301,12 +301,12 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             st.info("Không tìm thấy cột format trong dữ liệu.")
 
     st.caption(
-        "Phân phối này phản ánh hành vi của người đăng: họ ưu tiên thể loại hoặc format nào khi upload. "
+        "Phân phối này phản ánh hành vi của người đăng: họ ưu tiên thể loại hoặc format nào khi đăng tải. "
         "Nếu một nhóm chiếm tỷ trọng quá lớn, đây là dấu hiệu thị trường đang bị lệch về một hướng nội dung." 
     )
 
     # --- BIỂU ĐỒ 2.5: SO SÁNH UPLOAD VS VIEW THEO NHÓM ---
-    st.subheader("4. So sánh phân phối upload và phân phối lượt xem")
+    st.subheader("4. So sánh phân phối tỷ lệ thể loại và phân phối lượt xem")
     compare_col = genre_col
     if compare_col:
         compare_source = apply_cross_filters(
@@ -350,12 +350,12 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             secondary_y=True
         )
         fig_compare.update_layout(
-            title="So sánh upload và lượt xem theo thể loại (cột + đường)",
+            title="So sánh tỷ lệ lượt xem theo thể loại (cột + đường)",
             xaxis_title="Thể loại",
             legend=dict(orientation='h', yanchor='bottom', y=-0.25, xanchor='center', x=0.5),
             clickmode='event+select',
         )
-        fig_compare.update_yaxes(title_text='Tỷ lệ upload (%)', secondary_y=False)
+        fig_compare.update_yaxes(title_text='Tỷ lệ thể loại được đăng tải (%)', secondary_y=False)
         fig_compare.update_yaxes(title_text='Tỷ lệ lượt xem (%)', secondary_y=True)
         compare_event = st.plotly_chart(
             fig_compare,
@@ -382,12 +382,12 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             y='SoVideo',
             color='genre_label',
             title="Xu hướng thể loại theo thời gian (theo số video đăng)",
-            labels={'month': 'Tháng', 'SoVideo': 'Số video'}
+            labels={'month': 'Tháng', 'SoVideo': 'Số video', 'genre_label' : "Thể loại"}
         )
         st.plotly_chart(fig_area, use_container_width=True)
         st.caption(
             "Stacked area chart cho thấy mức độ đăng tải của từng thể loại theo thời gian. "
-            "Phần diện tích tăng/giảm phản ánh xu hướng nội dung và mức độ thay đổi khẩu vị người đăng." 
+            "Phần diện tích tăng/giảm phản ánh xu hướng nội dung và mức độ thay đổi thể loại âm nhạc của người đăng." 
         )
     else:
         st.info("Cần có cột ngày đăng (video_publish_date) để hiển thị xu hướng thể loại theo thời gian.")
