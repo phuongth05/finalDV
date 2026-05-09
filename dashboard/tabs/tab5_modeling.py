@@ -180,6 +180,36 @@ def _build_df_model(filtered_df: pd.DataFrame):
 
     return df_model, genre_dummy_cols
 
+def _run_models_for_flip(df, target, var_main, var_confounder):
+    """Chạy mô hình chuẩn hóa để lấy hệ số đơn và đa biến."""
+    need_cols = [target, var_main, var_confounder]
+    for c in need_cols:
+        if c not in df.columns:
+            return None, None
+
+    df_valid = df[need_cols].replace([np.inf, -np.inf], np.nan).dropna()
+    if len(df_valid) < 10:
+        return None, None
+
+    scaler = StandardScaler()
+    X_scaled = pd.DataFrame(
+        scaler.fit_transform(df_valid[[var_main, var_confounder]]),
+        columns=[var_main, var_confounder],
+        index=df_valid.index
+    )
+    y = df_valid[target]
+
+    # Model đơn
+    X1 = sm.add_constant(X_scaled[[var_main]], has_constant="add")
+    m1 = sm.OLS(y, X1).fit()
+    coef_single = m1.params.get(var_main, 0)
+
+    # Model đa
+    X2 = sm.add_constant(X_scaled[[var_main, var_confounder]], has_constant="add")
+    m2 = sm.OLS(y, X2).fit()
+    coef_multi = m2.params.get(var_main, 0)
+
+    return float(coef_single), float(coef_multi)
 
 def _stepwise_selection(
     data, target, feats,
@@ -335,10 +365,11 @@ def render_tab(filtered_df: pd.DataFrame):
     df_model, genre_dummy_cols = _build_df_model(filtered_df)
 
     # 3 sub-tabs
-    sub4a, sub4b = st.tabs([
-        "A: Correlation & VIF",
-        "B: Stepwise Regression",
-    ])
+    sub4a, sub4b, sub4c = st.tabs([
+    "A: Correlation & VIF",
+    "B: Stepwise Regression",
+    "C: Confounding",
+])
 
     # =================================================
     # SUB-TAB 4A
@@ -731,3 +762,70 @@ def render_tab(filtered_df: pd.DataFrame):
                         "Không có biến nào được chọn. "
                         "Thử giảm ngưỡng p-value hoặc thêm biến."
                     )
+    # =================================================
+# SUB-TAB 4C: CONFUNDING (SIMSON)
+# =================================================
+    with sub4c:
+        st.markdown("### 🎭 Kẻ Hai Mặt: Nghịch lý Simpson (Đảo dấu)")
+        st.info(
+            "**Nghịch lý Simpson** xảy ra khi một biến có vẻ tác động tích cực đến lượt xem (đứng một mình), "
+            "nhưng khi ghép chung với biến kiểm soát quy mô (Confounder), bản chất thực sự của nó mới lộ diện."
+        )
+
+        st.markdown("#### Ví dụ kinh điển: Số lượng Video vs Quy mô Kênh")
+        st.caption(
+            "Phân tích hệ số của biến **Số lượng Video (channel_video_count)** lên Lượt xem, "
+            "trước và sau khi đưa **Quy mô Kênh (channel_subscriber_count)** vào kiểm soát."
+        )
+
+        coef_single, coef_multi = _run_models_for_flip(
+            df_model,
+            'log_views',
+            'channel_video_count',
+            'channel_subscriber_count'
+        )
+
+        if coef_single is None:
+            st.warning("Không đủ dữ liệu để phân tích (thiếu biến hoặc NA quá nhiều).")
+        else:
+            col1, col2, col3 = st.columns(3)
+
+            col1.metric("Hệ số khi đứng 1 mình", f"{coef_single:.4f}", "Đánh lừa")
+            col2.metric("Hệ số khi bị kiểm soát", f"{coef_multi:.4f}", "Sự thật", delta_color="inverse")
+
+            flip_detected = np.sign(coef_single) != np.sign(coef_multi)
+
+            if flip_detected:
+                col3.error("🔴 PHÁT HIỆN ĐẢO DẤU!")
+            else:
+                col3.success("➖ Không bị đảo dấu trong tập dữ liệu này")
+
+            # Biểu đồ
+            fig_flip = go.Figure()
+            fig_flip.add_trace(go.Bar(
+                x=['Đứng một mình (Đơn biến)', 'Ghép với Quy mô Kênh (Đa biến)'],
+                y=[coef_single, coef_multi],
+                marker_color=[
+                    '#2ecc71' if coef_single > 0 else '#e74c3c',
+                    '#2ecc71' if coef_multi > 0 else '#e74c3c'
+                ],
+                text=[f"{coef_single:.4f}", f"{coef_multi:.4f}"],
+                textposition='auto'
+            ))
+
+            fig_flip.add_hline(y=0, line_dash='solid', line_color='black', line_width=2)
+
+            fig_flip.update_layout(
+                title='Sự thay đổi Hệ số của "Số lượng Video" tác động lên Lượt xem',
+                yaxis_title='Hệ số Chuẩn hóa (Std Coef)',
+                height=400
+            )
+
+            st.plotly_chart(fig_flip, use_container_width=True)
+
+            st.markdown(
+                "> **💡 Insight Thực Chiến:** Đừng lầm tưởng đăng càng nhiều video thì view càng cao. "
+                "Thực chất, các kênh lớn thường đăng nhiều, nhưng nếu xét hai kênh có cùng lượng Sub, "
+                "kênh nào spam quá nhiều video có thể làm GIẢM lượt xem trung bình mỗi video. "
+                "*(Chất lượng quan trọng hơn số lượng!)*"
+            )
