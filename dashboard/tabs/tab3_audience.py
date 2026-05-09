@@ -72,7 +72,7 @@ def _short_label(text, max_len=18):
     return text if len(text) <= max_len else text[:max_len].rstrip() + "..."
 
 
-def _packed_bubble_chart(df, value_col, label_col, title):
+def _packed_bubble_chart(df, value_col, label_col, title, hover_cols=None, hover_labels=None):
     values = df[value_col].astype(float).fillna(0).tolist()
     labels = df[label_col].astype(str).tolist()
     positions, radii = _pack_bubbles(values)
@@ -81,7 +81,27 @@ def _packed_bubble_chart(df, value_col, label_col, title):
     x_vals = [pos[0] for pos in positions]
     y_vals = [pos[1] for pos in positions]
 
-    fig = go.Figure(go.Scatter(
+    hovertext = labels
+    customdata = None
+    hovertemplate = "<b>%{hovertext}</b><br>Giá trị: %{marker.color:,.0f}<extra></extra>"
+
+    if hover_cols:
+        hover_labels = hover_labels or hover_cols
+        hover_values = []
+        for col in hover_cols:
+            if col in df.columns:
+                hover_values.append(pd.to_numeric(df[col], errors="coerce").fillna(0).to_numpy())
+            else:
+                hover_values.append(np.zeros(len(df)))
+
+        if hover_values:
+            customdata = np.column_stack(hover_values)
+            hover_lines = "<br>".join(
+                f"{label}: %{{customdata[{idx}]:,.0f}}" for idx, label in enumerate(hover_labels)
+            )
+            hovertemplate = f"<b>%{{hovertext}}</b><br>{hover_lines}<extra></extra>"
+
+    scatter_kwargs = dict(
         x=x_vals,
         y=y_vals,
         mode='markers+text',
@@ -96,9 +116,13 @@ def _packed_bubble_chart(df, value_col, label_col, title):
             line=dict(color='white', width=1),
             opacity=0.9
         ),
-        customdata=labels,
-        hovertemplate="<b>%{customdata}</b><br>Giá trị: %{marker.color:,.0f}<extra></extra>"
-    ))
+        hovertext=hovertext,
+        hovertemplate=hovertemplate
+    )
+    if customdata is not None:
+        scatter_kwargs["customdata"] = customdata
+
+    fig = go.Figure(go.Scatter(**scatter_kwargs))
     fig.update_layout(
         title=title,
         xaxis=dict(visible=False),
@@ -112,8 +136,35 @@ def _collapse_top(series, top_n=8, other_label='Khác'):
     top = series.nlargest(top_n)
     other = series.sum() - top.sum()
     if other > 0:
-        top = pd.concat([top, pd.Series({other_label: other})])
+        if other_label in top.index:
+            top.loc[other_label] += other
+        else:
+            top = pd.concat([top, pd.Series({other_label: other})])
     return top
+
+
+def _ensure_genre_label(frame: pd.DataFrame) -> pd.DataFrame:
+    if "genre_label" in frame.columns:
+        return frame
+
+    frame = frame.copy()
+    text_candidates = ['video_title', 'video_description', 'video_tags', 'video_tag', 'video_tags_list']
+    text_cols = [col for col in text_candidates if col in frame.columns]
+    if text_cols:
+        combined_text = frame[text_cols].fillna('').astype(str).agg(' '.join, axis=1).str.lower()
+    else:
+        combined_text = pd.Series('', index=frame.index)
+
+    genre_label = pd.Series('Giai điệu Khác', index=frame.index)
+    for genre, keywords in MUSIC_GENRES.items():
+        if not keywords:
+            continue
+        pattern = r'(?:' + '|'.join(re.escape(k) for k in keywords) + r')'
+        matched = combined_text.str.contains(pattern, regex=True)
+        genre_label = genre_label.mask(matched & (genre_label == 'Giai điệu Khác'), genre)
+
+    frame['genre_label'] = genre_label
+    return frame
 
 
 def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_filters, sync_chart_selection):
@@ -124,22 +175,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     df_q2['video_made_for_kids'] = df_q2['video_made_for_kids'].fillna(False).astype(bool)
     df_q2['video_licensed_content'] = df_q2['video_licensed_content'].fillna(False).astype(bool)
 
-    text_candidates = ['video_title', 'video_description', 'video_tags', 'video_tag', 'video_tags_list']
-    text_cols = [col for col in text_candidates if col in df_q2.columns]
-    if text_cols:
-        combined_text = df_q2[text_cols].fillna('').astype(str).agg(' '.join, axis=1).str.lower()
-    else:
-        combined_text = pd.Series('', index=df_q2.index)
-
-    genre_label = pd.Series('Giai điệu Khác', index=df_q2.index)
-    for genre, keywords in MUSIC_GENRES.items():
-        if not keywords:
-            continue
-        pattern = r'(?:' + '|'.join(re.escape(k) for k in keywords) + r')'
-        matched = combined_text.str.contains(pattern, regex=True)
-        genre_label = genre_label.mask(matched & (genre_label == 'Giai điệu Khác'), genre)
-
-    df_q2['genre_label'] = genre_label
+    df_q2 = _ensure_genre_label(df_q2)
 
     # Treemap section removed as requested.
 
@@ -175,40 +211,48 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     col_view, col_like = st.columns(2)
 
     with col_view:
-        if {'video_title', 'video_view_count'}.issubset(df_q2.columns):
+        if {'video_title', 'video_view_count', 'video_like_count'}.issubset(df_q2.columns):
             top_view = (
-                df_q2[['video_title', 'video_view_count']]
-                .dropna()
+                df_q2[['video_title', 'video_view_count', 'video_like_count']]
+                .dropna(subset=['video_view_count'])
+                .copy()
                 .sort_values('video_view_count')
                 .tail(10)
             )
+            top_view['video_like_count'] = top_view['video_like_count'].fillna(0)
             fig_top_view = _packed_bubble_chart(
                 top_view,
                 value_col='video_view_count',
                 label_col='video_title',
-                title="Top 10 video theo lượt xem (Packed Bubble)"
+                title="Top 10 video theo lượt xem (Packed Bubble)",
+                hover_cols=['video_view_count', 'video_like_count'],
+                hover_labels=['Lượt xem', 'Lượt thích']
             )
             st.plotly_chart(fig_top_view, use_container_width=True)
         else:
-            st.info("Thiếu dữ liệu video title hoặc lượt xem để hiển thị top view.")
+            st.info("Thiếu dữ liệu video title, lượt xem hoặc lượt thích để hiển thị top view.")
 
     with col_like:
-        if {'video_title', 'video_like_count'}.issubset(df_q2.columns):
+        if {'video_title', 'video_like_count', 'video_view_count'}.issubset(df_q2.columns):
             top_like = (
-                df_q2[['video_title', 'video_like_count']]
-                .dropna()
+                df_q2[['video_title', 'video_like_count', 'video_view_count']]
+                .dropna(subset=['video_like_count'])
+                .copy()
                 .sort_values('video_like_count')
                 .tail(10)
             )
+            top_like['video_view_count'] = top_like['video_view_count'].fillna(0)
             fig_top_like = _packed_bubble_chart(
                 top_like,
                 value_col='video_like_count',
                 label_col='video_title',
-                title="Top 10 video theo lượt thích (Packed Bubble)"
+                title="Top 10 video theo lượt thích (Packed Bubble)",
+                hover_cols=['video_like_count', 'video_view_count'],
+                hover_labels=['Lượt thích', 'Lượt xem']
             )
             st.plotly_chart(fig_top_like, use_container_width=True)
         else:
-            st.info("Thiếu dữ liệu lượt thích để hiển thị top like.")
+            st.info("Thiếu dữ liệu video title, lượt thích hoặc lượt xem để hiển thị top like.")
 
     st.caption(
         "Hai biểu đồ xếp hạng giúp nhận diện các video nổi bật theo mức độ quan tâm (view) "
@@ -225,8 +269,9 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     col_genre, col_format = st.columns(2)
 
     with col_genre:
-        genre_counts = df_q2[genre_col].astype(str).value_counts()
-        genre_counts = _collapse_top(genre_counts, top_n=8, other_label='Khác')
+        genre_series = df_q2[genre_col].astype(str).replace({'Khác': 'Giai điệu Khác', 'khác': 'Giai điệu Khác'})
+        genre_counts = genre_series.value_counts()
+        genre_counts = _collapse_top(genre_counts, top_n=8, other_label='Giai điệu Khác')
         genre_df = genre_counts.reset_index()
         genre_df.columns = ['TheLoai', 'SoVideo']
         fig_genre = px.pie(
@@ -264,7 +309,13 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     st.subheader("4. So sánh phân phối upload và phân phối lượt xem")
     compare_col = genre_col
     if compare_col:
-        compare_df = df_q2[[compare_col, 'video_view_count']].dropna().copy()
+        compare_source = apply_cross_filters(
+            base_filtered_df,
+            active_cross_filters,
+            exclude_key="cross_compare_genre",
+        )
+        compare_source = _ensure_genre_label(compare_source)
+        compare_df = compare_source[[compare_col, 'video_view_count']].dropna().copy()
         compare_df[compare_col] = compare_df[compare_col].astype(str)
 
         upload_counts = compare_df[compare_col].value_counts().nlargest(8)
@@ -279,7 +330,9 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 x=upload_share.index.tolist(),
                 y=upload_share.values,
                 name='Tỷ lệ upload (%)',
-                marker_color='rgba(54, 162, 235, 0.75)'
+                marker_color='rgba(54, 162, 235, 0.75)',
+                customdata=upload_share.index.tolist(),
+                hovertemplate="Thể loại: %{customdata}<br>Tỷ lệ upload: %{y:.2f}%<extra></extra>",
             ),
             secondary_y=False
         )
@@ -290,18 +343,27 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 name='Tỷ lệ lượt xem (%)',
                 marker_color='rgba(255, 99, 132, 0.9)',
                 mode='lines+markers',
-                line=dict(width=3)
+                line=dict(width=3),
+                customdata=view_share.index.tolist(),
+                hovertemplate="Thể loại: %{customdata}<br>Tỷ lệ lượt xem: %{y:.2f}%<extra></extra>",
             ),
             secondary_y=True
         )
         fig_compare.update_layout(
             title="So sánh upload và lượt xem theo thể loại (cột + đường)",
             xaxis_title="Thể loại",
-            legend=dict(orientation='h', yanchor='bottom', y=-0.25, xanchor='center', x=0.5)
+            legend=dict(orientation='h', yanchor='bottom', y=-0.25, xanchor='center', x=0.5),
+            clickmode='event+select',
         )
         fig_compare.update_yaxes(title_text='Tỷ lệ upload (%)', secondary_y=False)
         fig_compare.update_yaxes(title_text='Tỷ lệ lượt xem (%)', secondary_y=True)
-        st.plotly_chart(fig_compare, use_container_width=True)
+        compare_event = st.plotly_chart(
+            fig_compare,
+            use_container_width=True,
+            key="cross_compare_genre",
+            on_select="rerun",
+        )
+        sync_chart_selection("cross_compare_genre", compare_event)
         st.caption(
             "Cột thể hiện tỷ lệ upload, đường thể hiện tỷ lệ lượt xem theo cùng một nhóm. "
             "Nhìn vào khoảng cách giữa cột và đường để nhận ra nhóm nào vượt trội về mức độ quan tâm." 

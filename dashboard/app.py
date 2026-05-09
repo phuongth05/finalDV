@@ -1,7 +1,9 @@
+import base64
 import json
 import os
 import re
 import sys
+from pathlib import Path
 
 CURRENT_DIR = os.path.dirname(__file__)
 if CURRENT_DIR not in sys.path:
@@ -23,7 +25,7 @@ from tab_contexts import (
 
 from tabs.tab1_overview import render_tab as render_tab1
 from tabs.tab2_success import render_tab as render_tab2
-from tabs.tab3_audience import render_tab as render_tab3
+from tabs.tab3_audience import MUSIC_GENRES, render_tab as render_tab3
 from tabs.tab4_timing import render_tab as render_tab4
 from tabs.tab5_modeling import render_tab as render_tab5
 from tabs.tab6_confounders import render_tab as render_tab6
@@ -52,7 +54,7 @@ st.markdown("""
     font-weight:700;
 }
 .sidebar-card {
-    background: linear-gradient(180deg, rgba(29,185,84,0.12), rgba(17,17,17,0.96));
+    background: linear-gradient(180deg, rgba(29,185,84,0.12), rgba(170,170,170,0.96));
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 18px;
     padding: 16px 16px 12px 16px;
@@ -73,8 +75,21 @@ st.markdown("""
     font-weight: 700;
     margin-top: 0.7rem;
 }
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 16px;
+}
+.sidebar-logo img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
 .metric-card {
-    background-color:#111;
+    # background-color:#111;
     padding:15px;
     border-radius:12px;
 }
@@ -119,6 +134,47 @@ df['genre'] = df['search_query'].apply(extract_genre)
 # basic features
 df['title_length'] = df['video_title'].astype(str).apply(len)
 
+
+def _build_genre_label(frame: pd.DataFrame) -> pd.Series:
+    if "genre_label" in frame.columns:
+        return frame["genre_label"]
+
+    text_candidates = ['video_title', 'video_description', 'video_tags', 'video_tag', 'video_tags_list']
+    text_cols = [col for col in text_candidates if col in frame.columns]
+    if text_cols:
+        combined_text = frame[text_cols].fillna('').astype(str).agg(' '.join, axis=1).str.lower()
+    else:
+        combined_text = pd.Series('', index=frame.index)
+
+    genre_label = pd.Series('Giai điệu Khác', index=frame.index)
+    for genre, keywords in MUSIC_GENRES.items():
+        if not keywords:
+            continue
+        pattern = r'(?:' + '|'.join(re.escape(k) for k in keywords) + r')'
+        matched = combined_text.str.contains(pattern, regex=True)
+        genre_label = genre_label.mask(matched & (genre_label == 'Giai điệu Khác'), genre)
+
+    return genre_label
+
+
+df['genre_label'] = _build_genre_label(df)
+
+
+def _render_sidebar_logo() -> None:
+    logo_path = Path(CURRENT_DIR) / "images" / "YouTube_2024.svg"
+    if not logo_path.exists():
+        return
+
+    encoded = base64.b64encode(logo_path.read_bytes()).decode("ascii")
+    st.sidebar.markdown(
+        f"""
+        <div class="sidebar-card sidebar-logo">
+            <img src="data:image/svg+xml;base64,{encoded}" alt="YouTube" />
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 def detect_video_type(title):
     title_lower = str(title).lower()
     if 'official' in title_lower or 'mv' in title_lower:
@@ -151,15 +207,7 @@ df['channel_size'] = pd.qcut(
 )
 
 # ================= SIDEBAR =================
-        # <h1>Điều khiển</h1>
-st.sidebar.markdown(
-    """
-    <div class="sidebar-card">
-        <p>Chọn khoảng thời gian, khoảng lượt xem, rồi dùng cross-filter trên các biểu đồ để khoanh vùng dữ liệu nhanh hơn.</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+_render_sidebar_logo()
 
 st.sidebar.markdown('<div class="sidebar-filter-title">Bộ lọc chính</div>', unsafe_allow_html=True)
 
@@ -336,6 +384,21 @@ def _points_to_channels(points):
     return sorted(set(channels))
 
 
+def _points_to_categories(points):
+    categories = []
+    for point in points:
+        category = _custom_value(point, 0)
+        if category is None:
+            category = _point_value(point, "label")
+        if category is None:
+            category = _point_value(point, "x")
+        if category is None:
+            category = _point_value(point, "y")
+        if category is not None:
+            categories.append(str(category))
+    return sorted(set(categories))
+
+
 def _points_to_hour_day_pairs(points):
     pairs = []
     for point in points:
@@ -370,6 +433,7 @@ def _collect_cross_filters(source_df):
         {"key": "cross_lollipop", "label": "Lollipop chart: kênh được chọn", "kind": "channels", "extract": _points_to_channels},
         {"key": "cross_keywords", "label": "TF-IDF: từ khóa được chọn", "kind": "keywords", "extract": _points_to_keywords},
         {"key": "cross_trend", "label": "Biểu đồ theo giờ: giờ được chọn", "kind": "hours", "extract": _points_to_hours},
+        {"key": "cross_compare_genre", "label": "So sánh upload/view: thể loại được chọn", "kind": "genres", "extract": _points_to_categories},
     ]
 
     active_filters = []
@@ -397,6 +461,8 @@ def _collect_cross_filters(source_df):
             summary = f"{len(values)} từ khóa"
         elif spec["kind"] == "hours":
             summary = f"{', '.join(map(str, values))}"
+        elif spec["kind"] == "genres":
+            summary = f"{len(values)} thể loại"
         else:
             summary = f"{len(values)} ô"
 
@@ -436,6 +502,9 @@ def _apply_cross_filters(frame, active_filters, exclude_key=None):
             result = result[mask]
         elif kind == "hours":
             result = result[result["hour"].isin(values)]
+        elif kind == "genres":
+            if "genre_label" in result.columns:
+                result = result[result["genre_label"].astype(str).isin(values)]
         elif kind == "day_hour_pairs":
             pairs = set(values)
             mask = result.apply(

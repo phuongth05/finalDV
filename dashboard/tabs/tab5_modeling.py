@@ -409,66 +409,74 @@ def render_tab(filtered_df: pd.DataFrame):
         )
 
         X_vif = df_model[num_exist].dropna()
-        non_const = [c for c in num_exist if X_vif[c].std() > 1e-10]
+        non_const = [c for c in num_exist if c in X_vif.columns and X_vif[c].std() > 1e-10]
         X_vif = X_vif[non_const]
 
-        vif_rows = []
-        for i, col in enumerate(non_const):
-            try:
-                v = variance_inflation_factor(X_vif.values, i)
-                vif_rows.append({'Biến': col, 'VIF': round(float(v), 2)})
-            except Exception:
-                vif_rows.append({'Biến': col, 'VIF': None})
+        if X_vif.empty or len(non_const) < 2:
+            st.warning("Không đủ biến numeric sau lọc/cross-filter để tính VIF.")
+            st.session_state['high_vif_vars'] = []
+            st.session_state['ok_vif_vars'] = []
+        else:
+            vif_rows = []
+            for i, col in enumerate(non_const):
+                try:
+                    v = variance_inflation_factor(X_vif.values, i)
+                    vif_rows.append({'Biến': col, 'VIF': round(float(v), 2)})
+                except Exception:
+                    vif_rows.append({'Biến': col, 'VIF': None})
 
-        vif_data = pd.DataFrame(vif_rows)
+            vif_data = pd.DataFrame(vif_rows, columns=['Biến', 'VIF'])
 
-        def classify_vif(v):
-            if v is None: return '⚠️ Lỗi'
-            if v < 5: return '✅ Tốt'
-            elif v < 10: return '⚠️ Cần xem xét'
-            else: return '❌ Nghiêm trọng'
+            def classify_vif(v):
+                if v is None:
+                    return '⚠️ Lỗi'
+                if v < 5:
+                    return '✅ Tốt'
+                if v < 10:
+                    return '⚠️ Cần xem xét'
+                return '❌ Nghiêm trọng'
 
-        vif_data['Mức độ'] = vif_data['VIF'].apply(classify_vif)
-        vif_data = vif_data.sort_values('VIF', ascending=False, na_position='last')
+            vif_data['Mức độ'] = vif_data['VIF'].apply(classify_vif)
+            vif_data = vif_data.sort_values('VIF', ascending=False, na_position='last')
 
-        col_v1, col_v2 = st.columns([3, 2])
-        with col_v1:
-            vif_plot = vif_data.dropna(subset=['VIF']).sort_values('VIF')
-            colors_vif = [
-                '#1f77b4' if v < 5 else '#ff6b6b' if v < 10 else '#d62728'
-                for v in vif_plot['VIF']
-            ]
-            fig_vif = go.Figure(go.Bar(
-                x=vif_plot['VIF'].values,
-                y=vif_plot['Biến'].values,
-                orientation='h',
-                marker_color=colors_vif,
-                text=vif_plot['VIF'].round(2).values,
-                textposition='outside'
-            ))
-            fig_vif.add_vline(x=5, line_dash='dash', line_color='#1f77b4', annotation_text='VIF = 5')
-            fig_vif.add_vline(x=10, line_dash='dash', line_color='#d62728', annotation_text='VIF = 10')
-            fig_vif.update_layout(title='VIF – Biến Numeric', xaxis_title='VIF Score', height=420)
-            st.plotly_chart(fig_vif, use_container_width=True)
+            col_v1, col_v2 = st.columns([3, 2])
+            with col_v1:
+                vif_plot = vif_data.dropna(subset=['VIF']).sort_values('VIF')
+                colors_vif = [
+                    '#1f77b4' if v < 5 else '#ff6b6b' if v < 10 else '#d62728'
+                    for v in vif_plot['VIF']
+                ]
+                fig_vif = go.Figure(go.Bar(
+                    x=vif_plot['VIF'].values,
+                    y=vif_plot['Biến'].values,
+                    orientation='h',
+                    marker_color=colors_vif,
+                    text=vif_plot['VIF'].round(2).values,
+                    textposition='outside'
+                ))
+                fig_vif.add_vline(x=5, line_dash='dash', line_color='#1f77b4', annotation_text='VIF = 5')
+                fig_vif.add_vline(x=10, line_dash='dash', line_color='#d62728', annotation_text='VIF = 10')
+                fig_vif.update_layout(title='VIF – Biến Numeric', xaxis_title='VIF Score', height=420)
+                st.plotly_chart(fig_vif, use_container_width=True)
 
-        with col_v2:
-            st.dataframe(vif_data, hide_index=True, height=380)
+            with col_v2:
+                st.dataframe(vif_data, hide_index=True, height=380)
 
-        st.markdown("#### 📌 Nhận xét & Gợi ý cho 4B")
+            st.markdown("#### 📌 Nhận xét & Gợi ý cho 4B")
 
-        high_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 10)]['Biến'].tolist()
-        med_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 5) & (vif_data['VIF'] < 10)]['Biến'].tolist()
-        ok_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] < 5)]['Biến'].tolist()
+            high_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 10)]['Biến'].tolist()
+            med_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 5) & (vif_data['VIF'] < 10)]['Biến'].tolist()
+            ok_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] < 5)]['Biến'].tolist()
 
-        if high_vif_list:
-            st.error(f"❌ **VIF ≥ 10 – nên loại ở 4B:** `{'`, `'.join(high_vif_list)}`")
-        if med_vif_list:
-            st.warning(f"⚠️ **VIF 5–10 – cần xem xét:** `{'`, `'.join(med_vif_list)}`")
-        if ok_vif_list:
-            st.success(f"✅ **VIF < 5 – an toàn:** `{'`, `'.join(ok_vif_list)}`")
+            if high_vif_list:
+                st.error(f"❌ **VIF ≥ 10 – nên loại ở 4B:** `{'`, `'.join(high_vif_list)}`")
+            if med_vif_list:
+                st.warning(f"⚠️ **VIF 5–10 – cần xem xét:** `{'`, `'.join(med_vif_list)}`")
+            if ok_vif_list:
+                st.success(f"✅ **VIF < 5 – an toàn:** `{'`, `'.join(ok_vif_list)}`")
 
-        st.session_state['high_vif_vars'] = high_vif_list
-        st.session_state['ok_vif_vars'] = ok_vif_list
+            st.session_state['high_vif_vars'] = high_vif_list
+            st.session_state['ok_vif_vars'] = ok_vif_list
 
     # =================================================
     # SUB-TAB 4B
