@@ -257,7 +257,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
 
     st.subheader("8. Word cloud từ title/description")
     image_path = Path("dashboard/images/wordcloud.png")
-    st.image(str(image_path), use_container_width=True)
+    st.image(str(image_path), width=1000)
     st.caption(
         "Word cloud trực quan hóa tần suất xuất hiện của các từ trong tiêu đề và mô tả video. "
         "Từ nào càng lớn nghĩa là xuất hiện càng nhiều, giúp nhận diện xu hướng chủ đề phổ biến." 

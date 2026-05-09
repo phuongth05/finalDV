@@ -139,13 +139,19 @@ def render_tab(filtered_df):
         st.info("Thiếu dữ liệu thời gian để hiển thị xu hướng.")
 
     st.markdown("### Phân bố độ dài video")
+
     if 'video_duration' in filtered_df.columns:
         duration_minutes = filtered_df['video_duration'] / 60
+        
+        # Tách outliers (>100 phút)
+        main_duration = duration_minutes[duration_minutes <= 100]
+        outliers = duration_minutes[duration_minutes > 100]
+        
         fig_duration = px.histogram(
-            duration_minutes,
+            main_duration,
             nbins=50,
             labels={'value': 'Thời lượng (phút)', 'count': 'Số video'},
-            title="Phân bố thời lượng video"
+            title="Phân bố thời lượng video (≤100 phút)"
         )
         fig_duration.update_layout(xaxis_title="Thời lượng (phút)", yaxis_title="Số video")
         st.plotly_chart(fig_duration, use_container_width=True)
@@ -153,5 +159,8 @@ def render_tab(filtered_df):
             "Phân bố thời lượng giúp nhìn mức độ phổ biến của các độ dài video. "
             "Vùng tập trung cao là khoảng thời lượng được đăng nhiều nhất." 
         )
+        
+        if len(outliers) > 0:
+            st.info(f"⚠️ {len(outliers)} video vượt quá 100 phút (outliers), không được hiển thị ở biểu đồ trên.")
     else:
         st.info("Thiếu dữ liệu thời lượng để hiển thị phân bố.")
