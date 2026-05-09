@@ -10,7 +10,7 @@ import re
 from dotenv import load_dotenv
 import os
 
-def _build_dataframe_profile(filtered_df: pd.DataFrame, max_columns: int = 40, max_preview_rows: int = 3):
+def _build_dataframe_profile(filtered_df: pd.DataFrame, max_columns: int = 40):
     """Tạo bản tóm tắt ngắn về dataframe để AI hiểu schema và nguồn gốc dữ liệu."""
     preview_columns = filtered_df.columns.tolist()[:max_columns]
     dtype_map = {col: str(filtered_df[col].dtype) for col in preview_columns}
@@ -41,8 +41,6 @@ def _build_dataframe_profile(filtered_df: pd.DataFrame, max_columns: int = 40, m
         "tab6": "Confounding & Synergy: Simpson's paradox, coefficient before/after control, synergy jump.",
     }
 
-    preview_rows = filtered_df.head(max_preview_rows).to_dict(orient="records")
-
     return {
         "shape": [int(filtered_df.shape[0]), int(filtered_df.shape[1])],
         "columns": preview_columns,
@@ -50,8 +48,12 @@ def _build_dataframe_profile(filtered_df: pd.DataFrame, max_columns: int = 40, m
         "non_null_counts": non_null_map,
         "derived_columns_from_app_py": derived_columns,
         "tabs_reference": tab_guidance,
-        "sample_rows": preview_rows,
     }
+
+
+@st.cache_data(show_spinner=False)
+def _get_dataframe_profile(filtered_df: pd.DataFrame):
+    return _build_dataframe_profile(filtered_df)
 
 
 def _build_code_prompt(question: str, filtered_df: pd.DataFrame, dataframe_profile: dict) -> str:
@@ -125,47 +127,81 @@ Trình bày đẹp bằng Markdown.
 """
 
 
-@st.cache_resource
-def _load_history_from_log(log_dir: str = "data/ai_logs"):
-    """Parse log files from directory and reconstruct chat history. Cached."""
+@st.cache_data(show_spinner=False)
+def _resolve_history_dir(log_dir: str = "data/ai_logs"):
+    possible_paths = [
+        log_dir,
+        os.path.join(os.path.dirname(__file__), "..", "..", log_dir),
+        os.path.abspath(log_dir),
+    ]
+
+    for path in possible_paths:
+        if os.path.isdir(path):
+            return path
+    return None
+
+
+@st.cache_data(show_spinner=False)
+def _list_history_summaries(log_dir: str = "data/ai_logs", limit: int = 20):
+    """Return lightweight history metadata so the sidebar does not parse every message."""
+    summaries = []
+    actual_path = _resolve_history_dir(log_dir)
+    if not actual_path:
+        return summaries
+
+    log_files = [f for f in os.listdir(actual_path) if f.endswith(".jsonl")]
+    log_files.sort(key=lambda name: os.path.getmtime(os.path.join(actual_path, name)), reverse=True)
+
+    for log_file in log_files[:limit]:
+        file_path = os.path.join(actual_path, log_file)
+        preview = os.path.splitext(log_file)[0]
+        has_code = False
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                for line_index, line in enumerate(f):
+                    if not line.strip():
+                        continue
+
+                    entry = json.loads(line)
+                    if line_index == 0:
+                        preview = str(entry.get("content", preview))
+                    if entry.get("code") or entry.get("viz_code"):
+                        has_code = True
+                    if line_index >= 1:
+                        break
+        except Exception:
+            pass
+
+        summaries.append(
+            {
+                "path": file_path,
+                "preview": preview,
+                "has_code": has_code,
+                "updated_at": datetime.fromtimestamp(os.path.getmtime(file_path)),
+            }
+        )
+
+    return summaries
+
+
+@st.cache_data(show_spinner=False)
+def _load_conversation_from_log(file_path: str):
+    """Load one saved conversation from a single JSONL file."""
     messages = []
     try:
-        # Try different path variations
-        possible_paths = [
-            log_dir,
-            os.path.join(os.path.dirname(__file__), "..", "..", log_dir),
-            os.path.abspath(log_dir),
-        ]
-        
-        actual_path = None
-        for p in possible_paths:
-            if os.path.isdir(p):
-                actual_path = p
-                break
-        
-        if not actual_path:
-            return messages
-        
-        # Read all .jsonl files from the directory
-        log_files = sorted([f for f in os.listdir(actual_path) if f.endswith('.jsonl')])
-        
-        for log_file in log_files:
-            file_path = os.path.join(actual_path, log_file)
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    for line in f:
-                        if not line.strip():
-                            continue
-                        try:
-                            entry = json.loads(line)
-                            if "role" in entry and "content" in entry:
-                                messages.append(entry)
-                        except json.JSONDecodeError:
-                            pass
-            except Exception as e:
-                pass
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
 
-    except Exception as e:
+                if "role" in entry and "content" in entry:
+                    messages.append(entry)
+    except Exception:
         pass
 
     return messages
@@ -183,11 +219,15 @@ def render_tab(filtered_df):
         st.error("Chưa cấu hình API Key Groq hợp lệ.")
         return
 
-    dataframe_profile = _build_dataframe_profile(filtered_df)
-
     # ================= SESSION STATE =================
     if "messages" not in st.session_state:
-        st.session_state.messages = _load_history_from_log()
+        st.session_state.messages = []
+
+    if "selected_history_file" not in st.session_state:
+        st.session_state.selected_history_file = None
+
+    if "selected_history_messages" not in st.session_state:
+        st.session_state.selected_history_messages = []
 
     if "pending_code" not in st.session_state:
         st.session_state.pending_code = ""
@@ -201,78 +241,68 @@ def render_tab(filtered_df):
     if "pending_turn_id" not in st.session_state:
         st.session_state.pending_turn_id = 0
 
-    if "selected_message_idx" not in st.session_state:
-        st.session_state.selected_message_idx = None
-
     # ================= SIDEBAR HISTORY =================
     with st.sidebar:
         st.markdown("## 🕘 History")
-        
-        if st.session_state.messages:
-            # Display last 20 messages in reverse (newest first)
-            history_items = list(enumerate(reversed(st.session_state.messages[-20:])))
-            for display_idx, (actual_idx, msg) in enumerate(history_items):
-                if msg["role"] == "user":
-                    content_preview = msg['content'][:40]
-                    if len(msg['content']) > 40:
-                        content_preview += "..."
-                    
-                    col1, col2 = st.columns([4, 1])
-                    with col1:
-                        if st.button(f"👤 {content_preview}", key=f"hist_{actual_idx}_{display_idx}", use_container_width=True):
-                            st.session_state.selected_message_idx = len(st.session_state.messages) - 1 - actual_idx
+        history_items = _list_history_summaries()
+
+        if history_items:
+            for display_idx, item in enumerate(history_items):
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    button_label = f"👤 {item['preview'][:40]}"
+                    if len(item["preview"]) > 40:
+                        button_label += "..."
+
+                    if st.button(button_label, key=f"hist_{display_idx}", use_container_width=True):
+                        st.session_state.selected_history_file = item["path"]
+                        st.session_state.selected_history_messages = _load_conversation_from_log(item["path"])
+                        st.session_state.pending_code = ""
+                        st.session_state.pending_viz_code = ""
+                        st.session_state.pending_question = ""
+                        st.session_state.pending_turn_id += 1
+                        st.rerun()
+
+                with col2:
+                    if item["has_code"]:
+                        if st.button("↻", key=f"load_{display_idx}", help="Load this conversation's code"):
+                            conversation = _load_conversation_from_log(item["path"])
+                            assistant_msg = next((msg for msg in reversed(conversation) if msg.get("role") == "assistant"), {})
+                            st.session_state.selected_history_file = item["path"]
+                            st.session_state.selected_history_messages = conversation
+                            st.session_state.pending_code = assistant_msg.get("code", "")
+                            st.session_state.pending_viz_code = assistant_msg.get("viz_code", "")
+                            st.session_state.pending_question = assistant_msg.get("question", "")
+                            st.session_state.pending_turn_id += 1
                             st.rerun()
-                    
-                    # Show "Load" button next to history if it has code
-                    with col2:
-                        message_at_idx = st.session_state.messages[len(st.session_state.messages) - 1 - actual_idx]
-                        if message_at_idx.get("code"):
-                            if st.button("↻", key=f"load_{actual_idx}_{display_idx}", help="Load this conversation's code"):
-                                st.session_state.pending_code = message_at_idx.get("code", "")
-                                st.session_state.pending_viz_code = message_at_idx.get("viz_code", "")
-                                st.session_state.pending_question = message_at_idx.get("question", msg.get("content", ""))
-                                st.session_state.pending_turn_id += 1
-                                st.rerun()
         else:
             st.markdown("_No history yet_")
 
     # ================= CHAT HISTORY =================
-    # Only show history if a specific message is selected from sidebar
-    if st.session_state.selected_message_idx is not None:
+    selected_history = st.session_state.selected_history_messages
+
+    if selected_history:
         with st.spinner("⏳ Loading conversation..."):
-            # Display only the selected conversation (user message + assistant response)
-            selected_idx = st.session_state.selected_message_idx
-            
-            # User message is at selected_idx
-            if selected_idx < len(st.session_state.messages):
-                msg = st.session_state.messages[selected_idx]
-                with st.chat_message("user"):
+            for msg in selected_history:
+                with st.chat_message(msg["role"]):
                     st.markdown(msg["content"])
-            
-            # Assistant message is the next message after user message
-            assistant_idx = selected_idx + 1
-            if assistant_idx < len(st.session_state.messages) and st.session_state.messages[assistant_idx]["role"] == "assistant":
-                msg = st.session_state.messages[assistant_idx]
-                with st.chat_message("assistant"):
-                    st.markdown(msg["content"])
-                    
-                    if msg.get("code"):
-                        with st.expander("📝 Extraction Code"):
-                            st.code(msg["code"], language="python")
-                    
-                    if msg.get("viz_code"):
-                        with st.expander("🎨 Visualization Code"):
-                            st.code(msg["viz_code"], language="python")
+
+                    if msg["role"] == "assistant":
+                        if msg.get("code"):
+                            with st.expander("📝 Extraction Code"):
+                                st.code(msg["code"], language="python")
+
+                        if msg.get("viz_code"):
+                            with st.expander("🎨 Visualization Code"):
+                                st.code(msg["viz_code"], language="python")
         
         # Action buttons
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔄 Re-run", use_container_width=True):
                 try:
-                    # Get the assistant message with code
-                    assistant_idx = st.session_state.selected_message_idx + 1
-                    if assistant_idx < len(st.session_state.messages):
-                        assistant_msg = st.session_state.messages[assistant_idx]
+                    assistant_msg = next((msg for msg in reversed(selected_history) if msg.get("role") == "assistant"), None)
+                    if assistant_msg:
                         code_to_run = assistant_msg.get("code", "")
                         viz_code_to_run = assistant_msg.get("viz_code", "")
                         question_text = assistant_msg.get("question", "")
@@ -338,19 +368,38 @@ def render_tab(filtered_df):
         
         with col2:
             if st.button("✨ Start New Chat", use_container_width=True):
-                st.session_state.selected_message_idx = None
+                st.session_state.messages = []
+                st.session_state.selected_history_file = None
+                st.session_state.selected_history_messages = []
                 st.session_state.pending_code = ""
                 st.session_state.pending_viz_code = ""
                 st.session_state.pending_question = ""
                 st.rerun()
     else:
         # No history selected - blank chat for new conversation
-        st.markdown("_💬 Ready for new analysis. Type your question below._")
+        if st.session_state.messages:
+            for msg in st.session_state.messages:
+                with st.chat_message(msg["role"]):
+                    st.markdown(msg["content"])
+
+                    if msg["role"] == "assistant":
+                        if msg.get("code"):
+                            with st.expander("📝 Extraction Code"):
+                                st.code(msg["code"], language="python")
+
+                        if msg.get("viz_code"):
+                            with st.expander("🎨 Visualization Code"):
+                                st.code(msg["viz_code"], language="python")
+        else:
+            st.markdown("_💬 Ready for new analysis. Type your question below._")
 
     # ================= CHAT INPUT =================
     q = st.chat_input("Hỏi AI phân tích dữ liệu...")
 
     if q:
+        dataframe_profile = _get_dataframe_profile(filtered_df)
+        st.session_state.selected_history_file = None
+        st.session_state.selected_history_messages = []
         st.session_state.pending_question = q
         st.session_state.pending_turn_id += 1
         st.session_state.messages.append({
