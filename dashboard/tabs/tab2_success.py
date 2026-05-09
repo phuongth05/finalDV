@@ -56,7 +56,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
     )
 
     # --- BIỂU ĐỒ 1.2: DENSITY HEATMAP ---
-    st.subheader("2. Ma trận Thành công: Mật độ phân bổ Video")
+    st.subheader("2. Ma trận mật độ phân bổ tương tác dựa trên lượt xem")
 
     df_q1['engagement_rate'] = ((df_q1['video_like_count'] + df_q1['video_comment_count']) / df_q1['video_view_count']) * 100
     df_q1_clean = df_q1[(df_q1['engagement_rate'] > 0) & (df_q1['video_view_count'] > 0) & (df_q1['engagement_rate'] < 100)]
@@ -75,8 +75,9 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         labels={
             'log_view': 'Lượt xem (Log)',
             'log_er': 'Tỷ lệ Tương tác (%) (Log)',
+            'count': "Số lượng"
         },
-        title="2D Density Heatmap: Đa số video rơi vào nhóm 'Viral' hay 'Mì ăn liền'?"
+
     )
     st.plotly_chart(fig2, use_container_width=True)
     st.caption(

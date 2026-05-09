@@ -120,7 +120,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
         "từ đó gợi ý thời điểm đăng bài hiệu quả hơn." 
     )
 
-    st.subheader("4. Độ dài video và hiệu suất (scatter)")
+    st.subheader("4. Độ dài video và hiệu suất")
     df_duration = filtered_df.dropna(subset=['video_duration', 'video_view_count']).copy()
     df_duration = df_duration[df_duration['video_duration'] > 0]
     if df_duration.empty:
