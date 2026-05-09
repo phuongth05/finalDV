@@ -19,7 +19,6 @@ from tab_contexts import (
     _build_tab3_context,
     _build_tab4_context,
     _build_tab5_context,
-    _build_tab6_context,
     _render_tab_chatbot,
 )
 
@@ -28,7 +27,6 @@ from tabs.tab2_success import render_tab as render_tab2
 from tabs.tab3_audience import MUSIC_GENRES, render_tab as render_tab3
 from tabs.tab4_timing import render_tab as render_tab4
 from tabs.tab5_modeling import render_tab as render_tab5
-from tabs.tab6_confounders import render_tab as render_tab6
 from tabs.tab7_ai import render_tab as render_tab7
 
 
@@ -548,13 +546,12 @@ if filtered_df.empty:
     st.stop()
 
 # ================= TABS =================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab1, tab2, tab3, tab4, tab5,tab7 = st.tabs([
     "Tổng quan",
     "Định nghĩa thành công",
     "Hành vi người dùng",
     "Nền tảng & Thuật toán",
     "Mô hình hóa",
-    "Yếu tố gây nhiễu",
     "Chatbot AI"
     ])
 
@@ -585,10 +582,7 @@ with tab5:
     render_tab5(filtered_df)
     _render_tab_chatbot("tab5", "Tab 5 - Mô hình hóa", _build_tab5_context, filtered_df, active_cross_filters)
 
-# ================= TAB 6 =================
-with tab6:
-    render_tab6(filtered_df)
-    _render_tab_chatbot("tab6", "Tab 6 - Confounding & Synergy", _build_tab6_context, filtered_df, active_cross_filters)
+
 
 # ================= CHATBOT =================
 with tab7:
