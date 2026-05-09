@@ -879,10 +879,94 @@ def _stepwise_context(df_model, genre_dummy_cols):
         "ok_vif_vars": ok_vif_list,
     }
 
+def _simpson_context(df_model: pd.DataFrame):
+    """
+    Context cho Tab 5C: Simpson/Confounding
+    Hard-code:
+      Y = log_views
+      X = channel_video_count
+      Z = channel_subscriber_count
+    Dùng standardized coef giống tab6a.
+    """
+    target = "log_views"
+    var_main = "channel_video_count"
+    var_confounder = "channel_subscriber_count"
+
+    need = [target, var_main, var_confounder]
+    missing = [c for c in need if c not in df_model.columns]
+    if missing:
+        return {"status": "missing_vars", "missing": missing}
+
+    d = (
+        df_model[need]
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+        .copy()
+    )
+
+    n = int(len(d))
+    if n < 30:
+        return {"status": "insufficient_data", "n": n}
+
+    # chuẩn hoá X và Z để lấy Std Coef
+    scaler = StandardScaler()
+    X_scaled = pd.DataFrame(
+        scaler.fit_transform(d[[var_main, var_confounder]]),
+        columns=[var_main, var_confounder],
+        index=d.index,
+    )
+    y = pd.to_numeric(d[target], errors="coerce")
+
+    # Model đơn: Y ~ X
+    m_single = sm.OLS(
+        y, sm.add_constant(X_scaled[[var_main]], has_constant="add")
+    ).fit()
+    coef_single = _safe_float(m_single.params.get(var_main))
+    p_single = _safe_float(m_single.pvalues.get(var_main))
+    r2_single = _safe_float(m_single.rsquared)
+
+    # Model đa: Y ~ X + Z
+    m_multi = sm.OLS(
+        y, sm.add_constant(X_scaled[[var_main, var_confounder]], has_constant="add")
+    ).fit()
+    coef_multi = _safe_float(m_multi.params.get(var_main))
+    p_multi = _safe_float(m_multi.pvalues.get(var_main))
+    r2_multi = _safe_float(m_multi.rsquared)
+
+    flip_detected = None
+    pct_change = None
+    if coef_single is not None and coef_multi is not None:
+        flip_detected = (np.sign(coef_single) != np.sign(coef_multi))
+        if abs(coef_single) > 1e-12:
+            pct_change = _safe_float(abs((coef_multi - coef_single) / coef_single))
+
+    corr_xz = _safe_float(d[[var_main, var_confounder]].corr().iloc[0, 1])
+
+    return {
+        "status": "ok",
+        "n": n,
+        "setup": {"y": target, "x": var_main, "z": var_confounder},
+        "coef_single_std": coef_single,
+        "coef_multi_std": coef_multi,
+        "p_single": p_single,
+        "p_multi": p_multi,
+        "r2_single": r2_single,
+        "r2_multi": r2_multi,
+        "pct_change": pct_change,         # tỷ lệ đổi hệ số X sau khi thêm Z
+        "flip_detected": flip_detected,   # có đảo dấu hay không
+        "corr_x_z": corr_xz,              # tương quan X-Z (giúp giải thích confounding)
+        "interpretation": (
+            "So sánh Std Coef của channel_video_count khi chạy đơn biến "
+            "và khi kiểm soát channel_subscriber_count để phát hiện confounding."
+        ),
+    }
+
 
 def _build_tab5_context(frame, active_cross_filters):
     df_model, genre_dummy_cols = _build_df_model(frame)
     payload = _stepwise_context(df_model, genre_dummy_cols)
+    payload["simpson_confounding"] = _simpson_context(df_model)
+
     payload.update(
         {
             "tab": 5,
