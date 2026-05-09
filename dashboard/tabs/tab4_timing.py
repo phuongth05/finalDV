@@ -80,7 +80,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     # --- BIỂU ĐỒ 3.2: LINE/RADAR CHART - CUNG VS CẦU ---
-    st.subheader("3. Độ lệch pha(Bar & Line Chart): Số lượng Video đăng (Cung) và Tổng View (Cầu) theo Giờ đăng")
+    st.subheader("3. Độ lệch pha(Bar & Line Chart): Số lượng của số Video đăng và Tổng View theo Giờ đăng")
     df_line_radar = apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_trend")
     df_q3_line_radar = df_line_radar.dropna(subset=['video_view_count', 'hour']).copy()
 
@@ -92,11 +92,11 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     fig8 = make_subplots(specs=[[{"secondary_y": True}]])
 
     fig8.add_trace(
-        go.Bar(x=df_trend['hour'], y=df_trend['video_count'], name="Số lượng Video đăng (Cung)", marker_color='rgb(158,202,225)'),
+        go.Bar(x=df_trend['hour'], y=df_trend['video_count'], name="Số lượng Video đăng", marker_color='rgb(158,202,225)'),
         secondary_y=False,
     )
     fig8.add_trace(
-        go.Scatter(x=df_trend['hour'], y=df_trend['total_views'], name="Tổng lượt xem (Cầu)", marker_color='rgb(227,26,28)', mode='lines+markers', line=dict(width=3)),
+        go.Scatter(x=df_trend['hour'], y=df_trend['total_views'], name="Tổng lượt xem", marker_color='rgb(227,26,28)', mode='lines+markers', line=dict(width=3)),
         secondary_y=True,
     )
 
@@ -115,8 +115,8 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
     sync_chart_selection("cross_trend", trend_event)
     st.caption(
-        "Cột xanh thể hiện số video được đăng (cung), đường đỏ là tổng lượt xem (cầu). "
-        "Khoảng cách giữa hai đường cho biết nơi cung thấp nhưng cầu cao hoặc ngược lại, "
+        "Cột xanh thể hiện số video được đăng, đường đỏ là tổng lượt xem. "
+        "Khoảng cách giữa hai đường cho biết giờ xem có nhiều người xem nhưng số video được đăng ít hoặc ngược lại, "
         "từ đó gợi ý thời điểm đăng bài hiệu quả hơn." 
     )
 
@@ -169,7 +169,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
         )
 
     # --- BIỂU ĐỒ 3.3: 2D DENSITY CONTOUR PLOT ---
-    st.subheader("6. Biểu đồ Đường đồng mức: Sự kết hợp hoàn hảo giữa Thời lượng và Lượt xem")
+    st.subheader("6. Bản đồ mật độ: Tương quan giữa Thời lượng và Lượt xem")
 
     df_contour = df_q3[df_q3['video_duration'] > 0].copy()
 
@@ -185,18 +185,18 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             'log_duration': 'Thời lượng video (giây - Log)',
             'log_views': 'Lượt xem (Log)'
         },
-        title="2D Density Contour: Vùng 'Đỉnh núi' tập trung nhiều view nhất"
+        title="Mật độ phân bố video theo thời lượng và lượt xem"
     )
     fig9.update_traces(contours_coloring="fill", contours_showlabels=True)
     st.plotly_chart(fig9, use_container_width=True)
     st.caption(
-        "Các vòng đồng mức biểu thị mật độ video theo thời lượng và lượt xem (đã log). "
-        "Vùng đậm nhất là nơi tập trung nhiều video, thường đại diện cho độ dài phổ biến và hiệu quả. "
-        "Biểu đồ này giúp ước lượng khoảng thời lượng phù hợp để tối ưu lượt xem." 
+    "Biểu đồ cho thấy khu vực tập trung nhiều video nhất dựa trên thời lượng và lượt xem. "
+    "Vùng màu đậm nhất (đỉnh mật độ) chính là 'điểm rơi' phổ biến, giúp xác định khoảng thời lượng 'vàng' "
+    "mà đa số các video đang áp dụng để tối ưu hóa lượt xem."
     )
 
     # --- BIỂU ĐỒ 3.7: BAR CHART CHO NLP (TỪ KHÓA TRONG TITLE) ---
-    st.subheader("7. Sức mạnh Từ khóa trong Tiêu đề (Định dạng nhạc)")
+    st.subheader("7. Yếu tố Từ khóa trong Tiêu đề (Định dạng nhạc)")
     df_bar = apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_keywords")
     df_q3_bar = df_bar.dropna(subset=['video_view_count', 'video_title']).copy()
 

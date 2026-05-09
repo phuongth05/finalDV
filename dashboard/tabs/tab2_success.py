@@ -86,7 +86,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
     )
 
     # --- BIỂU ĐỒ 1.3: LOLLIPOP CHART ---
-    st.subheader("3. Top 10 Kênh có Tỷ lệ Tương tác (Engagement Rate) cao nhất")
+    st.subheader("3. Top 10 Kênh có Tỷ lệ Tương tác cao nhất")
     df_lollipop = apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_lollipop")
     df_q1_lollipop = df_lollipop.dropna(subset=['video_view_count', 'video_like_count', 'video_comment_count']).copy()
 
