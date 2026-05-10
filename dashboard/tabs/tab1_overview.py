@@ -302,7 +302,7 @@ def render_tab(filtered_df):
 
                 st.caption(
                     "Kích thước bong bóng thể hiện thời lượng của video. "
-                    "Đây thường là các video tổng hợp (mashup), lofi, hoặc phát trực tiếp (livestream)."
+                    "Đây thường là các video nhạc không lời hoặc nhạc hòa tấu."
                 )
             else:
                 st.warning("Thiếu cột 'video_title' để vẽ biểu đồ bong bóng cho các video ngoại lai.")
