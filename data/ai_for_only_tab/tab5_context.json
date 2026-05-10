@@ -20,39 +20,39 @@
   "vif_analysis": [
     {
       "feature": "video_duration",
-      "vif": 1.3763688390004118
+      "vif": 1.3682164695754906
     },
     {
       "feature": "video_tags_count",
-      "vif": 3.68076198563515
+      "vif": 4.0072162280688035
     },
     {
       "feature": "title_length",
-      "vif": 6.803294509907236
+      "vif": 6.515325858414649
     },
     {
       "feature": "description_length",
-      "vif": 3.2206517033193545
+      "vif": 2.949361269168151
     },
     {
       "feature": "channel_subscriber_count",
-      "vif": 14.289313557855111
+      "vif": 14.317816557814963
     },
     {
       "feature": "channel_view_count",
-      "vif": 14.415857659447596
+      "vif": 14.43577084057142
     },
     {
       "feature": "channel_video_count",
-      "vif": 3.156133472559632
+      "vif": 3.1562469642578352
     },
     {
       "feature": "hour",
-      "vif": 3.9802833257521826
+      "vif": 3.965670817384264
     },
     {
       "feature": "video_age_days",
-      "vif": 2.978433132249199
+      "vif": 2.9623134081769407
     }
   ],
   "removed_variables": [
@@ -73,8 +73,8 @@
     "title_length"
   ],
   "model_results": {
-    "r2": 0.390586855252374,
-    "adjusted_r2": 0.38778391645605703,
+    "r2": 0.3898756977337571,
+    "adjusted_r2": 0.3870694880349064,
     "selected_features": [
       "is_licensed",
       "has_caption",
@@ -97,14 +97,14 @@
       "video_tags_count",
       "genre_Nhạc sàn",
       "genre_Không lời",
-      "description_length",
-      "genre_Dân ca",
       "genre_Lofi",
+      "genre_Dân ca",
       "genre_Bolero",
       "genre_Trữ tình",
       "is_weekend",
       "genre_Cải lương",
       "channel_video_count",
+      "description_length",
       "is_cover",
       "genre_Indie"
     ],
@@ -127,51 +127,51 @@
   "factor_importance": [
     {
       "feature": "is_licensed",
-      "std_coef": 1.2745630217830815,
-      "p_value": 2.7470034767518463e-244,
-      "abs_coef": 1.2745630217830815
+      "std_coef": 1.276274083284693,
+      "p_value": 1.2183579785414144e-243,
+      "abs_coef": 1.276274083284693
     },
     {
       "feature": "video_age_days",
-      "std_coef": 0.7872135260240445,
-      "p_value": 4.5433580372985016e-104,
-      "abs_coef": 0.7872135260240445
+      "std_coef": 0.7868466834871876,
+      "p_value": 7.780330478017456e-104,
+      "abs_coef": 0.7868466834871876
     },
     {
       "feature": "has_caption",
-      "std_coef": 0.5988182661903151,
-      "p_value": 1.4413543211936634e-59,
-      "abs_coef": 0.5988182661903151
+      "std_coef": 0.6076286708123574,
+      "p_value": 4.615357485051851e-61,
+      "abs_coef": 0.6076286708123574
     },
     {
       "feature": "genre_Khác",
-      "std_coef": 0.5516257258218518,
-      "p_value": 1.0490837188306226e-39,
-      "abs_coef": 0.5516257258218518
+      "std_coef": 0.547385218851928,
+      "p_value": 4.6993729521123574e-39,
+      "abs_coef": 0.547385218851928
     },
     {
       "feature": "is_for_kids",
-      "std_coef": 0.4709563371310345,
-      "p_value": 8.647090013323041e-37,
-      "abs_coef": 0.4709563371310345
+      "std_coef": 0.4647183163983407,
+      "p_value": 5.955386427106778e-36,
+      "abs_coef": 0.4647183163983407
     },
     {
       "feature": "video_duration",
-      "std_coef": 0.45579659168967246,
-      "p_value": 4.815791180098975e-34,
-      "abs_coef": 0.45579659168967246
+      "std_coef": 0.45354812905002506,
+      "p_value": 1.084123057396687e-33,
+      "abs_coef": 0.45354812905002506
     },
     {
       "feature": "genre_Nhạc trẻ",
-      "std_coef": 0.42191562104930735,
-      "p_value": 2.8073242060924492e-31,
-      "abs_coef": 0.42191562104930735
+      "std_coef": 0.4201106317961823,
+      "p_value": 5.304967721029881e-31,
+      "abs_coef": 0.4201106317961823
     },
     {
       "feature": "genre_Rap",
-      "std_coef": 0.39425618107397076,
-      "p_value": 1.548649329804033e-28,
-      "abs_coef": 0.39425618107397076
+      "std_coef": 0.3930878898281185,
+      "p_value": 2.4506893745071504e-28,
+      "abs_coef": 0.3930878898281185
     }
   ],
   "statistical_interpretation": {
@@ -180,53 +180,53 @@
     "positive_effects": [
       {
         "feature": "is_licensed",
-        "std_coef": 1.2745630217830815,
-        "p_value": 2.7470034767518463e-244,
-        "abs_coef": 1.2745630217830815
+        "std_coef": 1.276274083284693,
+        "p_value": 1.2183579785414144e-243,
+        "abs_coef": 1.276274083284693
       },
       {
         "feature": "video_age_days",
-        "std_coef": 0.7872135260240445,
-        "p_value": 4.5433580372985016e-104,
-        "abs_coef": 0.7872135260240445
+        "std_coef": 0.7868466834871876,
+        "p_value": 7.780330478017456e-104,
+        "abs_coef": 0.7868466834871876
       },
       {
         "feature": "has_caption",
-        "std_coef": 0.5988182661903151,
-        "p_value": 1.4413543211936634e-59,
-        "abs_coef": 0.5988182661903151
+        "std_coef": 0.6076286708123574,
+        "p_value": 4.615357485051851e-61,
+        "abs_coef": 0.6076286708123574
       },
       {
         "feature": "genre_Khác",
-        "std_coef": 0.5516257258218518,
-        "p_value": 1.0490837188306226e-39,
-        "abs_coef": 0.5516257258218518
+        "std_coef": 0.547385218851928,
+        "p_value": 4.6993729521123574e-39,
+        "abs_coef": 0.547385218851928
       },
       {
         "feature": "is_for_kids",
-        "std_coef": 0.4709563371310345,
-        "p_value": 8.647090013323041e-37,
-        "abs_coef": 0.4709563371310345
+        "std_coef": 0.4647183163983407,
+        "p_value": 5.955386427106778e-36,
+        "abs_coef": 0.4647183163983407
       }
     ],
     "negative_effects": [
       {
         "feature": "posted_evening",
-        "std_coef": -0.2892444054370776,
-        "p_value": 4.53493563523548e-16,
-        "abs_coef": 0.2892444054370776
+        "std_coef": -0.29236122156207417,
+        "p_value": 2.225198981019797e-16,
+        "abs_coef": 0.29236122156207417
       },
       {
         "feature": "genre_Nhạc cụ",
-        "std_coef": -0.17966406193799145,
-        "p_value": 4.778384587671157e-07,
-        "abs_coef": 0.17966406193799145
+        "std_coef": -0.18329429034467215,
+        "p_value": 2.7926749995240905e-07,
+        "abs_coef": 0.18329429034467215
       },
       {
         "feature": "is_weekend",
-        "std_coef": -0.110784879311428,
-        "p_value": 0.001078962318952444,
-        "abs_coef": 0.110784879311428
+        "std_coef": -0.110105716271248,
+        "p_value": 0.0011652634782910898,
+        "abs_coef": 0.110105716271248
       }
     ]
   },
@@ -380,72 +380,72 @@
     },
     {
       "Step": 22,
-      "Action": "➕ description_length",
-      "p-value": 0.0004,
-      "R²": 0.3828,
+      "Action": "➕ genre_Lofi",
+      "p-value": 0.0007,
+      "R²": 0.3826,
       "Số biến": 22
     },
     {
       "Step": 23,
       "Action": "➕ genre_Dân ca",
-      "p-value": 0.0004,
-      "R²": 0.3839,
+      "p-value": 0.0003,
+      "R²": 0.3838,
       "Số biến": 23
     },
     {
       "Step": 24,
-      "Action": "➕ genre_Lofi",
-      "p-value": 0.0005,
+      "Action": "➕ genre_Bolero",
+      "p-value": 0.0004,
       "R²": 0.385,
       "Số biến": 24
     },
     {
       "Step": 25,
-      "Action": "➕ genre_Bolero",
-      "p-value": 0.0003,
-      "R²": 0.3862,
+      "Action": "➕ genre_Trữ tình",
+      "p-value": 0.0014,
+      "R²": 0.3859,
       "Số biến": 25
     },
     {
       "Step": 26,
-      "Action": "➕ genre_Trữ tình",
-      "p-value": 0.0009,
-      "R²": 0.3872,
+      "Action": "➕ is_weekend",
+      "p-value": 0.0016,
+      "R²": 0.3868,
       "Số biến": 26
     },
     {
       "Step": 27,
-      "Action": "➕ is_weekend",
-      "p-value": 0.0014,
-      "R²": 0.3881,
+      "Action": "➕ genre_Cải lương",
+      "p-value": 0.0019,
+      "R²": 0.3877,
       "Số biến": 27
     },
     {
       "Step": 28,
-      "Action": "➕ genre_Cải lương",
-      "p-value": 0.0016,
-      "R²": 0.389,
+      "Action": "➕ channel_video_count",
+      "p-value": 0.0063,
+      "R²": 0.3884,
       "Số biến": 28
     },
     {
       "Step": 29,
-      "Action": "➕ channel_video_count",
-      "p-value": 0.0094,
-      "R²": 0.3896,
+      "Action": "➕ description_length",
+      "p-value": 0.0144,
+      "R²": 0.3889,
       "Số biến": 29
     },
     {
       "Step": 30,
       "Action": "➕ is_cover",
-      "p-value": 0.0149,
-      "R²": 0.3902,
+      "p-value": 0.0127,
+      "R²": 0.3895,
       "Số biến": 30
     },
     {
       "Step": 31,
       "Action": "➕ genre_Indie",
-      "p-value": 0.032,
-      "R²": 0.3906,
+      "p-value": 0.0341,
+      "R²": 0.3899,
       "Số biến": 31
     }
   ],
@@ -471,8 +471,8 @@
     },
     "coef_single_std": 0.3150053336463967,
     "coef_multi_std": -0.6695760077333497,
-    "p_single": 2.532729023569069e-13,
-    "p_multi": 6.219957052830742e-27,
+    "p_single": 2.532729023569065e-13,
+    "p_multi": 6.219957052830826e-27,
     "r2_single": 0.007877932079130345,
     "r2_multi": 0.07065330653261725,
     "pct_change": 3.125602128645128,

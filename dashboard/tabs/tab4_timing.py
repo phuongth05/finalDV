@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_filters, sync_chart_selection):
-    st.header("Câu 3: Yếu tố nền tảng và tối ưu thuật toán")
+    st.info("Bên cạnh chất lượng nội dung và sự đầu tư của nhà phát hành, cách nền tảng phân phối và tối ưu thuật toán đang ảnh hưởng như thế nào đến khả năng lan tỏa của video?")
 
     df_q3 = filtered_df.dropna(subset=['video_view_count', 'hour', 'day']).copy()
 

@@ -168,7 +168,7 @@ def _ensure_genre_label(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_filters, sync_chart_selection):
-    st.header("Câu 2: Hành vi người dùng")
+    st.info("Người xem trên nền tảng đang thực sự quan tâm đến những loại nội dung âm nhạc nào, và xu hướng phát hành của các kênh có đang phản ánh đúng nhu cầu đó hay không?")
 
     # Tiền xử lý cho Q2
     df_q2 = filtered_df.dropna(subset=['video_view_count']).copy()

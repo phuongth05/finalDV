@@ -6,7 +6,9 @@ import streamlit as st
 
 
 def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync_chart_selection):
-    st.header("Câu 1: Thế nào là một video nhạc thành công: view cao, tương tác cao, hay cả hai?")
+    st.info(
+            "Một video âm nhạc thành công thường được hình thành từ những đặc điểm nào, và điều gì tạo ra sự khác biệt giữa các video có mức độ thành công khác nhau?"
+        )
 
     # Tiền xử lý dữ liệu cơ bản cho Câu 1
     df_bubble = apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_bubble")
