@@ -512,7 +512,7 @@ def render_tab(filtered_df: pd.DataFrame):
     # SUB-TAB 4B
     # =================================================
     with sub4b:
-        st.markdown("### 🔄 Hồi quy từng bước")
+        st.markdown("###Hồi quy từng bước")
         st.info(
             "Dùng cả biến **numeric** (đã lọc VIF) "
             "và các biến **encoding**."
