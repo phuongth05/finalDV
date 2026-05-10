@@ -207,7 +207,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     # --- BIỂU ĐỒ 2.3: TOP VIDEO THEO LƯỢT XEM / LƯỢT THÍCH ---
-    st.subheader("2. Top video theo lượt xem và lượt thích (hành vi người xem)")
+    st.subheader("2. Top video theo lượt xem và lượt thích")
     col_view, col_like = st.columns(2)
 
     with col_view:
@@ -261,7 +261,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     # --- BIỂU ĐỒ 2.4: PHÂN PHỐI THỂ LOẠI / FORMAT UPLOAD ---
-    st.subheader("3. Phân phối thể loại và format video được upload nhiều nhất (hành vi người đăng)")
+    st.subheader("3. Phân phối thể loại và chất lượng video được đăng tải")
     format_candidates = ['video_definition', 'video_dimension', 'format']
     genre_col = 'genre_label'
     format_col = next((col for col in format_candidates if col in df_q2.columns), None)
@@ -278,7 +278,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             genre_df,
             names='TheLoai',
             values='SoVideo',
-            title="Tỷ trọng thể loại upload (lọc từ title/description/tags)"
+            title="Tỷ trọng thể loại được đăng tải (lọc từ title/description/tags)"
         )
         fig_genre.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig_genre, use_container_width=True)
@@ -293,7 +293,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 format_df,
                 names='Format',
                 values='SoVideo',
-                title="Tỷ trọng format đăng tải"
+                title="Tỷ trọng chất lượng video đăng tải"
             )
             fig_format.update_traces(textposition='inside', textinfo='percent+label')
             st.plotly_chart(fig_format, use_container_width=True)
@@ -301,7 +301,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             st.info("Không tìm thấy cột format trong dữ liệu.")
 
     st.caption(
-        "Phân phối này phản ánh hành vi của người đăng: họ ưu tiên thể loại hoặc format nào khi đăng tải. "
+        "Phân phối này phản ánh hành vi của người đăng: Họ ưu tiên thể loại hoặc chất lượng video nào khi đăng tải. "
         "Nếu một nhóm chiếm tỷ trọng quá lớn, đây là dấu hiệu thị trường đang bị lệch về một hướng nội dung." 
     )
 
@@ -350,7 +350,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             secondary_y=True
         )
         fig_compare.update_layout(
-            title="So sánh tỷ lệ lượt xem theo thể loại (cột + đường)",
+            title="So sánh tỷ lệ lượt xem theo thể loại",
             xaxis_title="Thể loại",
             legend=dict(orientation='h', yanchor='bottom', y=-0.25, xanchor='center', x=0.5),
             clickmode='event+select',
@@ -365,13 +365,13 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
         )
         sync_chart_selection("cross_compare_genre", compare_event)
         st.caption(
-            "Cột thể hiện tỷ lệ upload, đường thể hiện tỷ lệ lượt xem theo cùng một nhóm. "
+            "Cột thể hiện tỷ lệ đăng tải, đường thể hiện tỷ lệ lượt xem theo cùng một nhóm. "
             "Nhìn vào khoảng cách giữa cột và đường để nhận ra nhóm nào vượt trội về mức độ quan tâm." 
         )
     else:
         st.info("Không có cột thể loại hoặc format để so sánh phân phối.")
 
-    st.subheader("5. Xu hướng thể loại theo thời gian (stacked area)")
+    st.subheader("5. Xu hướng thể loại theo thời gian")
     if 'video_publish_date' in df_q2.columns:
         df_time = df_q2.dropna(subset=['video_publish_date']).copy()
         df_time['month'] = df_time['video_publish_date'].dt.to_period('M').dt.to_timestamp()
