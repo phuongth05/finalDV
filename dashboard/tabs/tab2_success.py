@@ -15,7 +15,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
     df_q1 = df_bubble.dropna(subset=['video_view_count', 'video_like_count', 'video_comment_count']).copy()
 
     # --- BIỂU ĐỒ 1.1: BUBBLE CHART ---
-    st.subheader("1. View cao có đi kèm lượng fan tương tác mạnh?")
+    st.subheader("1. Lượt xem cao có đi kèm lượng người hâm mộ tương tác mạnh?")
     fig1 = px.scatter(
         df_q1,
         x='video_view_count',
@@ -34,7 +34,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
             'video_comment_count': 'Lượt bình luận',
             'video_licensed_content': 'Có bản quyền'
         },
-        title="Bubble Chart: Tương quan View, Like, Comment & Bản quyền"
+        title="Tương quan số lượt xem, lượt thích, bình luận và bản quyền"
     )
     fig1.update_traces(
         hovertemplate=(
@@ -76,10 +76,14 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         text_auto=True,
         labels={
             'log_view': 'Lượt xem (Log)',
-            'log_er': 'Tỷ lệ Tương tác (%) (Log)',
-            'count': "Số lượng"
+            'log_er': 'Tỷ lệ Tương tác (%) (Log)'
         },
 
+    )
+    fig2.update_layout(
+    coloraxis_colorbar=dict(
+        title='Số lượng'
+    )
     )
     st.plotly_chart(fig2, use_container_width=True)
     st.caption(
@@ -119,7 +123,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
     ))
 
     fig3.update_layout(
-        title="Lollipop Chart: Tỷ lệ tương tác (Like+Comment / View) của Top 10 Kênh",
+        title="Tỷ lệ tương tác ( Lượt thích + Bình luận / Lượt xem) của Top 10 Kênh",
         xaxis_title="Tỷ lệ tương tác",
         yaxis_title="Kênh",
         showlegend=False,
@@ -137,7 +141,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         "Biểu đồ này nhấn mạnh chất lượng tương tác thay vì chỉ nhìn vào tổng lượt xem." 
     )
 
-    st.subheader("4. So sánh nhóm view cao và view thấp theo các đặc trưng")
+    st.subheader("4. So sánh nhóm số lượt xem cao và lượt xem thấp theo các đặc trưng")
     df_compare_source = apply_cross_filters(base_filtered_df, active_cross_filters)
     if df_compare_source.empty or 'video_view_count' not in df_compare_source.columns:
         st.info("Không đủ dữ liệu để so sánh nhóm view cao và view thấp.")
@@ -151,8 +155,8 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
             ('video_like_count', 'Lượt thích'),
             ('video_comment_count', 'Bình luận'),
             ('video_tags_count', 'Số thẻ'),
-            ('channel_subscriber_count', 'Subscriber kênh'),
-            ('channel_view_count', 'Tổng view kênh'),
+            ('channel_subscriber_count', 'Số người đăng kí kênh'),
+            ('channel_view_count', 'Tổng lượt xem kênh'),
             ('channel_video_count', 'Số video kênh'),
             ('title_length', 'Độ dài tiêu đề'),
             ('video_duration', 'Thời lượng (giây)')
@@ -184,8 +188,8 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
             fig_compare.update_yaxes(type='log', title_text='Giá trị (log)')
             st.plotly_chart(fig_compare, use_container_width=True)
             st.caption(
-                "Biểu đồ so sánh giá trị trung bình của các đặc trưng giữa nhóm view cao (top 20%) "
-                "và nhóm view thấp (bottom 20%) trên thang log để dễ nhìn các chênh lệch lớn. "
+                "Biểu đồ so sánh giá trị trung bình của các đặc trưng giữa nhóm có lượt xem cao (top 20%) "
+                "và nhóm có lượt xem thấp (bottom 20%) trên thang log để dễ nhìn các chênh lệch lớn. "
                 "Đặc trưng có khoảng cách lớn giữa hai nhóm là ứng viên có tác động mạnh đến hiệu quả." 
             )
         else:
