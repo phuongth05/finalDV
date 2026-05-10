@@ -1,5 +1,8 @@
 import streamlit as st
+import numpy as np
+import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 
 def _fmt_k(value, decimals=0):
@@ -10,6 +13,118 @@ def _fmt_k(value, decimals=0):
     sign = '-' if v < 0 else ''
     v_abs = abs(v)
     return f"{sign}{v_abs/1000:,.{decimals}f}K"
+
+
+def _pack_bubbles(values, padding=0.08):
+    values = np.array(values, dtype=float)
+    if values.size == 0:
+        return [], np.array([])
+    if values.max() <= 0:
+        values = np.ones_like(values)
+
+    norm = values / values.max()
+    radii = np.sqrt(norm) * 0.9 + 0.1
+    positions = []
+    placed_radii = []
+
+    for idx, radius in enumerate(radii):
+        if idx == 0:
+            positions.append((0.0, 0.0))
+            placed_radii.append(radius)
+            continue
+
+        placed = False
+        for step in range(2500):
+            angle = step * 0.55
+            spiral = 0.08 * step
+            x = spiral * np.cos(angle)
+            y = spiral * np.sin(angle)
+
+            ok = True
+            for (px, py), pr in zip(positions, placed_radii):
+                if (x - px) ** 2 + (y - py) ** 2 < (radius + pr + padding) ** 2:
+                    ok = False
+                    break
+
+            if ok:
+                positions.append((x, y))
+                placed_radii.append(radius)
+                placed = True
+                break
+
+        if not placed:
+            positions.append((spiral * np.cos(angle), spiral * np.sin(angle)))
+            placed_radii.append(radius)
+
+    return positions, np.array(placed_radii)
+
+
+def _short_label(text, max_len=18):
+    text = str(text)
+    return text if len(text) <= max_len else text[:max_len].rstrip() + "..."
+
+
+def _packed_bubble_chart(df, value_col, label_col, title, hover_cols=None, hover_labels=None):
+    values = pd.to_numeric(df[value_col], errors="coerce").fillna(0).tolist()
+    labels = df[label_col].astype(str).tolist()
+    positions, radii = _pack_bubbles(values)
+
+    if len(radii) == 0:
+        return go.Figure()
+
+    sizes = (radii / max(radii)) * 70 + 20
+    x_vals = [pos[0] for pos in positions]
+    y_vals = [pos[1] for pos in positions]
+
+    hovertext = labels
+    customdata = None
+    hovertemplate = "<b>%{hovertext}</b><br>Giá trị: %{marker.color:,.0f}<extra></extra>"
+
+    if hover_cols:
+        hover_labels = hover_labels or hover_cols
+        hover_values = []
+        for col in hover_cols:
+            if col in df.columns:
+                hover_values.append(pd.to_numeric(df[col], errors="coerce").fillna(0).to_numpy())
+            else:
+                hover_values.append(np.zeros(len(df)))
+
+        if hover_values:
+            customdata = np.column_stack(hover_values)
+            hover_lines = "<br>".join(
+                f"{label}: %{{customdata[{idx}]:,.0f}}" for idx, label in enumerate(hover_labels)
+            )
+            hovertemplate = f"<b>%{{hovertext}}</b><br>{hover_lines}<extra></extra>"
+
+    scatter_kwargs = dict(
+        x=x_vals,
+        y=y_vals,
+        mode='markers+text',
+        text=[_short_label(label) for label in labels],
+        textposition='middle center',
+        textfont=dict(color="#FF9D3C", size=12),
+        marker=dict(
+            size=sizes,
+            color=values,
+            colorscale='Blues',
+            showscale=False,
+            line=dict(color='white', width=1),
+            opacity=0.9
+        ),
+        hovertext=hovertext,
+        hovertemplate=hovertemplate
+    )
+    if customdata is not None:
+        scatter_kwargs["customdata"] = customdata
+
+    fig = go.Figure(go.Scatter(**scatter_kwargs))
+    fig.update_layout(
+        title=title,
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        margin=dict(l=10, r=10, t=50, b=10)
+    )
+    return fig
 
 
 def render_tab(filtered_df):
@@ -61,7 +176,7 @@ def render_tab(filtered_df):
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
         "Biểu đồ cho thấy phân bố số video theo lượt xem. Trục X là lượt xem, trục Y là số video. "
-        "Nếu phân bố lệch phải, thị trường có nhiều video có lượt xem thấp và ít video bứt phá." 
+        "Nếu phân bố lệch phải, thị trường có nhiều video lượt xem thấp và ít video bứt phá." 
     )
 
     st.markdown("### Tổng quan kênh và bản quyền")
@@ -145,7 +260,8 @@ def render_tab(filtered_df):
         
         # Tách outliers (>100 phút)
         main_duration = duration_minutes[duration_minutes <= 100]
-        outliers = duration_minutes[duration_minutes > 100]
+        outliers_df = filtered_df.loc[duration_minutes > 100].copy()
+        outliers_df['duration_minutes'] = duration_minutes[duration_minutes > 100].values
         
         fig_duration = px.histogram(
             main_duration,
@@ -160,7 +276,36 @@ def render_tab(filtered_df):
             "Vùng tập trung cao là khoảng thời lượng được đăng nhiều nhất." 
         )
         
-        if len(outliers) > 0:
-            st.info(f"⚠️ {len(outliers)} video vượt quá 100 phút (outliers), không được hiển thị ở biểu đồ trên.")
+        if len(outliers_df) > 0:
+            st.info(f"⚠️ Phát hiện {len(outliers_df)} video vượt quá 100 phút.")
+
+            if 'video_title' in outliers_df.columns:
+                top_outliers = outliers_df.sort_values('duration_minutes', ascending=True).tail(20).copy()
+
+                hover_cols = ['duration_minutes']
+                hover_labels = ['Thời lượng (phút)']
+
+                if 'video_view_count' in top_outliers.columns:
+                    top_outliers['video_view_count'] = top_outliers['video_view_count'].fillna(0)
+                    hover_cols.append('video_view_count')
+                    hover_labels.append('Lượt xem')
+
+                fig_outliers = _packed_bubble_chart(
+                    top_outliers,
+                    value_col='duration_minutes',
+                    label_col='video_title',
+                    title=f"Top {len(top_outliers)} video có thời lượng dài nhất",
+                    hover_cols=hover_cols,
+                    hover_labels=hover_labels
+                )
+                st.plotly_chart(fig_outliers, use_container_width=True)
+
+                st.caption(
+                    "Kích thước bong bóng thể hiện thời lượng của video. "
+                    "Đây thường là các video tổng hợp (mashup), lofi, hoặc phát trực tiếp (livestream)."
+                )
+            else:
+                st.warning("Thiếu cột 'video_title' để vẽ biểu đồ bong bóng cho các video ngoại lai.")
+        
     else:
         st.info("Thiếu dữ liệu thời lượng để hiển thị phân bố.")

@@ -122,7 +122,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     )
 
     fig8.update_layout(
-        title_text="Đối chiếu Số lượng Video phát hành và Tổng View theo Giờ",
+        title_text="Đối chiếu Số lượng Video phát hành và Tổng lượt xem theo Giờ",
         xaxis_title="Giờ trong ngày"
     )
     fig8.update_yaxes(title_text="Số lượng Video", secondary_y=False)
