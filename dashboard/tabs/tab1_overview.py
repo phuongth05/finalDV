@@ -61,7 +61,7 @@ def render_tab(filtered_df):
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
         "Biểu đồ cho thấy phân bố số video theo lượt xem. Trục X là lượt xem, trục Y là số video. "
-        "Nếu phân bố lệch phải, thị trường có nhiều video view thấp và ít video bứt phá." 
+        "Nếu phân bố lệch phải, thị trường có nhiều video có lượt xem thấp và ít video bứt phá." 
     )
 
     st.markdown("### Tổng quan kênh và bản quyền")
@@ -150,7 +150,7 @@ def render_tab(filtered_df):
         fig_duration = px.histogram(
             main_duration,
             nbins=50,
-            labels={'value': 'Thời lượng (phút)', 'count': 'Số video'},
+            labels={'value': 'Thời lượng (phút)', 'count': 'Số video','variable' : "Biến"},
             title="Phân bố thời lượng video (≤100 phút)"
         )
         fig_duration.update_layout(xaxis_title="Thời lượng (phút)", yaxis_title="Số video")
