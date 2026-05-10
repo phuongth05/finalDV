@@ -87,14 +87,7 @@ Nhiệm vụ:
 3. Không dùng print, không hiển thị ra màn hình trong khối 1.
 4. Khối 2 chỉ nên tập trung vào visualization, có thể dùng dữ liệu đã trích xuất hoặc dataframe phụ trợ cần thiết.
 5. Tránh code quá dài, tránh logic phức tạp không cần thiết.
-6. Nếu cần dùng logic theo tab, ưu tiên đúng vai trò:
-   - Tab 1: KPI, phân bố, top entities, trend.
-   - Tab 2: correlation, heatmap, top 20% vs bottom 20%.
-   - Tab 3: supply-demand, caption impact, audience segments.
-   - Tab 4: timing, duration, SEO/NLP, platform behavior.
-   - Tab 5: correlation, VIF, stepwise regression.
-   - Tab 6: confounding, Simpson's paradox, synergy.
-7. Trả về đúng 2 khối code, không thêm nội dung nào khác.
+6. Trả về đúng 2 khối code, không thêm nội dung nào khác.
 
 Gợi ý an toàn:
 - Có thể bắt đầu bằng `df = filtered_df.copy()`.
@@ -266,14 +259,13 @@ def render_tab(filtered_df):
                 with col2:
                     if item["has_code"]:
                         if st.button("↻", key=f"load_{display_idx}", help="Load this conversation's code"):
+                            # Only select the history conversation for viewing.
+                            # Do NOT populate pending_code/pending_viz_code here to avoid
+                            # building the editor/frame. The user must press Re-run to
+                            # execute or load the code into the run/editor UI.
                             conversation = _load_conversation_from_log(item["path"])
-                            assistant_msg = next((msg for msg in reversed(conversation) if msg.get("role") == "assistant"), {})
                             st.session_state.selected_history_file = item["path"]
                             st.session_state.selected_history_messages = conversation
-                            st.session_state.pending_code = assistant_msg.get("code", "")
-                            st.session_state.pending_viz_code = assistant_msg.get("viz_code", "")
-                            st.session_state.pending_question = assistant_msg.get("question", "")
-                            st.session_state.pending_turn_id += 1
                             st.rerun()
         else:
             st.markdown("_No history yet_")
