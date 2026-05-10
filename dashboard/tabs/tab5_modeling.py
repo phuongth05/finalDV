@@ -499,11 +499,11 @@ def render_tab(filtered_df: pd.DataFrame):
             ok_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] < 5)]['Biến'].tolist()
 
             if high_vif_list:
-                st.error(f"❌ **VIF ≥ 10 – nên loại ở mô hình hóa:** `{'`, `'.join(high_vif_list)}`")
+                st.error(f"**VIF ≥ 10 – Đa cộng tuyến:** `{'`, `'.join(high_vif_list)}`")
             if med_vif_list:
-                st.warning(f"⚠️ **VIF 5–10 – cần xem xét nếu đưa vào mô hình:** `{'`, `'.join(med_vif_list)}`")
+                st.warning(f"**VIF 5–10 – Có dấu hiệu Đa cộng tuyến:** `{'`, `'.join(med_vif_list)}`")
             if ok_vif_list:
-                st.success(f"✅ **VIF < 5 – an toàn khi đưa vào mô hình:** `{'`, `'.join(ok_vif_list)}`")
+                st.success(f"**VIF < 5 – Phù hợp cho Mô hình hóa:** `{'`, `'.join(ok_vif_list)}`")
 
             st.session_state['high_vif_vars'] = high_vif_list
             st.session_state['ok_vif_vars'] = ok_vif_list
