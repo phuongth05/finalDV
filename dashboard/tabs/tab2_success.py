@@ -72,7 +72,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         y='log_er',
         nbinsx=30,
         nbinsy=30,
-        color_continuous_scale="Blues",
+        color_continuous_scale="viridis",
         text_auto=True,
         labels={
             'log_view': 'Lượt xem (Log)',

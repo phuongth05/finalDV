@@ -278,7 +278,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             genre_df,
             names='TheLoai',
             values='SoVideo',
-            title="Tỷ trọng thể loại được đăng tải (lọc từ title/description/tags)"
+            title="Tỷ trọng thể loại được đăng tải (lọc từ Tiêu đề/Mô tả/Thẻ)"
         )
         fig_genre.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig_genre, use_container_width=True)

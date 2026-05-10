@@ -112,9 +112,6 @@ Người dùng hỏi: "{question}"
 Dữ liệu đã trích xuất: {extracted_data}
 
 Dựa hoàn toàn vào dữ liệu trên, hãy trả lời ngắn gọn, đúng trọng tâm, ưu tiên insight và khuyến nghị hành động.
-Nếu dữ liệu có vẻ là số đã tổng hợp, chuẩn hoá, log-transform, hoặc chỉ là dữ liệu của một tập con sau filter thì phải nói rõ điều đó trước khi diễn giải.
-Không được coi mọi con số là raw count nếu ngữ cảnh không xác nhận.
-Khi thấy dải số hẹp hoặc dữ liệu dạng tương đối, hãy dùng ngôn ngữ như "trong tập dữ liệu đang lọc" hoặc "giá trị đã chuẩn hoá/tổng hợp" thay vì khẳng định trên toàn bộ dữ liệu gốc.
 Nếu dữ liệu chưa đủ, hãy nói rõ thiếu gì thay vì suy đoán.
 Trình bày đẹp bằng Markdown.
 """
@@ -136,7 +133,7 @@ def _resolve_history_dir(log_dir: str = "data/ai_logs"):
 
 @st.cache_data(show_spinner=False)
 def _list_history_summaries(log_dir: str = "data/ai_logs", limit: int = 20):
-    """Return lightweight history metadata so the sidebar does not parse every message."""
+    """Trả về dữ liệu lịch sử nhẹ nhàng để thanh bên không phân tích mọi tin nhắn."""
     summaries = []
     actual_path = _resolve_history_dir(log_dir)
     if not actual_path:
@@ -180,7 +177,7 @@ def _list_history_summaries(log_dir: str = "data/ai_logs", limit: int = 20):
 
 @st.cache_data(show_spinner=False)
 def _load_conversation_from_log(file_path: str):
-    """Load one saved conversation from a single JSONL file."""
+    """Tải một cuộc trò chuyện được lưu từ một tệp JSONL duy nhất."""
     messages = []
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -236,7 +233,7 @@ def render_tab(filtered_df):
 
     # ================= SIDEBAR HISTORY =================
     with st.sidebar:
-        st.markdown("## 🕘 History")
+        st.markdown("## 🕘 Lịch sử trò chuyện")
         history_items = _list_history_summaries()
 
         if history_items:
@@ -258,7 +255,7 @@ def render_tab(filtered_df):
 
                 with col2:
                     if item["has_code"]:
-                        if st.button("↻", key=f"load_{display_idx}", help="Load this conversation's code"):
+                        if st.button("↻", key=f"load_{display_idx}", help="Tải mã của cuộc trò chuyện này"):
                             # Only select the history conversation for viewing.
                             # Do NOT populate pending_code/pending_viz_code here to avoid
                             # building the editor/frame. The user must press Re-run to
@@ -268,30 +265,30 @@ def render_tab(filtered_df):
                             st.session_state.selected_history_messages = conversation
                             st.rerun()
         else:
-            st.markdown("_No history yet_")
+            st.markdown("Lịch sử trò chuyện trống")
 
     # ================= CHAT HISTORY =================
     selected_history = st.session_state.selected_history_messages
 
     if selected_history:
-        with st.spinner("⏳ Loading conversation..."):
+        with st.spinner("Đang tải cuộc trò chuyện..."):
             for msg in selected_history:
                 with st.chat_message(msg["role"]):
                     st.markdown(msg["content"])
 
                     if msg["role"] == "assistant":
                         if msg.get("code"):
-                            with st.expander("📝 Extraction Code"):
+                            with st.expander("Mã Nguồn"):
                                 st.code(msg["code"], language="python")
 
                         if msg.get("viz_code"):
-                            with st.expander("🎨 Visualization Code"):
+                            with st.expander("Mã Trực Quan"):
                                 st.code(msg["viz_code"], language="python")
         
         # Action buttons
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("🔄 Re-run", use_container_width=True):
+            if st.button("Chạy Lại", use_container_width=True):
                 try:
                     assistant_msg = next((msg for msg in reversed(selected_history) if msg.get("role") == "assistant"), None)
                     if assistant_msg:
@@ -321,7 +318,7 @@ def render_tab(filtered_df):
                             imgs = local_env.get("ai_images") or []
                             
                             if figs:
-                                st.markdown("### 📊 Results")
+                                st.markdown("### Kết Quả")
                                 for fig in figs:
                                     try:
                                         st.plotly_chart(fig, use_container_width=True)
@@ -329,14 +326,14 @@ def render_tab(filtered_df):
                                         st.pyplot(fig)
                             
                             if imgs:
-                                st.markdown("### 📸 Images")
+                                st.markdown("### Hình Ảnh")
                                 for img in imgs:
                                     st.image(img)
                             
                             # Get fresh analysis from Groq
                             extracted_data = local_env.get("ai_extracted_data")
                             if extracted_data is not None:
-                                with st.spinner("🤖 Generating fresh analysis..."):
+                                with st.spinner("Đang tạo phân tích mới..."):
                                     prompt_answer = _build_answer_prompt(
                                         question_text,
                                         extracted_data
@@ -352,14 +349,14 @@ def render_tab(filtered_df):
                                     )
                                     
                                     fresh_answer = response_answer.choices[0].message.content
-                                    st.markdown("### 💬 Fresh Analysis")
+                                    st.markdown("### Phân Tích Mới")
                                     st.markdown(fresh_answer)
                 except Exception:
                     st.error("Lỗi khi chạy lại!")
                     st.code(traceback.format_exc(), language="python")
         
         with col2:
-            if st.button("✨ Start New Chat", use_container_width=True):
+            if st.button("Bắt Đầu Trò Chuyện Mới", use_container_width=True):
                 st.session_state.messages = []
                 st.session_state.selected_history_file = None
                 st.session_state.selected_history_messages = []
@@ -376,14 +373,14 @@ def render_tab(filtered_df):
 
                     if msg["role"] == "assistant":
                         if msg.get("code"):
-                            with st.expander("📝 Extraction Code"):
+                            with st.expander("Mã Nguồn"):
                                 st.code(msg["code"], language="python")
 
                         if msg.get("viz_code"):
-                            with st.expander("🎨 Visualization Code"):
+                            with st.expander("Mã Trực Quan"):
                                 st.code(msg["viz_code"], language="python")
         else:
-            st.markdown("_💬 Ready for new analysis. Type your question below._")
+            st.markdown("_Sẵn sàng phân tích mới. Nhập câu hỏi của bạn dưới đây._")
 
     # ================= CHAT INPUT =================
     q = st.chat_input("Hỏi AI phân tích dữ liệu...")
@@ -436,24 +433,24 @@ def render_tab(filtered_df):
                     )
 
     if st.session_state.pending_code:
-        st.markdown("### 🧠 AI Generated Extraction Plan")
+        st.markdown("### Kế Hoạch Trích Xuất Do AI Tạo Ra")
 
         current_turn_id = st.session_state.pending_turn_id
         edited_code = st.text_area(
-            "Extraction Code",
+            "Mã Nguồn",
             value=st.session_state.pending_code,
             height=250,
             key=f"code_{current_turn_id}"
         )
 
         edited_viz_code = st.text_area(
-            "Visualization Code",
+            "Mã Trực Quan",
             value=st.session_state.pending_viz_code,
             height=250,
             key=f"viz_{current_turn_id}"
         )
 
-        if st.button("✅ Run Analysis", key=f"run_{current_turn_id}"):
+        if st.button(" Chạy Phân Tích", key=f"run_{current_turn_id}"):
             try:
                 active_question = st.session_state.pending_question or q
 

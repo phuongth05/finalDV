@@ -52,7 +52,7 @@ st.markdown("""
     font-weight:700;
 }
 .sidebar-card {
-    background: linear-gradient(180deg, rgba(29,185,84,0.12), rgba(170,170,170,0.96));
+    background-color: #1a1a1a;
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 18px;
     padding: 16px 16px 12px 16px;
@@ -78,6 +78,8 @@ st.markdown("""
     align-items: center;
     justify-content: center;
     padding: 18px 16px;
+    background-color: #1a1a1a;
+    border-radius: 12px;
 }
 .sidebar-logo img {
     width: 100%;
@@ -159,15 +161,13 @@ df['genre_label'] = _build_genre_label(df)
 
 
 def _render_sidebar_logo() -> None:
-    logo_path = Path(CURRENT_DIR) / "images" / "YouTube_2024.svg"
-    if not logo_path.exists():
-        return
-
-    encoded = base64.b64encode(logo_path.read_bytes()).decode("ascii")
     st.sidebar.markdown(
-        f"""
+        """
         <div class="sidebar-card sidebar-logo">
-            <img src="data:image/svg+xml;base64,{encoded}" alt="YouTube" />
+            <div style="text-align: center;">
+                <p style="font-size: 18px; font-weight: 700; margin: 0; color: #fff;">GROUP 1</p>
+                <p style="font-size: 16px; font-weight: 600; margin: 6px 0 0 0; color: rgba(255,255,255,0.8);">FINAL PROJECT</p>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -548,7 +548,7 @@ if filtered_df.empty:
 # ================= TABS =================
 tab1, tab2, tab3, tab4, tab5,tab7 = st.tabs([
     "Tổng quan",
-    "Định nghĩa thành công",
+    "Phân tích thành công",
     "Hành vi người dùng",
     "Nền tảng & Thuật toán",
     "Mô hình hóa",
