@@ -16,11 +16,32 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
 
     df_q3 = filtered_df.dropna(subset=['video_view_count', 'hour', 'day']).copy()
 
-    days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    df_q3['day'] = pd.Categorical(df_q3['day'], categories=days_order, ordered=True)
+    days_order = [
+    'Thứ Hai', 'Thứ Ba', 'Thứ Tư',
+    'Thứ Năm', 'Thứ Sáu',
+    'Thứ Bảy', 'Chủ Nhật'
+    ]
+
+    day_mapping = {
+        'Monday': 'Thứ Hai',
+        'Tuesday': 'Thứ Ba',
+        'Wednesday': 'Thứ Tư',
+        'Thursday': 'Thứ Năm',
+        'Friday': 'Thứ Sáu',
+        'Saturday': 'Thứ Bảy',
+        'Sunday': 'Chủ Nhật'
+    }
+
+    df_q3['day'] = df_q3['day'].map(day_mapping)
+
+    df_q3['day'] = pd.Categorical(
+        df_q3['day'],
+        categories=days_order,
+        ordered=True
+    )
 
     # --- BIỂU ĐỒ 3.1: HEATMAP THỜI GIAN ĐĂNG BÀI ---
-    st.subheader("1. Bản đồ nhiệt (Heatmap): Ảnh hưởng của thời điểm đăng (giờ, ngày) đến lượt xem")
+    st.subheader("1.Ảnh hưởng của thời điểm đăng (giờ, ngày) đến lượt xem")
 
     heat_data = df_q3.groupby(['day', 'hour'])['video_view_count'].mean().reset_index()
     heat_pivot = heat_data.pivot(index='day', columns='hour', values='video_view_count')
@@ -32,10 +53,10 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
 
     fig7 = px.imshow(
         heat_pivot,
-        labels=dict(x="Giờ trong ngày (0-23h)", y="Ngày trong tuần", color="Trung bình View"),
+        labels=dict(x="Giờ trong ngày (0-23h)", y="Ngày trong tuần", color="Trung bình lượt xem"),
         color_continuous_scale='Blues',
         aspect="auto",
-        title="Heatmap: Tương quan giữa Giờ đăng, Ngày đăng và Lượt xem"
+        title="Tương quan giữa Giờ đăng, Ngày đăng và Lượt xem"
     )
     st.plotly_chart(fig7, use_container_width=True)
     st.caption(
@@ -76,11 +97,11 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
 
     st.caption(
         "Hai biểu đồ này tóm tắt hiệu quả theo từng ngày và từng giờ. "
-        "So sánh các cột để nhận biết thời điểm có mức view trung bình cao hơn." 
+        "So sánh các cột để nhận biết thời điểm có mức lượt xem trung bình cao hơn." 
     )
 
     # --- BIỂU ĐỒ 3.2: LINE/RADAR CHART - CUNG VS CẦU ---
-    st.subheader("3. Độ lệch pha(Bar & Line Chart): Số lượng của số Video đăng và Tổng View theo Giờ đăng")
+    st.subheader("3. Độ lệch pha: Số lượng của số Video đăng và Tổng lượt xem theo Giờ đăng")
     df_line_radar = apply_cross_filters(base_filtered_df, active_cross_filters, exclude_key="cross_trend")
     df_q3_line_radar = df_line_radar.dropna(subset=['video_view_count', 'hour']).copy()
 
@@ -234,7 +255,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 custom_data=['Keyword'],
                 color_continuous_scale='Blues',
                 labels={'Avg_Views': 'Trung bình Lượt xem', 'Keyword': 'Từ khóa (TF-IDF)', 'Video_Count': 'Số Video'},
-                title="Horizontal Bar Chart: Top 15 Cụm từ quan trọng nhất tự động trích xuất bởi TF-IDF"
+                title="Top 15 Cụm từ quan trọng nhất tự động trích xuất bởi TF-IDF"
             )
             fig6.update_traces(texttemplate='%{x:,.0f}')
             keyword_event = st.plotly_chart(
@@ -247,7 +268,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             st.caption(
                 "Biểu đồ tổng hợp các từ khóa xuất hiện nhiều và gắn với lượt xem trung bình cao. "
                 "Màu thể hiện số video chứa từ khóa đó; cột càng dài nghĩa là nhóm video có từ khóa này "
-                "đang đạt mức view trung bình tốt hơn." 
+                "đang đạt mức lượt xem trung bình tốt hơn." 
             )
         else:
             st.warning("Không trích xuất được từ khóa nào thỏa mãn.")
