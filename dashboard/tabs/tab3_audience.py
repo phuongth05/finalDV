@@ -191,7 +191,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
         log_y=True,
         color_discrete_sequence=['#1f77b4', '#AED6F1'],
         labels={'has_caption': 'Có phụ đề (CC)', 'video_view_count': 'Lượt xem (Log)'},
-        title="Box Plot: Phân phối lượt xem của video Có vs Không có phụ đề"
+        title="Phân phối lượt xem của video Có vs Không có phụ đề"
     )
     fig5.update_traces(
         hovertemplate=(
@@ -224,7 +224,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 top_view,
                 value_col='video_view_count',
                 label_col='video_title',
-                title="Top 10 video theo lượt xem (Packed Bubble)",
+                title="Top 10 video theo lượt xem",
                 hover_cols=['video_view_count', 'video_like_count'],
                 hover_labels=['Lượt xem', 'Lượt thích']
             )
@@ -246,7 +246,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
                 top_like,
                 value_col='video_like_count',
                 label_col='video_title',
-                title="Top 10 video theo lượt thích (Packed Bubble)",
+                title="Top 10 video theo lượt thích",
                 hover_cols=['video_like_count', 'video_view_count'],
                 hover_labels=['Lượt thích', 'Lượt xem']
             )
@@ -255,8 +255,8 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             st.info("Thiếu dữ liệu video title, lượt thích hoặc lượt xem để hiển thị top like.")
 
     st.caption(
-        "Hai biểu đồ xếp hạng giúp nhận diện các video nổi bật theo mức độ quan tâm (view) "
-        "và mức độ yêu thích (like). Chênh lệch giữa hai danh sách cho thấy video nào "
+        "Hai biểu đồ xếp hạng giúp nhận diện các video nổi bật theo mức độ quan tâm (số lượt xem)"
+        "và mức độ yêu thích (số lượt thích). Chênh lệch giữa hai danh sách cho thấy video nào "
         "được xem nhiều nhưng chưa chắc được thích tương ứng." 
     )
 
@@ -329,7 +329,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             go.Bar(
                 x=upload_share.index.tolist(),
                 y=upload_share.values,
-                name='Tỷ lệ upload (%)',
+                name='Tỷ lệ đăng tải (%)',
                 marker_color='rgba(54, 162, 235, 0.75)',
                 customdata=upload_share.index.tolist(),
                 hovertemplate="Thể loại: %{customdata}<br>Tỷ lệ upload: %{y:.2f}%<extra></extra>",
@@ -381,7 +381,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
             x='month',
             y='SoVideo',
             color='genre_label',
-            title="Xu hướng thể loại theo thời gian (theo số video đăng)",
+            title="Xu hướng thể loại theo thời gian",
             labels={'month': 'Tháng', 'SoVideo': 'Số video', 'genre_label' : "Thể loại"}
         )
         st.plotly_chart(fig_area, use_container_width=True)
