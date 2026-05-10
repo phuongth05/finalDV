@@ -54,7 +54,7 @@ def render_tab(filtered_df, base_filtered_df, active_cross_filters, apply_cross_
     fig7 = px.imshow(
         heat_pivot,
         labels=dict(x="Giờ trong ngày (0-23h)", y="Ngày trong tuần", color="Trung bình lượt xem"),
-        color_continuous_scale='Blues',
+        color_continuous_scale='viridis',
         aspect="auto",
         title="Tương quan giữa Giờ đăng, Ngày đăng và Lượt xem"
     )

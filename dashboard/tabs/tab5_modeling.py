@@ -492,7 +492,7 @@ def render_tab(filtered_df: pd.DataFrame):
             with col_v2:
                 st.dataframe(vif_data, hide_index=True, height=380)
 
-            st.markdown("#### 📌 Nhận xét & Gợi ý khi đưa vào mô hình hóa")
+            st.markdown("#### Nhận xét & Gợi ý khi đưa vào mô hình hóa")
 
             high_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 10)]['Biến'].tolist()
             med_vif_list = vif_data[vif_data['VIF'].notna() & (vif_data['VIF'] >= 5) & (vif_data['VIF'] < 10)]['Biến'].tolist()

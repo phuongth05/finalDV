@@ -27,7 +27,7 @@ def render_tab(base_filtered_df, active_cross_filters, apply_cross_filters, sync
         log_x=True,
         log_y=True,
         size_max=60,
-        color_discrete_map={True: '#1f77b4', False: '#E50914'},
+        color_discrete_map={True: '#1B5E20', False: '#E50914'},
         labels={
             'video_view_count': 'Lượt xem',
             'video_like_count': 'Lượt thích',
