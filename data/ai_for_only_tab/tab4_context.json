@@ -2,7 +2,375 @@
   "tab": 4,
   "name": "Thuật toán & Tối ưu nền tảng",
   "rows": 6772,
+  "dashboard_state": {
+    "columns": [
+      "video_id",
+      "video_publish_date",
+      "channel_id",
+      "channel_title",
+      "video_title",
+      "video_description",
+      "video_tags",
+      "video_category_id",
+      "video_view_count",
+      "video_like_count",
+      "video_comment_count",
+      "video_duration",
+      "video_definition",
+      "video_caption_status",
+      "video_licensed_content",
+      "video_made_for_kids",
+      "video_tags_count",
+      "video_topics",
+      "search_query",
+      "channel_subscriber_count",
+      "channel_view_count",
+      "channel_video_count",
+      "_row_id",
+      "hour",
+      "day",
+      "genre",
+      "title_length",
+      "genre_label",
+      "video_type",
+      "engagement_rate",
+      "channel_size",
+      "publish_date"
+    ],
+    "selected_chart_state": {}
+  },
   "active_filters": [],
+  "charts": {
+    "time_heatmap": {
+      "chart_type": "heatmap",
+      "source_table": {
+        "status": "ok",
+        "rows": 8,
+        "table": [
+          {
+            "day": "Thursday",
+            "hour": 16,
+            "video_view_count": 21152569.833333332,
+            "video_count": 6
+          },
+          {
+            "day": "Thursday",
+            "hour": 14,
+            "video_view_count": 15371330.04,
+            "video_count": 25
+          },
+          {
+            "day": "Thursday",
+            "hour": 13,
+            "video_view_count": 10594111.765100671,
+            "video_count": 149
+          },
+          {
+            "day": "Friday",
+            "hour": 13,
+            "video_view_count": 10462049.957264958,
+            "video_count": 117
+          },
+          {
+            "day": "Wednesday",
+            "hour": 13,
+            "video_view_count": 10361327.436363636,
+            "video_count": 110
+          },
+          {
+            "day": "Sunday",
+            "hour": 16,
+            "video_view_count": 10116302.0,
+            "video_count": 6
+          },
+          {
+            "day": "Tuesday",
+            "hour": 13,
+            "video_view_count": 8656367.823529411,
+            "video_count": 102
+          },
+          {
+            "day": "Saturday",
+            "hour": 8,
+            "video_view_count": 8645361.771428572,
+            "video_count": 35
+          }
+        ],
+        "top_cells": [
+          {
+            "day": "Thursday",
+            "hour": 16,
+            "video_view_count": 21152569.833333332,
+            "video_count": 6
+          },
+          {
+            "day": "Thursday",
+            "hour": 14,
+            "video_view_count": 15371330.04,
+            "video_count": 25
+          },
+          {
+            "day": "Thursday",
+            "hour": 13,
+            "video_view_count": 10594111.765100671,
+            "video_count": 149
+          },
+          {
+            "day": "Friday",
+            "hour": 13,
+            "video_view_count": 10462049.957264958,
+            "video_count": 117
+          },
+          {
+            "day": "Wednesday",
+            "hour": 13,
+            "video_view_count": 10361327.436363636,
+            "video_count": 110
+          },
+          {
+            "day": "Sunday",
+            "hour": 16,
+            "video_view_count": 10116302.0,
+            "video_count": 6
+          },
+          {
+            "day": "Tuesday",
+            "hour": 13,
+            "video_view_count": 8656367.823529411,
+            "video_count": 102
+          },
+          {
+            "day": "Saturday",
+            "hour": 8,
+            "video_view_count": 8645361.771428572,
+            "video_count": 35
+          }
+        ]
+      },
+      "insight": "Heatmap giờ-ngày cho thấy vùng dày dữ liệu và các ô hiệu suất cao để tối ưu lịch đăng."
+    },
+    "day_hour_performance": {
+      "chart_type": "bar",
+      "day_table": [
+        {
+          "day": "Thursday",
+          "video_view_count": 4830416.382797732
+        },
+        {
+          "day": "Saturday",
+          "video_view_count": 4371735.893637227
+        },
+        {
+          "day": "Friday",
+          "video_view_count": 4167281.051948052
+        },
+        {
+          "day": "Sunday",
+          "video_view_count": 4114799.193154034
+        },
+        {
+          "day": "Wednesday",
+          "video_view_count": 4112184.286966046
+        },
+        {
+          "day": "Tuesday",
+          "video_view_count": 4026133.525562372
+        },
+        {
+          "day": "Monday",
+          "video_view_count": 3444160.6304347827
+        }
+      ],
+      "hour_table": [
+        {
+          "hour": 13,
+          "video_view_count": 8715730.86340852
+        },
+        {
+          "hour": 12,
+          "video_view_count": 6088922.888081395
+        },
+        {
+          "hour": 14,
+          "video_view_count": 5358920.660465117
+        },
+        {
+          "hour": 16,
+          "video_view_count": 4260699.474576271
+        },
+        {
+          "hour": 3,
+          "video_view_count": 3721223.3251231527
+        },
+        {
+          "hour": 10,
+          "video_view_count": 3235039.736
+        },
+        {
+          "hour": 2,
+          "video_view_count": 3226732.7333333334
+        },
+        {
+          "hour": 8,
+          "video_view_count": 3204871.434944238
+        }
+      ],
+      "insight": "Đọc riêng theo ngày và theo giờ giúp tách hiệu quả thời điểm đăng theo hai chiều khác nhau."
+    },
+    "upload_vs_views_by_hour": {
+      "chart_type": "combo_bar_line",
+      "source_table": [
+        {
+          "hour": 12,
+          "video_count": 1376,
+          "total_views": 8378357894,
+          "imbalance": 8378356518
+        },
+        {
+          "hour": 13,
+          "video_count": 798,
+          "total_views": 6955153229,
+          "imbalance": 6955152431
+        },
+        {
+          "hour": 11,
+          "video_count": 758,
+          "total_views": 2095922589,
+          "imbalance": 2095921831
+        },
+        {
+          "hour": 3,
+          "video_count": 406,
+          "total_views": 1510816670,
+          "imbalance": 1510816264
+        },
+        {
+          "hour": 10,
+          "video_count": 375,
+          "total_views": 1213139901,
+          "imbalance": 1213139526
+        },
+        {
+          "hour": 14,
+          "video_count": 215,
+          "total_views": 1152167942,
+          "imbalance": 1152167727
+        },
+        {
+          "hour": 9,
+          "video_count": 341,
+          "total_views": 1031520458,
+          "imbalance": 1031520117
+        },
+        {
+          "hour": 2,
+          "video_count": 285,
+          "total_views": 919618829,
+          "imbalance": 919618544
+        }
+      ],
+      "insight": "So sánh số video đăng và tổng lượt xem theo giờ giúp nhìn độ dồn dữ liệu và hiệu quả từng khung giờ."
+    },
+    "duration_groups": {
+      "chart_type": "column",
+      "source_table": {
+        "status": "ok",
+        "rows": 4,
+        "table": [
+          {
+            "duration_group": "5-10 phút",
+            "video_count": 1213,
+            "avg_views": 6823537.464962902,
+            "median_views": 1031645.0
+          },
+          {
+            "duration_group": "10-15 phút",
+            "video_count": 64,
+            "avg_views": 5311294.171875,
+            "median_views": 1138203.0
+          },
+          {
+            "duration_group": "< 5 phút",
+            "video_count": 4473,
+            "avg_views": 4055664.6447574333,
+            "median_views": 117570.0
+          },
+          {
+            "duration_group": "> 15 phút",
+            "video_count": 995,
+            "avg_views": 1497705.4623115577,
+            "median_views": 559581.0
+          }
+        ]
+      },
+      "insight": "Nhóm thời lượng nào có view trung bình cao nhất là ứng viên cho chiến lược sản xuất nội dung."
+    },
+    "duration_views_map": {
+      "chart_type": "density_contour",
+      "source_table": {
+        "status": "ok",
+        "rows": 499,
+        "top_cells": [
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(6.507, 6.79]",
+            "count": 146
+          },
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(6.79, 7.073]",
+            "count": 136
+          },
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(6.224, 6.507]",
+            "count": 113
+          },
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(5.941, 6.224]",
+            "count": 110
+          },
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(5.659, 5.941]",
+            "count": 108
+          },
+          {
+            "x_log": "(1.742, 1.873]",
+            "y_log": "(4.244, 4.527]",
+            "count": 95
+          },
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(5.376, 5.659]",
+            "count": 90
+          },
+          {
+            "x_log": "(2.394, 2.525]",
+            "y_log": "(7.073, 7.356]",
+            "count": 85
+          },
+          {
+            "x_log": "(1.742, 1.873]",
+            "y_log": "(4.81, 5.093]",
+            "count": 84
+          },
+          {
+            "x_log": "(2.264, 2.394]",
+            "y_log": "(6.507, 6.79]",
+            "count": 83
+          }
+        ],
+        "peak_cell": {
+          "x_log": "(2.394, 2.525]",
+          "y_log": "(6.507, 6.79]",
+          "count": 146
+        }
+      },
+      "insight": "Độ dồn dữ liệu giữa thời lượng và lượt xem cho biết vùng 'điểm rơi' phổ biến và outlier khác thường."
+    }
+  },
   "timing_optimization": {
     "status": "ok",
     "best_day": [
@@ -94,203 +462,7 @@
       }
     ]
   },
-  "seo_nlp": {
-    "keyword_impacts": {
-      "status": "ok",
-      "high_impact_keywords": [
-        {
-          "token": "kido",
-          "occurrences": 1,
-          "avg_views": 118618056.0,
-          "total_views": 118618056
-        },
-        {
-          "token": "gducky",
-          "occurrences": 2,
-          "avg_views": 101890926.5,
-          "total_views": 203781853
-        },
-        {
-          "token": "lou",
-          "occurrences": 1,
-          "avg_views": 98504147.0,
-          "total_views": 98504147
-        },
-        {
-          "token": "drum7",
-          "occurrences": 2,
-          "avg_views": 93929716.0,
-          "total_views": 187859432
-        },
-        {
-          "token": "monstar",
-          "occurrences": 1,
-          "avg_views": 93323415.0,
-          "total_views": 93323415
-        },
-        {
-          "token": "lầu",
-          "occurrences": 1,
-          "avg_views": 86007797.0,
-          "total_views": 86007797
-        },
-        {
-          "token": "nấu",
-          "occurrences": 1,
-          "avg_views": 85111933.0,
-          "total_views": 85111933
-        },
-        {
-          "token": "giếng",
-          "occurrences": 1,
-          "avg_views": 82407446.0,
-          "total_views": 82407446
-        },
-        {
-          "token": "boyzed",
-          "occurrences": 1,
-          "avg_views": 81444621.0,
-          "total_views": 81444621
-        },
-        {
-          "token": "vsoul",
-          "occurrences": 1,
-          "avg_views": 81444621.0,
-          "total_views": 81444621
-        }
-      ],
-      "emotional_keywords": [
-        {
-          "token": "live",
-          "occurrences": 228,
-          "avg_views": 9341889.087719299,
-          "total_views": 2129950712
-        },
-        {
-          "token": "đau",
-          "occurrences": 67,
-          "avg_views": 7374258.2835820895,
-          "total_views": 494075305
-        },
-        {
-          "token": "nỗi",
-          "occurrences": 74,
-          "avg_views": 6197118.22972973,
-          "total_views": 458586749
-        },
-        {
-          "token": "buồn",
-          "occurrences": 508,
-          "avg_views": 5356897.37007874,
-          "total_views": 2721303864
-        },
-        {
-          "token": "love",
-          "occurrences": 17,
-          "avg_views": 5276779.176470588,
-          "total_views": 89705246
-        },
-        {
-          "token": "vui",
-          "occurrences": 460,
-          "avg_views": 4023241.3673913046,
-          "total_views": 1850691029
-        },
-        {
-          "token": "cưới",
-          "occurrences": 429,
-          "avg_views": 3712095.6200466203,
-          "total_views": 1592489021
-        },
-        {
-          "token": "chill",
-          "occurrences": 453,
-          "avg_views": 3475332.2604856514,
-          "total_views": 1574325514
-        },
-        {
-          "token": "tết",
-          "occurrences": 588,
-          "avg_views": 3428487.576530612,
-          "total_views": 2015950695
-        },
-        {
-          "token": "đám",
-          "occurrences": 360,
-          "avg_views": 3175239.375,
-          "total_views": 1143086175
-        }
-      ]
-    },
-    "metadata_effectiveness": [
-      {
-        "feature": "caption",
-        "with_true": 7688598.0,
-        "with_false": 221090.0
-      },
-      {
-        "feature": "licensed",
-        "with_true": 542713.5,
-        "with_false": 7679.0
-      },
-      {
-        "feature": "official_title",
-        "with_true": 795136.0,
-        "with_false": 213549.0
-      },
-      {
-        "feature": "remix_title",
-        "with_true": 1165655.0,
-        "with_false": 249547.5
-      }
-    ]
-  },
-  "platform_behavior": {
-    "status": "ok",
-    "upload_view_synchronization": {
-      "correlation": 0.9263117164597432,
-      "preferred_hours": [
-        {
-          "hour": 12,
-          "upload_count": 1376,
-          "total_views": 8378357894
-        },
-        {
-          "hour": 13,
-          "upload_count": 798,
-          "total_views": 6955153229
-        },
-        {
-          "hour": 11,
-          "upload_count": 758,
-          "total_views": 2095922589
-        }
-      ],
-      "most_active_upload_hours": [
-        {
-          "hour": 12,
-          "upload_count": 1376,
-          "total_views": 8378357894
-        },
-        {
-          "hour": 13,
-          "upload_count": 798,
-          "total_views": 6955153229
-        },
-        {
-          "hour": 11,
-          "upload_count": 758,
-          "total_views": 2095922589
-        }
-      ]
-    },
-    "algorithmic_preference": {
-      "best_hours": [
-        12,
-        13,
-        11
-      ]
-    }
-  },
-  "selected_chart_state": {}
+  "tab_insights": [
+    "Heatmap, combo chart và contour map cần được đọc cùng nhau để hiểu cả hành vi upload lẫn hiệu suất."
+  ]
 }

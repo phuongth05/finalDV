@@ -20,39 +20,39 @@
   "vif_analysis": [
     {
       "feature": "video_duration",
-      "vif": 1.3763688390004112
+      "vif": 1.3764497879704936
     },
     {
       "feature": "video_tags_count",
-      "vif": 3.68076198563515
+      "vif": 3.6808361037057082
     },
     {
       "feature": "title_length",
-      "vif": 6.803294509907236
+      "vif": 6.806580984138608
     },
     {
       "feature": "description_length",
-      "vif": 3.2206517033193545
+      "vif": 3.220704742370729
     },
     {
       "feature": "channel_subscriber_count",
-      "vif": 14.289313557855111
+      "vif": 14.289243294611593
     },
     {
       "feature": "channel_view_count",
-      "vif": 14.415857659447619
+      "vif": 14.415804993807509
     },
     {
       "feature": "channel_video_count",
-      "vif": 3.156133472559633
+      "vif": 3.156173096763975
     },
     {
       "feature": "hour",
-      "vif": 3.9802833257521826
+      "vif": 3.9807956594507257
     },
     {
       "feature": "video_age_days",
-      "vif": 2.9784331322492013
+      "vif": 2.987083646923823
     }
   ],
   "removed_variables": [
@@ -73,8 +73,8 @@
     "title_length"
   ],
   "model_results": {
-    "r2": 0.39058685525237413,
-    "adjusted_r2": 0.38778391645605714,
+    "r2": 0.390586855252374,
+    "adjusted_r2": 0.38778391645605703,
     "selected_features": [
       "is_licensed",
       "has_caption",
@@ -122,56 +122,245 @@
       "genre_Quê hương",
       "genre_Thiếu nhi",
       "genre_Vui tươi"
+    ],
+    "n_obs": 6772,
+    "chart_data": [
+      {
+        "feature": "is_licensed",
+        "std_coef": 1.2745630217830815,
+        "p_value": 2.7470034767518463e-244,
+        "abs_coef": 1.2745630217830815
+      },
+      {
+        "feature": "video_age_days",
+        "std_coef": 0.7872135260240445,
+        "p_value": 4.5433580372985016e-104,
+        "abs_coef": 0.7872135260240445
+      },
+      {
+        "feature": "has_caption",
+        "std_coef": 0.5988182661903151,
+        "p_value": 1.4413543211936634e-59,
+        "abs_coef": 0.5988182661903151
+      },
+      {
+        "feature": "genre_Khác",
+        "std_coef": 0.5516257258218518,
+        "p_value": 1.0490837188306226e-39,
+        "abs_coef": 0.5516257258218518
+      },
+      {
+        "feature": "is_for_kids",
+        "std_coef": 0.4709563371310345,
+        "p_value": 8.647090013323041e-37,
+        "abs_coef": 0.4709563371310345
+      },
+      {
+        "feature": "video_duration",
+        "std_coef": 0.45579659168967246,
+        "p_value": 4.815791180098975e-34,
+        "abs_coef": 0.45579659168967246
+      },
+      {
+        "feature": "genre_Nhạc trẻ",
+        "std_coef": 0.42191562104930735,
+        "p_value": 2.8073242060924492e-31,
+        "abs_coef": 0.42191562104930735
+      },
+      {
+        "feature": "genre_Rap",
+        "std_coef": 0.39425618107397076,
+        "p_value": 1.548649329804033e-28,
+        "abs_coef": 0.39425618107397076
+      },
+      {
+        "feature": "is_collab",
+        "std_coef": 0.34717536229657653,
+        "p_value": 3.5908076618636467e-22,
+        "abs_coef": 0.34717536229657653
+      },
+      {
+        "feature": "genre_Remix",
+        "std_coef": 0.33370801735052824,
+        "p_value": 1.1114551953583369e-17,
+        "abs_coef": 0.33370801735052824
+      },
+      {
+        "feature": "genre_Live",
+        "std_coef": 0.3262507104336868,
+        "p_value": 6.0081161461051505e-21,
+        "abs_coef": 0.3262507104336868
+      },
+      {
+        "feature": "genre_Nhạc buồn",
+        "std_coef": 0.3060906715867586,
+        "p_value": 3.361223784700089e-17,
+        "abs_coef": 0.3060906715867586
+      },
+      {
+        "feature": "genre_Nhạc chế",
+        "std_coef": 0.3018731218541496,
+        "p_value": 3.6331498333705535e-16,
+        "abs_coef": 0.3018731218541496
+      },
+      {
+        "feature": "posted_evening",
+        "std_coef": -0.2892444054370776,
+        "p_value": 4.53493563523548e-16,
+        "abs_coef": 0.2892444054370776
+      },
+      {
+        "feature": "genre_Nhạc đám cưới",
+        "std_coef": 0.2745690824742999,
+        "p_value": 1.4819332335165646e-14,
+        "abs_coef": 0.2745690824742999
+      },
+      {
+        "feature": "genre_Không lời",
+        "std_coef": 0.2692263344977663,
+        "p_value": 1.4954202219494708e-12,
+        "abs_coef": 0.2692263344977663
+      },
+      {
+        "feature": "posted_afternoon",
+        "std_coef": 0.22836468221171533,
+        "p_value": 3.3248029570180675e-10,
+        "abs_coef": 0.22836468221171533
+      },
+      {
+        "feature": "genre_Nhạc sàn",
+        "std_coef": 0.22307619288999797,
+        "p_value": 5.367020625925373e-10,
+        "abs_coef": 0.22307619288999797
+      },
+      {
+        "feature": "is_remix",
+        "std_coef": 0.2131531094915647,
+        "p_value": 5.769321491273729e-08,
+        "abs_coef": 0.2131531094915647
+      },
+      {
+        "feature": "genre_Dân ca",
+        "std_coef": 0.18738539333905524,
+        "p_value": 1.7515543807397817e-07,
+        "abs_coef": 0.18738539333905524
+      },
+      {
+        "feature": "genre_Nhạc cụ",
+        "std_coef": -0.17966406193799145,
+        "p_value": 4.778384587671157e-07,
+        "abs_coef": 0.17966406193799145
+      },
+      {
+        "feature": "genre_Bolero",
+        "std_coef": 0.1748023637389564,
+        "p_value": 2.187699683483057e-06,
+        "abs_coef": 0.1748023637389564
+      },
+      {
+        "feature": "genre_Lofi",
+        "std_coef": 0.15963699119027575,
+        "p_value": 5.772373743883115e-06,
+        "abs_coef": 0.15963699119027575
+      },
+      {
+        "feature": "video_tags_count",
+        "std_coef": 0.1516170429154993,
+        "p_value": 4.9750490491664737e-05,
+        "abs_coef": 0.1516170429154993
+      },
+      {
+        "feature": "description_length",
+        "std_coef": 0.1432734654177941,
+        "p_value": 0.00015276408981012733,
+        "abs_coef": 0.1432734654177941
+      },
+      {
+        "feature": "genre_Trữ tình",
+        "std_coef": 0.138771663489772,
+        "p_value": 0.00011827999974141344,
+        "abs_coef": 0.138771663489772
+      },
+      {
+        "feature": "genre_Cải lương",
+        "std_coef": 0.11980648140967248,
+        "p_value": 0.0010249164803093251,
+        "abs_coef": 0.11980648140967248
+      },
+      {
+        "feature": "is_weekend",
+        "std_coef": -0.110784879311428,
+        "p_value": 0.001078962318952444,
+        "abs_coef": 0.110784879311428
+      },
+      {
+        "feature": "channel_video_count",
+        "std_coef": 0.0985537084344461,
+        "p_value": 0.006392076504157254,
+        "abs_coef": 0.0985537084344461
+      },
+      {
+        "feature": "is_cover",
+        "std_coef": 0.08340207435709172,
+        "p_value": 0.015010212633937165,
+        "abs_coef": 0.08340207435709172
+      },
+      {
+        "feature": "genre_Indie",
+        "std_coef": 0.0734655863301718,
+        "p_value": 0.031972510037592265,
+        "abs_coef": 0.0734655863301718
+      }
     ]
   },
   "factor_importance": [
     {
       "feature": "is_licensed",
-      "std_coef": 1.274563021783064,
-      "p_value": 2.747003476809946e-244,
-      "abs_coef": 1.274563021783064
+      "std_coef": 1.2745630217830815,
+      "p_value": 2.7470034767518463e-244,
+      "abs_coef": 1.2745630217830815
     },
     {
       "feature": "video_age_days",
-      "std_coef": 0.7872135260240356,
-      "p_value": 4.5433580373225346e-104,
-      "abs_coef": 0.7872135260240356
+      "std_coef": 0.7872135260240445,
+      "p_value": 4.5433580372985016e-104,
+      "abs_coef": 0.7872135260240445
     },
     {
       "feature": "has_caption",
-      "std_coef": 0.5988182661903287,
-      "p_value": 1.4413543211841985e-59,
-      "abs_coef": 0.5988182661903287
+      "std_coef": 0.5988182661903151,
+      "p_value": 1.4413543211936634e-59,
+      "abs_coef": 0.5988182661903151
     },
     {
       "feature": "genre_Khác",
-      "std_coef": 0.5516257258218596,
-      "p_value": 1.0490837188282811e-39,
-      "abs_coef": 0.5516257258218596
+      "std_coef": 0.5516257258218518,
+      "p_value": 1.0490837188306226e-39,
+      "abs_coef": 0.5516257258218518
     },
     {
       "feature": "is_for_kids",
-      "std_coef": 0.4709563371310138,
-      "p_value": 8.647090013382029e-37,
-      "abs_coef": 0.4709563371310138
+      "std_coef": 0.4709563371310345,
+      "p_value": 8.647090013323041e-37,
+      "abs_coef": 0.4709563371310345
     },
     {
       "feature": "video_duration",
-      "std_coef": 0.45579659168969483,
-      "p_value": 4.815791180063569e-34,
-      "abs_coef": 0.45579659168969483
+      "std_coef": 0.45579659168967246,
+      "p_value": 4.815791180098975e-34,
+      "abs_coef": 0.45579659168967246
     },
     {
       "feature": "genre_Nhạc trẻ",
       "std_coef": 0.42191562104930735,
-      "p_value": 2.8073242060919544e-31,
+      "p_value": 2.8073242060924492e-31,
       "abs_coef": 0.42191562104930735
     },
     {
       "feature": "genre_Rap",
-      "std_coef": 0.39425618107397825,
-      "p_value": 1.5486493298004041e-28,
-      "abs_coef": 0.39425618107397825
+      "std_coef": 0.39425618107397076,
+      "p_value": 1.548649329804033e-28,
+      "abs_coef": 0.39425618107397076
     }
   ],
   "statistical_interpretation": {
@@ -180,53 +369,53 @@
     "positive_effects": [
       {
         "feature": "is_licensed",
-        "std_coef": 1.274563021783064,
-        "p_value": 2.747003476809946e-244,
-        "abs_coef": 1.274563021783064
+        "std_coef": 1.2745630217830815,
+        "p_value": 2.7470034767518463e-244,
+        "abs_coef": 1.2745630217830815
       },
       {
         "feature": "video_age_days",
-        "std_coef": 0.7872135260240356,
-        "p_value": 4.5433580373225346e-104,
-        "abs_coef": 0.7872135260240356
+        "std_coef": 0.7872135260240445,
+        "p_value": 4.5433580372985016e-104,
+        "abs_coef": 0.7872135260240445
       },
       {
         "feature": "has_caption",
-        "std_coef": 0.5988182661903287,
-        "p_value": 1.4413543211841985e-59,
-        "abs_coef": 0.5988182661903287
+        "std_coef": 0.5988182661903151,
+        "p_value": 1.4413543211936634e-59,
+        "abs_coef": 0.5988182661903151
       },
       {
         "feature": "genre_Khác",
-        "std_coef": 0.5516257258218596,
-        "p_value": 1.0490837188282811e-39,
-        "abs_coef": 0.5516257258218596
+        "std_coef": 0.5516257258218518,
+        "p_value": 1.0490837188306226e-39,
+        "abs_coef": 0.5516257258218518
       },
       {
         "feature": "is_for_kids",
-        "std_coef": 0.4709563371310138,
-        "p_value": 8.647090013382029e-37,
-        "abs_coef": 0.4709563371310138
+        "std_coef": 0.4709563371310345,
+        "p_value": 8.647090013323041e-37,
+        "abs_coef": 0.4709563371310345
       }
     ],
     "negative_effects": [
       {
         "feature": "posted_evening",
-        "std_coef": -0.2892444054370614,
-        "p_value": 4.534935635252242e-16,
-        "abs_coef": 0.2892444054370614
+        "std_coef": -0.2892444054370776,
+        "p_value": 4.53493563523548e-16,
+        "abs_coef": 0.2892444054370776
       },
       {
         "feature": "genre_Nhạc cụ",
-        "std_coef": -0.17966406193798792,
-        "p_value": 4.778384587673648e-07,
-        "abs_coef": 0.17966406193798792
+        "std_coef": -0.17966406193799145,
+        "p_value": 4.778384587671157e-07,
+        "abs_coef": 0.17966406193799145
       },
       {
         "feature": "is_weekend",
-        "std_coef": -0.11078487931142833,
-        "p_value": 0.0010789623189524148,
-        "abs_coef": 0.11078487931142833
+        "std_coef": -0.110784879311428,
+        "p_value": 0.001078962318952444,
+        "abs_coef": 0.110784879311428
       }
     ]
   },
@@ -461,6 +650,180 @@
     "hour",
     "video_age_days"
   ],
+  "model_context": {
+    "correlation": {
+      "status": "ok",
+      "matrix": {
+        "video_view_count": {
+          "video_view_count": 1.0,
+          "video_like_count": 0.7787,
+          "video_comment_count": 0.302,
+          "engagement_rate": -0.1036
+        },
+        "video_like_count": {
+          "video_view_count": 0.7787,
+          "video_like_count": 1.0,
+          "video_comment_count": 0.565,
+          "engagement_rate": -0.0324
+        },
+        "video_comment_count": {
+          "video_view_count": 0.302,
+          "video_like_count": 0.565,
+          "video_comment_count": 1.0,
+          "engagement_rate": 0.0064
+        },
+        "engagement_rate": {
+          "video_view_count": -0.1036,
+          "video_like_count": -0.0324,
+          "video_comment_count": 0.0064,
+          "engagement_rate": 1.0
+        }
+      },
+      "pairs": [
+        {
+          "pair": [
+            "video_view_count",
+            "video_like_count"
+          ],
+          "corr": 0.7787294755577333
+        },
+        {
+          "pair": [
+            "video_like_count",
+            "video_comment_count"
+          ],
+          "corr": 0.5650226195472645
+        },
+        {
+          "pair": [
+            "video_view_count",
+            "video_comment_count"
+          ],
+          "corr": 0.3019998941162481
+        },
+        {
+          "pair": [
+            "video_view_count",
+            "engagement_rate"
+          ],
+          "corr": -0.10355453723788237
+        },
+        {
+          "pair": [
+            "video_like_count",
+            "engagement_rate"
+          ],
+          "corr": -0.03242735494860222
+        },
+        {
+          "pair": [
+            "video_comment_count",
+            "engagement_rate"
+          ],
+          "corr": 0.00639312843110073
+        }
+      ],
+      "strongest_positive": {
+        "pair": [
+          "video_view_count",
+          "video_like_count"
+        ],
+        "corr": 0.7787294755577333
+      },
+      "strongest_negative": {
+        "pair": [
+          "video_view_count",
+          "engagement_rate"
+        ],
+        "corr": -0.10355453723788237
+      }
+    },
+    "vif": [
+      {
+        "feature": "video_duration",
+        "vif": 1.3764497879704936
+      },
+      {
+        "feature": "video_tags_count",
+        "vif": 3.6808361037057082
+      },
+      {
+        "feature": "title_length",
+        "vif": 6.806580984138608
+      },
+      {
+        "feature": "description_length",
+        "vif": 3.220704742370729
+      },
+      {
+        "feature": "channel_subscriber_count",
+        "vif": 14.289243294611593
+      },
+      {
+        "feature": "channel_view_count",
+        "vif": 14.415804993807509
+      },
+      {
+        "feature": "channel_video_count",
+        "vif": 3.156173096763975
+      },
+      {
+        "feature": "hour",
+        "vif": 3.9807956594507257
+      },
+      {
+        "feature": "video_age_days",
+        "vif": 2.987083646923823
+      }
+    ],
+    "selected_pool": [
+      "video_duration",
+      "video_tags_count",
+      "title_length",
+      "description_length",
+      "channel_video_count",
+      "hour",
+      "video_age_days",
+      "is_hd",
+      "has_caption",
+      "is_licensed",
+      "is_for_kids",
+      "is_official",
+      "is_remix",
+      "is_lyric",
+      "is_cover",
+      "is_collab",
+      "is_weekend",
+      "posted_morning",
+      "posted_afternoon",
+      "posted_evening",
+      "genre_Bolero",
+      "genre_Chill",
+      "genre_Cải lương",
+      "genre_Dân ca",
+      "genre_Indie",
+      "genre_Khác",
+      "genre_Không lời",
+      "genre_Live",
+      "genre_Lofi",
+      "genre_Nhạc Tết",
+      "genre_Nhạc buồn",
+      "genre_Nhạc chế",
+      "genre_Nhạc cụ",
+      "genre_Nhạc sàn",
+      "genre_Nhạc trẻ",
+      "genre_Nhạc vàng",
+      "genre_Nhạc đám cưới",
+      "genre_Nhạc đỏ",
+      "genre_Quê hương",
+      "genre_Rap",
+      "genre_Remix",
+      "genre_Thiếu nhi",
+      "genre_Trữ tình",
+      "genre_Vui tươi"
+    ],
+    "insight": "Đọc tương quan và VIF cùng kết quả stepwise để phân biệt biến ảnh hưởng thật với biến gây nhiễu hoặc đa cộng tuyến."
+  },
   "simpson_confounding": {
     "status": "ok",
     "n": 6772,
@@ -469,20 +832,127 @@
       "x": "channel_video_count",
       "z": "channel_subscriber_count"
     },
-    "coef_single_std": 0.31500533364639577,
-    "coef_multi_std": -0.6695760077333532,
-    "p_single": 2.5327290235695185e-13,
-    "p_multi": 6.2199570528274374e-27,
+    "coef_single_std": 0.3150053336463967,
+    "coef_multi_std": -0.6695760077333497,
+    "p_single": 2.532729023569069e-13,
+    "p_multi": 6.219957052830742e-27,
     "r2_single": 0.007877932079130345,
     "r2_multi": 0.07065330653261725,
-    "pct_change": 3.125602128645146,
+    "pct_change": 3.125602128645128,
     "flip_detected": "True",
     "corr_x_z": 0.7421344954986105,
-    "interpretation": "So sánh Std Coef của channel_video_count khi chạy đơn biến và khi kiểm soát channel_subscriber_count để phát hiện confounding."
+    "flip_explanation": "⚠️ HỆ SỐ THAY ĐỔI DẤU (Simpson's Paradox): Hệ số của channel_video_count từ 0.3150 thành -0.6696. Điều này cho thấy mối quan hệ thực sự phụ thuộc rất lớn vào biến {var_confounder} ('gây nhiễu'). Kênh lớn (subscriber nhiều) có xu hướng upload nhiều video, nhưng nếu kiểm soát kích thước kênh, mối quan hệ thay đổi hoàn toàn.",
+    "interpretation": "So sánh Std Coef (hệ số chuẩn hóa) của {var_main} trước/sau khi kiểm soát {var_confounder}. Nếu đổi dấu hay đổi mạnh (>30%), có khả năng confounding (biến gây nhiễu).",
+    "chart_context": {
+      "single_model": {
+        "coef": 0.3150053336463967,
+        "p_value": 2.532729023569069e-13,
+        "r2": 0.007877932079130345,
+        "label": "Mô hình đơn (Y ~ X): Chỉ xét X, chưa kiểm soát Z"
+      },
+      "multi_model": {
+        "coef": -0.6695760077333497,
+        "p_value": 6.219957052830742e-27,
+        "r2": 0.07065330653261725,
+        "label": "Mô hình đa (Y ~ X + Z): Kiểm soát Z, cô lập tác động thật của X"
+      },
+      "insight": "So sánh hai mô hình để phát hiện Simpson's Paradox hoặc confounding. Nếu hệ số đổi dấu/mạnh, Z là biến gây nhiễu và cần kiểm soát để diễn giải đúng."
+    }
   },
   "tab": 5,
   "name": "Mô hình hóa",
   "rows": 6772,
   "active_filters": [],
-  "selected_chart_state": {}
+  "dashboard_state": {
+    "columns": [
+      "video_id",
+      "video_publish_date",
+      "channel_id",
+      "channel_title",
+      "video_title",
+      "video_description",
+      "video_tags",
+      "video_category_id",
+      "video_view_count",
+      "video_like_count",
+      "video_comment_count",
+      "video_duration",
+      "video_definition",
+      "video_caption_status",
+      "video_licensed_content",
+      "video_made_for_kids",
+      "video_tags_count",
+      "video_topics",
+      "search_query",
+      "channel_subscriber_count",
+      "channel_view_count",
+      "channel_video_count",
+      "_row_id",
+      "hour",
+      "day",
+      "genre",
+      "title_length",
+      "genre_label",
+      "video_type",
+      "engagement_rate",
+      "channel_size",
+      "publish_date"
+    ],
+    "selected_chart_state": {}
+  },
+  "selected_chart_state": {},
+  "glossary": {
+    "VIF (Variance Inflation Factor)": {
+      "definition": "Chỉ số đo mức độ của đa cộng tuyến (multicollinearity) giữa các biến.",
+      "scale": "VIF = 1: độc lập hoàn toàn | VIF < 5: chấp nhận được | VIF ≥ 10: đa cộng tuyến nghiêm trọng",
+      "impact": "VIF cao → hệ số không ổn định, dễ thay đổi khi thêm/bớt biến. Thường loại bớt biến VIF ≥ 10."
+    },
+    "Removed Variables": {
+      "definition": "Các biến bị loại khỏi mô hình cuối do: (1) VIF cao hoặc (2) p-value > ngưỡng sl_remove",
+      "reason_1": "VIF cao: Biến này tương quan mạnh với biến khác → làm hệ số không ổn định → loại khỏi mô hình.",
+      "reason_2": "p-value > sl_remove: Biến này không có ý nghĩa thống kê trong mô hình → loại để đơn giản hóa."
+    },
+    "Stepwise Regression": {
+      "definition": "Quy trình tự động thêm/bớt biến dựa trên tiêu chí thống kê (p-value).",
+      "forward": "Bắt đầu từ mô hình rỗng, từng bước THÊM biến có p-value < p_enter.",
+      "backward": "Bắt đầu từ tất cả biến, từng bước BỚT biến có p-value > sl_remove.",
+      "both": "Kết hợp forward và backward: vừa thêm biến mới tốt vừa bớt biến không còn cần."
+    },
+    "Standardized Coefficients (Std Coef)": {
+      "definition": "Hệ số hồi quy sau khi chuẩn hóa X và Y về scale 0-1, giúp so sánh tác động tương đối giữa các biến.",
+      "interpretation": "|Std Coef| lớn → biến này ảnh hưởng mạnh hơn đến Y. Dấu (+/-) chỉ hướng tác động.",
+      "caveat": "Std Coef chỉ cho thấy mối quan hệ tuyến tính, KHÔNG chứng minh nhân quả."
+    },
+    "p-value": {
+      "definition": "Xác suất quan sát thấy dữ liệu này nếu biến KHÔNG có tác động (giả thuyết vô).",
+      "threshold": "p-value < 0.05: thường được coi là 'có ý nghĩa thống kê' (đủ bằng chứng biến này có tác động).",
+      "danger": "p-value nhỏ ≠ tác động lớn. Dữ liệu lớn → p-value nhỏ ngay cả với tác động nhỏ."
+    },
+    "R² (Coefficient of Determination)": {
+      "definition": "Tỷ lệ phương sai trong Y được mô hình giải thích.",
+      "scale": "0 ≤ R² ≤ 1. R² = 0.7 → mô hình giải thích 70% biến động trong lượt xem.",
+      "danger": "R² cao ≠ mô hình tốt. Có thể do overfitting hoặc confounding chưa loại bớt."
+    },
+    "Confounding (Biến gây nhiễu)": {
+      "definition": "Biến Z ảnh hưởng đến cả X và Y → làm cho mối quan hệ X→Y bị bóp méo (spurious).",
+      "example": "Ví dụ: Kênh lớn (Z) → upload nhiều video (X) + lượt xem nhiều (Y). Nếu không kiểm soát Z, ta sẽ tưởng X→Y mạnh, thực chất là vì Z.",
+      "detection": "So sánh mô hình có/không Z: nếu hệ số X thay đổi mạnh, Z là confounding → cần kiểm soát."
+    },
+    "Simpson's Paradox": {
+      "definition": "Hiện tượng hệ số X đảo dấu hoàn toàn khi kiểm soát Z (mối quan hệ đảo ngược).",
+      "example": "X→Y dương (lợi) nếu bỏ qua Z, nhưng X→Y âm (hại) khi kiểm soát Z.",
+      "action": "Nếu phát hiện flip_detected=True, PHẢI kiểm soát Z, không được diễn giải từ mô hình đơn."
+    }
+  },
+  "how_to_read": {
+    "step_1_vif": "Kiểm tra VIF của các biến số. Nếu VIF ≥ 10, biến đó bị loại khỏi mô hình stepwise. Điều này tránh đa cộng tuyến làm hệ số không ổn định.",
+    "step_2_stepwise": "Chạy hồi quy từng bước: các biến có p-value < p_enter được THÊM vào mô hình. Nếu dùng 'both', các biến có p-value > sl_remove bị BỚT. Kết quả: mô hình tối ưu với các biến có ý nghĩa thống kê.",
+    "step_3_interpret": "Đọc Std Coef của các biến được chọn: |Std Coef| lớn → tác động mạnh, dấu chỉ hướng (+/-). NHƯNG: Std Coef ≠ nhân quả. Cần kiểm soát confounding (bước 4).",
+    "step_4_confounding": "Kiểm tra Simpson/Confounding: so sánh hệ số trước/sau kiểm soát Z. Nếu flip_detected=True hoặc pct_change > 30%, Z là biến gây nhiễu → phải xem xét trong diễn giải."
+  },
+  "tab_insights": [
+    "Cần đọc đồng thời correlation, VIF, stepwise và confounding để tránh diễn giải hệ số hồi quy sai.",
+    "Hệ số chuẩn hóa và p-value phải được xem như bảng ưu tiên biến, không phải kết luận nhân quả trực tiếp.",
+    "Nếu phát hiện flip_detected=True trong Simpson's Paradox, PHẢI kiểm soát biến gây nhiễu khi giải thích."
+  ]
 }

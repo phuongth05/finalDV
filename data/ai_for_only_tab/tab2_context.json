@@ -2,8 +2,71 @@
   "tab": 2,
   "name": "Định nghĩa thành công",
   "rows": 6772,
+  "dashboard_state": {
+    "columns": [
+      "video_id",
+      "video_publish_date",
+      "channel_id",
+      "channel_title",
+      "video_title",
+      "video_description",
+      "video_tags",
+      "video_category_id",
+      "video_view_count",
+      "video_like_count",
+      "video_comment_count",
+      "video_duration",
+      "video_definition",
+      "video_caption_status",
+      "video_licensed_content",
+      "video_made_for_kids",
+      "video_tags_count",
+      "video_topics",
+      "search_query",
+      "channel_subscriber_count",
+      "channel_view_count",
+      "channel_video_count",
+      "_row_id",
+      "hour",
+      "day",
+      "genre",
+      "title_length",
+      "genre_label",
+      "video_type",
+      "engagement_rate",
+      "channel_size",
+      "publish_date"
+    ],
+    "selected_chart_state": {}
+  },
   "active_filters": [],
   "correlation": {
+    "matrix": {
+      "video_view_count": {
+        "video_view_count": 1.0,
+        "video_like_count": 0.7787,
+        "video_comment_count": 0.302,
+        "engagement_rate": -0.1036
+      },
+      "video_like_count": {
+        "video_view_count": 0.7787,
+        "video_like_count": 1.0,
+        "video_comment_count": 0.565,
+        "engagement_rate": -0.0324
+      },
+      "video_comment_count": {
+        "video_view_count": 0.302,
+        "video_like_count": 0.565,
+        "video_comment_count": 1.0,
+        "engagement_rate": 0.0064
+      },
+      "engagement_rate": {
+        "video_view_count": -0.1036,
+        "video_like_count": -0.0324,
+        "video_comment_count": 0.0064,
+        "engagement_rate": 1.0
+      }
+    },
     "pairs": [
       {
         "pair": [
@@ -50,7 +113,8 @@
     ],
     "views_vs_likes": 0.7787294755577333,
     "views_vs_comments": 0.3019998941162481,
-    "engagement_correlation": -0.10355453723788237
+    "engagement_correlation": -0.10355453723788237,
+    "insight": "Tương quan cần đọc cùng heatmap và bảng so sánh top/bottom để tránh kết luận chỉ từ r."
   },
   "density_heatmap": {
     "status": "ok",
@@ -65,6 +129,92 @@
       "views_threshold": 2329957.75,
       "engagement_threshold": 0.014411684741204129
     }
+  },
+  "channel_engagement": {
+    "chart_type": "lollipop",
+    "source_table": [
+      {
+        "channel_title": "TEVI official",
+        "total_views": 221,
+        "total_likes": 49.0,
+        "total_comments": 35.0,
+        "video_count": 1,
+        "engagement_rate": 0.38009049773755654
+      },
+      {
+        "channel_title": "S.S_NHAC_V",
+        "total_views": 6,
+        "total_likes": 1.0,
+        "total_comments": 1.0,
+        "video_count": 1,
+        "engagement_rate": 0.3333333333333333
+      },
+      {
+        "channel_title": "Xuân Phương XP",
+        "total_views": 120,
+        "total_likes": 17.0,
+        "total_comments": 15.0,
+        "video_count": 1,
+        "engagement_rate": 0.26666666666666666
+      },
+      {
+        "channel_title": "Sơn viatal Dj official",
+        "total_views": 43,
+        "total_likes": 9.0,
+        "total_comments": 2.0,
+        "video_count": 1,
+        "engagement_rate": 0.2558139534883721
+      },
+      {
+        "channel_title": "Diễm Phương Official",
+        "total_views": 2839,
+        "total_likes": 661.0,
+        "total_comments": 20.0,
+        "video_count": 1,
+        "engagement_rate": 0.23987319478689678
+      },
+      {
+        "channel_title": "HẠNH MUZIK",
+        "total_views": 379,
+        "total_likes": 54.0,
+        "total_comments": 30.0,
+        "video_count": 1,
+        "engagement_rate": 0.22163588390501318
+      },
+      {
+        "channel_title": "Tình Vang Official",
+        "total_views": 343,
+        "total_likes": 12.0,
+        "total_comments": 59.0,
+        "video_count": 1,
+        "engagement_rate": 0.20699708454810495
+      },
+      {
+        "channel_title": "DƯƠNG HOÀI PHONG OFFICIAL",
+        "total_views": 6490,
+        "total_likes": 1035.0,
+        "total_comments": 23.0,
+        "video_count": 1,
+        "engagement_rate": 0.163020030816641
+      },
+      {
+        "channel_title": "Hieptran Entertainment",
+        "total_views": 31,
+        "total_likes": 5.0,
+        "total_comments": 0.0,
+        "video_count": 2,
+        "engagement_rate": 0.16129032258064516
+      },
+      {
+        "channel_title": "Quốc Music🎼",
+        "total_views": 2694,
+        "total_likes": 403.0,
+        "total_comments": 29.0,
+        "video_count": 1,
+        "engagement_rate": 0.1603563474387528
+      }
+    ],
+    "insight": "Top kênh theo tỷ lệ tương tác cho thấy chất lượng tương tác, không chỉ tổng view."
   },
   "comparative_analysis": {
     "status": "ok",
@@ -296,5 +446,8 @@
       }
     ]
   },
-  "selected_chart_state": {}
+  "tab_insights": [
+    "Nếu heatmap tập trung ở một vùng sáng, đó là cụm dữ liệu phổ biến chứ không tự động là cụm hiệu quả nhất.",
+    "So sánh nhóm view cao và thấp nên ưu tiên các biến có chênh lệch ổn định và có ý nghĩa thực tế."
+  ]
 }

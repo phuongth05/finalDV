@@ -2,7 +2,941 @@
   "tab": 3,
   "name": "Hành vi người dùng & Từ khóa",
   "rows": 6772,
+  "dashboard_state": {
+    "columns": [
+      "video_id",
+      "video_publish_date",
+      "channel_id",
+      "channel_title",
+      "video_title",
+      "video_description",
+      "video_tags",
+      "video_category_id",
+      "video_view_count",
+      "video_like_count",
+      "video_comment_count",
+      "video_duration",
+      "video_definition",
+      "video_caption_status",
+      "video_licensed_content",
+      "video_made_for_kids",
+      "video_tags_count",
+      "video_topics",
+      "search_query",
+      "channel_subscriber_count",
+      "channel_view_count",
+      "channel_video_count",
+      "_row_id",
+      "hour",
+      "day",
+      "genre",
+      "title_length",
+      "genre_label",
+      "video_type",
+      "engagement_rate",
+      "channel_size",
+      "publish_date"
+    ],
+    "selected_chart_state": {},
+    "dislike_data_available": false
+  },
   "active_filters": [],
+  "charts": {
+    "genre_boxplot": {
+      "chart_type": "box",
+      "source_table": {
+        "status": "ok",
+        "rows": 25,
+        "table": [
+          {
+            "genre": "Khác",
+            "video_count": 1290,
+            "total_views": 5839474238,
+            "avg_views": 4526724.215503876,
+            "median_views": 548146.5,
+            "p25_views": 10707.25,
+            "p75_views": 2532667.25,
+            "count_share": 0.1904902539870053,
+            "view_share": 0.20652843389905443,
+            "demand_gap": 0.016038179912049116
+          },
+          {
+            "genre": "Nhạc buồn",
+            "video_count": 317,
+            "total_views": 2464628050,
+            "avg_views": 7774851.89274448,
+            "median_views": 612794.0,
+            "p25_views": 18796.0,
+            "p75_views": 4768637.0,
+            "count_share": 0.04681039574719433,
+            "view_share": 0.08716808235881807,
+            "demand_gap": 0.040357686611623735
+          },
+          {
+            "genre": "Nhạc trẻ",
+            "video_count": 282,
+            "total_views": 1868626861,
+            "avg_views": 6626336.386524823,
+            "median_views": 1557952.0,
+            "p25_views": 162236.0,
+            "p75_views": 6978597.25,
+            "count_share": 0.041642055522740695,
+            "view_share": 0.06608892571743136,
+            "demand_gap": 0.024446870194690662
+          },
+          {
+            "genre": "Thiếu nhi",
+            "video_count": 277,
+            "total_views": 1759788612,
+            "avg_views": 6353027.480144404,
+            "median_views": 347453.0,
+            "p25_views": 25253.0,
+            "p75_views": 4547725.0,
+            "count_share": 0.04090372120496161,
+            "view_share": 0.062239573498697354,
+            "demand_gap": 0.021335852293735746
+          },
+          {
+            "genre": "Rap",
+            "video_count": 153,
+            "total_views": 1655152046,
+            "avg_views": 10817987.22875817,
+            "median_views": 3807935.0,
+            "p25_views": 643824.0,
+            "p75_views": 11880688.0,
+            "count_share": 0.022593030124040167,
+            "view_share": 0.058538824899803533,
+            "demand_gap": 0.035945794775763366
+          },
+          {
+            "genre": "Chill",
+            "video_count": 234,
+            "total_views": 1360443158,
+            "avg_views": 5813859.64957265,
+            "median_views": 134632.0,
+            "p25_views": 2277.5,
+            "p75_views": 1819715.75,
+            "count_share": 0.03455404607206143,
+            "view_share": 0.048115666475935195,
+            "demand_gap": 0.013561620403873764
+          },
+          {
+            "genre": "Acoustic",
+            "video_count": 156,
+            "total_views": 1342423009,
+            "avg_views": 8605275.698717948,
+            "median_views": 49050.5,
+            "p25_views": 3289.75,
+            "p75_views": 2549620.5,
+            "count_share": 0.02303603071470762,
+            "view_share": 0.04747833629860878,
+            "demand_gap": 0.02444230558390116
+          },
+          {
+            "genre": "Cải lương",
+            "video_count": 354,
+            "total_views": 1147817535,
+            "avg_views": 3242422.415254237,
+            "median_views": 110954.5,
+            "p25_views": 11474.0,
+            "p75_views": 1120903.0,
+            "count_share": 0.0522740696987596,
+            "view_share": 0.04059559957689175,
+            "demand_gap": -0.011678470121867845
+          },
+          {
+            "genre": "Remix",
+            "video_count": 121,
+            "total_views": 1108371724,
+            "avg_views": 9160096.892561983,
+            "median_views": 4082160.0,
+            "p25_views": 1219567.0,
+            "p75_views": 14409719.0,
+            "count_share": 0.017867690490253985,
+            "view_share": 0.039200494257872774,
+            "demand_gap": 0.02133280376761879
+          },
+          {
+            "genre": "Lofi",
+            "video_count": 141,
+            "total_views": 1033188651,
+            "avg_views": 7327579.085106383,
+            "median_views": 574016.0,
+            "p25_views": 31192.0,
+            "p75_views": 5140953.0,
+            "count_share": 0.020821027761370348,
+            "view_share": 0.036541446252940334,
+            "demand_gap": 0.015720418491569986
+          },
+          {
+            "genre": "Nhạc sàn",
+            "video_count": 140,
+            "total_views": 1031559723,
+            "avg_views": 7368283.735714286,
+            "median_views": 1582396.5,
+            "p25_views": 78894.25,
+            "p75_views": 7036532.25,
+            "count_share": 0.02067336089781453,
+            "view_share": 0.03648383491070937,
+            "demand_gap": 0.01581047401289484
+          },
+          {
+            "genre": "Live",
+            "video_count": 105,
+            "total_views": 855006744,
+            "avg_views": 8142921.371428572,
+            "median_views": 1446321.0,
+            "p25_views": 253417.0,
+            "p75_views": 5796986.0,
+            "count_share": 0.015505020673360898,
+            "view_share": 0.030239572368064575,
+            "demand_gap": 0.014734551694703677
+          },
+          {
+            "genre": "Dân ca",
+            "video_count": 249,
+            "total_views": 819288926,
+            "avg_views": 3290316.9718875503,
+            "median_views": 228426.0,
+            "p25_views": 30902.0,
+            "p75_views": 1344476.0,
+            "count_share": 0.0367690490253987,
+            "view_share": 0.028976317370580765,
+            "demand_gap": -0.007792731654817937
+          },
+          {
+            "genre": "Vui tươi",
+            "video_count": 227,
+            "total_views": 776133220,
+            "avg_views": 3419089.074889868,
+            "median_views": 47412.0,
+            "p25_views": 1351.0,
+            "p75_views": 1898726.5,
+            "count_share": 0.0335203780271707,
+            "view_share": 0.027450001813610236,
+            "demand_gap": -0.006070376213560463
+          },
+          {
+            "genre": "Nhạc đám cưới",
+            "video_count": 223,
+            "total_views": 766463291,
+            "avg_views": 3437055.116591928,
+            "median_views": 281175.0,
+            "p25_views": 30440.5,
+            "p75_views": 1994203.0,
+            "count_share": 0.032929710572947433,
+            "view_share": 0.027107999227266255,
+            "demand_gap": -0.005821711345681178
+          },
+          {
+            "genre": "Nhạc chế",
+            "video_count": 386,
+            "total_views": 745048317,
+            "avg_views": 1930176.9870466322,
+            "median_views": 243736.0,
+            "p25_views": 31630.0,
+            "p75_views": 1179745.25,
+            "count_share": 0.056999409332545777,
+            "view_share": 0.02635060209493063,
+            "demand_gap": -0.030648807237615146
+          },
+          {
+            "genre": "Nhạc Tết",
+            "video_count": 267,
+            "total_views": 687450213,
+            "avg_views": 2574719.8988764044,
+            "median_views": 78595.0,
+            "p25_views": 4097.0,
+            "p75_views": 1776524.0,
+            "count_share": 0.039427052569403424,
+            "view_share": 0.024313492976910257,
+            "demand_gap": -0.015113559592493168
+          },
+          {
+            "genre": "Nhạc đỏ",
+            "video_count": 255,
+            "total_views": 599931721,
+            "avg_views": 2352673.4156862744,
+            "median_views": 43521.0,
+            "p25_views": 5347.0,
+            "p75_views": 1049403.5,
+            "count_share": 0.03765505020673361,
+            "view_share": 0.0212181702897504,
+            "demand_gap": -0.016436879916983213
+          },
+          {
+            "genre": "Nhạc cụ",
+            "video_count": 201,
+            "total_views": 491641119,
+            "avg_views": 2445975.7164179105,
+            "median_views": 2180.0,
+            "p25_views": 150.0,
+            "p75_views": 1095758.0,
+            "count_share": 0.029681039574719435,
+            "view_share": 0.017388187054015503,
+            "demand_gap": -0.012292852520703931
+          },
+          {
+            "genre": "Trữ tình",
+            "video_count": 272,
+            "total_views": 421620862,
+            "avg_views": 1550076.6985294118,
+            "median_views": 145553.5,
+            "p25_views": 4281.5,
+            "p75_views": 1144895.75,
+            "count_share": 0.04016538688718252,
+            "view_share": 0.014911735676712706,
+            "demand_gap": -0.025253651210469814
+          },
+          {
+            "genre": "Bolero",
+            "video_count": 351,
+            "total_views": 411868379,
+            "avg_views": 1173414.1851851852,
+            "median_views": 180377.0,
+            "p25_views": 42003.5,
+            "p75_views": 826785.5,
+            "count_share": 0.05183106910809215,
+            "view_share": 0.014566813350056976,
+            "demand_gap": -0.03726425575803517
+          },
+          {
+            "genre": "Quê hương",
+            "video_count": 218,
+            "total_views": 371877467,
+            "avg_views": 1705859.9403669725,
+            "median_views": 58661.5,
+            "p25_views": 4058.25,
+            "p75_views": 700566.0,
+            "count_share": 0.03219137625516834,
+            "view_share": 0.013152429094055246,
+            "demand_gap": -0.019038947161113092
+          },
+          {
+            "genre": "Không lời",
+            "video_count": 342,
+            "total_views": 345522833,
+            "avg_views": 1010300.6812865497,
+            "median_views": 151070.0,
+            "p25_views": 21135.0,
+            "p75_views": 649215.0,
+            "count_share": 0.05050206733608978,
+            "view_share": 0.012220327835592126,
+            "demand_gap": -0.03828173950049765
+          },
+          {
+            "genre": "Indie",
+            "video_count": 48,
+            "total_views": 254957145,
+            "avg_views": 5311607.1875,
+            "median_views": 1074249.5,
+            "p25_views": 3596.0,
+            "p75_views": 6507968.75,
+            "count_share": 0.0070880094506792675,
+            "view_share": 0.009017233011418952,
+            "demand_gap": 0.0019292235607396846
+          },
+          {
+            "genre": "Nhạc vàng",
+            "video_count": 163,
+            "total_views": 116148532,
+            "avg_views": 712567.6809815951,
+            "median_views": 111296.0,
+            "p25_views": 22382.5,
+            "p75_views": 547380.5,
+            "count_share": 0.024069698759598347,
+            "view_share": 0.00410789969027246,
+            "demand_gap": -0.019961799069325888
+          }
+        ]
+      },
+      "insight": "Box plot cần đọc median, IQR và outlier để hiểu phân phối view theo thể loại."
+    },
+    "top_liked_videos": {
+      "chart_type": "bar/bubble",
+      "source_table": [
+        {
+          "video_title": "sơn tùng mtp muộn rồi mà sao còn official music video",
+          "video_like_count": 2655980.0
+        },
+        {
+          "video_title": "bắc bling bắc ninh official mv hoà minzy ft ns xuân hinh x masew x tuấn cry",
+          "video_like_count": 1963145.0
+        },
+        {
+          "video_title": "đen mang tiền về cho mẹ ft nguyên thảo mv",
+          "video_like_count": 1440305.0
+        },
+        {
+          "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
+          "video_like_count": 1419016.0
+        },
+        {
+          "video_title": "jack laylalay official music video",
+          "video_like_count": 1267103.0
+        }
+      ],
+      "insight": "Top video theo lượt thích cho biết nội dung nào được cộng đồng phản hồi tích cực nhất."
+    },
+    "least_liked_videos_proxy": {
+      "chart_type": "bar/bubble",
+      "source_table": [
+        {
+          "video_title": "thanh thúy khúc nhạc dưới trăng official mv 4k hd remastered",
+          "video_like_count": 0.0
+        },
+        {
+          "video_title": "chế thanh gõ cửa trái tim official mv 4k hd remastered",
+          "video_like_count": 0.0
+        },
+        {
+          "video_title": "chế thanh người không cô đơn official mv 4k hd remastered",
+          "video_like_count": 0.0
+        },
+        {
+          "video_title": "mỹ linh nếu em là người tình official mv 4k hd remastered",
+          "video_like_count": 0.0
+        },
+        {
+          "video_title": "đừng kéo đôi chân em lại hot clip dq music dq",
+          "video_like_count": 0.0
+        }
+      ],
+      "insight": "Tập dữ liệu hiện không có cột dislike, nên nhóm này chỉ là proxy từ video có lượt thích thấp nhất."
+    },
+    "genre_share": {
+      "chart_type": "pie",
+      "source_table": {
+        "status": "ok",
+        "rows": 25,
+        "table": [
+          {
+            "genre": "Khác",
+            "video_count": 1290,
+            "total_views": 5839474238,
+            "avg_views": 4526724.215503876,
+            "median_views": 548146.5,
+            "p25_views": 10707.25,
+            "p75_views": 2532667.25,
+            "count_share": 0.1904902539870053,
+            "view_share": 0.20652843389905443,
+            "demand_gap": 0.016038179912049116
+          },
+          {
+            "genre": "Nhạc buồn",
+            "video_count": 317,
+            "total_views": 2464628050,
+            "avg_views": 7774851.89274448,
+            "median_views": 612794.0,
+            "p25_views": 18796.0,
+            "p75_views": 4768637.0,
+            "count_share": 0.04681039574719433,
+            "view_share": 0.08716808235881807,
+            "demand_gap": 0.040357686611623735
+          },
+          {
+            "genre": "Nhạc trẻ",
+            "video_count": 282,
+            "total_views": 1868626861,
+            "avg_views": 6626336.386524823,
+            "median_views": 1557952.0,
+            "p25_views": 162236.0,
+            "p75_views": 6978597.25,
+            "count_share": 0.041642055522740695,
+            "view_share": 0.06608892571743136,
+            "demand_gap": 0.024446870194690662
+          },
+          {
+            "genre": "Thiếu nhi",
+            "video_count": 277,
+            "total_views": 1759788612,
+            "avg_views": 6353027.480144404,
+            "median_views": 347453.0,
+            "p25_views": 25253.0,
+            "p75_views": 4547725.0,
+            "count_share": 0.04090372120496161,
+            "view_share": 0.062239573498697354,
+            "demand_gap": 0.021335852293735746
+          },
+          {
+            "genre": "Rap",
+            "video_count": 153,
+            "total_views": 1655152046,
+            "avg_views": 10817987.22875817,
+            "median_views": 3807935.0,
+            "p25_views": 643824.0,
+            "p75_views": 11880688.0,
+            "count_share": 0.022593030124040167,
+            "view_share": 0.058538824899803533,
+            "demand_gap": 0.035945794775763366
+          },
+          {
+            "genre": "Chill",
+            "video_count": 234,
+            "total_views": 1360443158,
+            "avg_views": 5813859.64957265,
+            "median_views": 134632.0,
+            "p25_views": 2277.5,
+            "p75_views": 1819715.75,
+            "count_share": 0.03455404607206143,
+            "view_share": 0.048115666475935195,
+            "demand_gap": 0.013561620403873764
+          },
+          {
+            "genre": "Acoustic",
+            "video_count": 156,
+            "total_views": 1342423009,
+            "avg_views": 8605275.698717948,
+            "median_views": 49050.5,
+            "p25_views": 3289.75,
+            "p75_views": 2549620.5,
+            "count_share": 0.02303603071470762,
+            "view_share": 0.04747833629860878,
+            "demand_gap": 0.02444230558390116
+          },
+          {
+            "genre": "Cải lương",
+            "video_count": 354,
+            "total_views": 1147817535,
+            "avg_views": 3242422.415254237,
+            "median_views": 110954.5,
+            "p25_views": 11474.0,
+            "p75_views": 1120903.0,
+            "count_share": 0.0522740696987596,
+            "view_share": 0.04059559957689175,
+            "demand_gap": -0.011678470121867845
+          },
+          {
+            "genre": "Remix",
+            "video_count": 121,
+            "total_views": 1108371724,
+            "avg_views": 9160096.892561983,
+            "median_views": 4082160.0,
+            "p25_views": 1219567.0,
+            "p75_views": 14409719.0,
+            "count_share": 0.017867690490253985,
+            "view_share": 0.039200494257872774,
+            "demand_gap": 0.02133280376761879
+          },
+          {
+            "genre": "Lofi",
+            "video_count": 141,
+            "total_views": 1033188651,
+            "avg_views": 7327579.085106383,
+            "median_views": 574016.0,
+            "p25_views": 31192.0,
+            "p75_views": 5140953.0,
+            "count_share": 0.020821027761370348,
+            "view_share": 0.036541446252940334,
+            "demand_gap": 0.015720418491569986
+          },
+          {
+            "genre": "Nhạc sàn",
+            "video_count": 140,
+            "total_views": 1031559723,
+            "avg_views": 7368283.735714286,
+            "median_views": 1582396.5,
+            "p25_views": 78894.25,
+            "p75_views": 7036532.25,
+            "count_share": 0.02067336089781453,
+            "view_share": 0.03648383491070937,
+            "demand_gap": 0.01581047401289484
+          },
+          {
+            "genre": "Live",
+            "video_count": 105,
+            "total_views": 855006744,
+            "avg_views": 8142921.371428572,
+            "median_views": 1446321.0,
+            "p25_views": 253417.0,
+            "p75_views": 5796986.0,
+            "count_share": 0.015505020673360898,
+            "view_share": 0.030239572368064575,
+            "demand_gap": 0.014734551694703677
+          },
+          {
+            "genre": "Dân ca",
+            "video_count": 249,
+            "total_views": 819288926,
+            "avg_views": 3290316.9718875503,
+            "median_views": 228426.0,
+            "p25_views": 30902.0,
+            "p75_views": 1344476.0,
+            "count_share": 0.0367690490253987,
+            "view_share": 0.028976317370580765,
+            "demand_gap": -0.007792731654817937
+          },
+          {
+            "genre": "Vui tươi",
+            "video_count": 227,
+            "total_views": 776133220,
+            "avg_views": 3419089.074889868,
+            "median_views": 47412.0,
+            "p25_views": 1351.0,
+            "p75_views": 1898726.5,
+            "count_share": 0.0335203780271707,
+            "view_share": 0.027450001813610236,
+            "demand_gap": -0.006070376213560463
+          },
+          {
+            "genre": "Nhạc đám cưới",
+            "video_count": 223,
+            "total_views": 766463291,
+            "avg_views": 3437055.116591928,
+            "median_views": 281175.0,
+            "p25_views": 30440.5,
+            "p75_views": 1994203.0,
+            "count_share": 0.032929710572947433,
+            "view_share": 0.027107999227266255,
+            "demand_gap": -0.005821711345681178
+          },
+          {
+            "genre": "Nhạc chế",
+            "video_count": 386,
+            "total_views": 745048317,
+            "avg_views": 1930176.9870466322,
+            "median_views": 243736.0,
+            "p25_views": 31630.0,
+            "p75_views": 1179745.25,
+            "count_share": 0.056999409332545777,
+            "view_share": 0.02635060209493063,
+            "demand_gap": -0.030648807237615146
+          },
+          {
+            "genre": "Nhạc Tết",
+            "video_count": 267,
+            "total_views": 687450213,
+            "avg_views": 2574719.8988764044,
+            "median_views": 78595.0,
+            "p25_views": 4097.0,
+            "p75_views": 1776524.0,
+            "count_share": 0.039427052569403424,
+            "view_share": 0.024313492976910257,
+            "demand_gap": -0.015113559592493168
+          },
+          {
+            "genre": "Nhạc đỏ",
+            "video_count": 255,
+            "total_views": 599931721,
+            "avg_views": 2352673.4156862744,
+            "median_views": 43521.0,
+            "p25_views": 5347.0,
+            "p75_views": 1049403.5,
+            "count_share": 0.03765505020673361,
+            "view_share": 0.0212181702897504,
+            "demand_gap": -0.016436879916983213
+          },
+          {
+            "genre": "Nhạc cụ",
+            "video_count": 201,
+            "total_views": 491641119,
+            "avg_views": 2445975.7164179105,
+            "median_views": 2180.0,
+            "p25_views": 150.0,
+            "p75_views": 1095758.0,
+            "count_share": 0.029681039574719435,
+            "view_share": 0.017388187054015503,
+            "demand_gap": -0.012292852520703931
+          },
+          {
+            "genre": "Trữ tình",
+            "video_count": 272,
+            "total_views": 421620862,
+            "avg_views": 1550076.6985294118,
+            "median_views": 145553.5,
+            "p25_views": 4281.5,
+            "p75_views": 1144895.75,
+            "count_share": 0.04016538688718252,
+            "view_share": 0.014911735676712706,
+            "demand_gap": -0.025253651210469814
+          },
+          {
+            "genre": "Bolero",
+            "video_count": 351,
+            "total_views": 411868379,
+            "avg_views": 1173414.1851851852,
+            "median_views": 180377.0,
+            "p25_views": 42003.5,
+            "p75_views": 826785.5,
+            "count_share": 0.05183106910809215,
+            "view_share": 0.014566813350056976,
+            "demand_gap": -0.03726425575803517
+          },
+          {
+            "genre": "Quê hương",
+            "video_count": 218,
+            "total_views": 371877467,
+            "avg_views": 1705859.9403669725,
+            "median_views": 58661.5,
+            "p25_views": 4058.25,
+            "p75_views": 700566.0,
+            "count_share": 0.03219137625516834,
+            "view_share": 0.013152429094055246,
+            "demand_gap": -0.019038947161113092
+          },
+          {
+            "genre": "Không lời",
+            "video_count": 342,
+            "total_views": 345522833,
+            "avg_views": 1010300.6812865497,
+            "median_views": 151070.0,
+            "p25_views": 21135.0,
+            "p75_views": 649215.0,
+            "count_share": 0.05050206733608978,
+            "view_share": 0.012220327835592126,
+            "demand_gap": -0.03828173950049765
+          },
+          {
+            "genre": "Indie",
+            "video_count": 48,
+            "total_views": 254957145,
+            "avg_views": 5311607.1875,
+            "median_views": 1074249.5,
+            "p25_views": 3596.0,
+            "p75_views": 6507968.75,
+            "count_share": 0.0070880094506792675,
+            "view_share": 0.009017233011418952,
+            "demand_gap": 0.0019292235607396846
+          },
+          {
+            "genre": "Nhạc vàng",
+            "video_count": 163,
+            "total_views": 116148532,
+            "avg_views": 712567.6809815951,
+            "median_views": 111296.0,
+            "p25_views": 22382.5,
+            "p75_views": 547380.5,
+            "count_share": 0.024069698759598347,
+            "view_share": 0.00410789969027246,
+            "demand_gap": -0.019961799069325888
+          }
+        ]
+      },
+      "insight": "Tỷ trọng thể loại giúp nhìn lệch dữ liệu và mức độ tập trung nội dung."
+    },
+    "upload_vs_view_share": {
+      "chart_type": "combo_bar_line",
+      "source_table": [
+        {
+          "genre": "Khác",
+          "count_share": 0.1904902539870053,
+          "view_share": 0.20652843389905443,
+          "demand_gap": 0.016038179912049116
+        },
+        {
+          "genre": "Nhạc buồn",
+          "count_share": 0.04681039574719433,
+          "view_share": 0.08716808235881807,
+          "demand_gap": 0.040357686611623735
+        },
+        {
+          "genre": "Nhạc trẻ",
+          "count_share": 0.041642055522740695,
+          "view_share": 0.06608892571743136,
+          "demand_gap": 0.024446870194690662
+        },
+        {
+          "genre": "Thiếu nhi",
+          "count_share": 0.04090372120496161,
+          "view_share": 0.062239573498697354,
+          "demand_gap": 0.021335852293735746
+        },
+        {
+          "genre": "Rap",
+          "count_share": 0.022593030124040167,
+          "view_share": 0.058538824899803533,
+          "demand_gap": 0.035945794775763366
+        },
+        {
+          "genre": "Chill",
+          "count_share": 0.03455404607206143,
+          "view_share": 0.048115666475935195,
+          "demand_gap": 0.013561620403873764
+        },
+        {
+          "genre": "Acoustic",
+          "count_share": 0.02303603071470762,
+          "view_share": 0.04747833629860878,
+          "demand_gap": 0.02444230558390116
+        },
+        {
+          "genre": "Cải lương",
+          "count_share": 0.0522740696987596,
+          "view_share": 0.04059559957689175,
+          "demand_gap": -0.011678470121867845
+        },
+        {
+          "genre": "Remix",
+          "count_share": 0.017867690490253985,
+          "view_share": 0.039200494257872774,
+          "demand_gap": 0.02133280376761879
+        },
+        {
+          "genre": "Lofi",
+          "count_share": 0.020821027761370348,
+          "view_share": 0.036541446252940334,
+          "demand_gap": 0.015720418491569986
+        },
+        {
+          "genre": "Nhạc sàn",
+          "count_share": 0.02067336089781453,
+          "view_share": 0.03648383491070937,
+          "demand_gap": 0.01581047401289484
+        },
+        {
+          "genre": "Live",
+          "count_share": 0.015505020673360898,
+          "view_share": 0.030239572368064575,
+          "demand_gap": 0.014734551694703677
+        },
+        {
+          "genre": "Dân ca",
+          "count_share": 0.0367690490253987,
+          "view_share": 0.028976317370580765,
+          "demand_gap": -0.007792731654817937
+        },
+        {
+          "genre": "Vui tươi",
+          "count_share": 0.0335203780271707,
+          "view_share": 0.027450001813610236,
+          "demand_gap": -0.006070376213560463
+        },
+        {
+          "genre": "Nhạc đám cưới",
+          "count_share": 0.032929710572947433,
+          "view_share": 0.027107999227266255,
+          "demand_gap": -0.005821711345681178
+        },
+        {
+          "genre": "Nhạc chế",
+          "count_share": 0.056999409332545777,
+          "view_share": 0.02635060209493063,
+          "demand_gap": -0.030648807237615146
+        },
+        {
+          "genre": "Nhạc Tết",
+          "count_share": 0.039427052569403424,
+          "view_share": 0.024313492976910257,
+          "demand_gap": -0.015113559592493168
+        },
+        {
+          "genre": "Nhạc đỏ",
+          "count_share": 0.03765505020673361,
+          "view_share": 0.0212181702897504,
+          "demand_gap": -0.016436879916983213
+        },
+        {
+          "genre": "Nhạc cụ",
+          "count_share": 0.029681039574719435,
+          "view_share": 0.017388187054015503,
+          "demand_gap": -0.012292852520703931
+        },
+        {
+          "genre": "Trữ tình",
+          "count_share": 0.04016538688718252,
+          "view_share": 0.014911735676712706,
+          "demand_gap": -0.025253651210469814
+        },
+        {
+          "genre": "Bolero",
+          "count_share": 0.05183106910809215,
+          "view_share": 0.014566813350056976,
+          "demand_gap": -0.03726425575803517
+        },
+        {
+          "genre": "Quê hương",
+          "count_share": 0.03219137625516834,
+          "view_share": 0.013152429094055246,
+          "demand_gap": -0.019038947161113092
+        },
+        {
+          "genre": "Không lời",
+          "count_share": 0.05050206733608978,
+          "view_share": 0.012220327835592126,
+          "demand_gap": -0.03828173950049765
+        },
+        {
+          "genre": "Indie",
+          "count_share": 0.0070880094506792675,
+          "view_share": 0.009017233011418952,
+          "demand_gap": 0.0019292235607396846
+        },
+        {
+          "genre": "Nhạc vàng",
+          "count_share": 0.024069698759598347,
+          "view_share": 0.00410789969027246,
+          "demand_gap": -0.019961799069325888
+        }
+      ],
+      "insight": "So sánh upload share với view share để phát hiện thể loại bị đăng quá nhiều nhưng không thu hút tương ứng, hoặc ngược lại."
+    },
+    "genre_trend": {
+      "chart_type": "stacked_area",
+      "source_table": [
+        {
+          "quarter": "2021-01-01 00:00:00",
+          "genre": "Khác",
+          "video_count": 9
+        },
+        {
+          "quarter": "2021-01-01 00:00:00",
+          "genre": "Nhạc buồn",
+          "video_count": 5
+        },
+        {
+          "quarter": "2021-01-01 00:00:00",
+          "genre": "Nhạc trẻ",
+          "video_count": 1
+        },
+        {
+          "quarter": "2021-01-01 00:00:00",
+          "genre": "Thiếu nhi",
+          "video_count": 4
+        },
+        {
+          "quarter": "2021-04-01 00:00:00",
+          "genre": "Khác",
+          "video_count": 8
+        },
+        {
+          "quarter": "2021-04-01 00:00:00",
+          "genre": "Nhạc buồn",
+          "video_count": 9
+        },
+        {
+          "quarter": "2021-04-01 00:00:00",
+          "genre": "Nhạc trẻ",
+          "video_count": 2
+        },
+        {
+          "quarter": "2021-04-01 00:00:00",
+          "genre": "Thiếu nhi",
+          "video_count": 7
+        },
+        {
+          "quarter": "2021-07-01 00:00:00",
+          "genre": "Thiếu nhi",
+          "video_count": 4
+        },
+        {
+          "quarter": "2021-07-01 00:00:00",
+          "genre": "Nhạc trẻ",
+          "video_count": 8
+        },
+        {
+          "quarter": "2021-07-01 00:00:00",
+          "genre": "Khác",
+          "video_count": 14
+        },
+        {
+          "quarter": "2021-07-01 00:00:00",
+          "genre": "Nhạc buồn",
+          "video_count": 8
+        }
+      ],
+      "insight": "Chỉ giữ các mốc tháng thưa để nhìn xu hướng thể loại mà không làm context quá dày."
+    }
+  },
   "supply_vs_demand": {
     "status": "ok",
     "oversupplied_genres": [
@@ -147,158 +1081,7 @@
       }
     ]
   },
-  "caption_impact": {
-    "status": "ok",
-    "median_performance_comparison": [
-      {
-        "has_caption": false,
-        "median_views": 221090.0,
-        "median_likes": 1383.0,
-        "median_comments": 36.0,
-        "median_engagement": 0.0074415175781145666
-      },
-      {
-        "has_caption": true,
-        "median_views": 7688598.0,
-        "median_likes": 45072.0,
-        "median_comments": 1822.0,
-        "median_engagement": 0.005965780737423144
-      }
-    ]
-  },
-  "audience_segments": {
-    "status": "ok",
-    "dominant_segments": [
-      {
-        "channel_size": "Large",
-        "genre": "Khác",
-        "video_count": 402,
-        "avg_views": 9557479.935323384,
-        "total_views": 3842106934
-      },
-      {
-        "channel_size": "Medium",
-        "genre": "Khác",
-        "video_count": 402,
-        "avg_views": 3959700.771144279,
-        "total_views": 1591799710
-      },
-      {
-        "channel_size": "Large",
-        "genre": "Thiếu nhi",
-        "video_count": 138,
-        "avg_views": 11001223.347826088,
-        "total_views": 1518168822
-      },
-      {
-        "channel_size": "Large",
-        "genre": "Nhạc buồn",
-        "video_count": 100,
-        "avg_views": 14186762.49,
-        "total_views": 1418676249
-      },
-      {
-        "channel_size": "Large",
-        "genre": "Nhạc trẻ",
-        "video_count": 104,
-        "avg_views": 12567352.913461538,
-        "total_views": 1307004703
-      }
-    ],
-    "niche_segments": [
-      {
-        "channel_size": "Medium",
-        "genre": "Indie",
-        "video_count": 7,
-        "avg_views": 10451322.0,
-        "total_views": 73159254
-      },
-      {
-        "channel_size": "Small",
-        "genre": "Remix",
-        "video_count": 9,
-        "avg_views": 3169486.111111111,
-        "total_views": 28525375
-      },
-      {
-        "channel_size": "Large",
-        "genre": "Indie",
-        "video_count": 11,
-        "avg_views": 11464523.545454545,
-        "total_views": 126109759
-      },
-      {
-        "channel_size": "Medium",
-        "genre": "Live",
-        "video_count": 21,
-        "avg_views": 14020711.61904762,
-        "total_views": 294434944
-      },
-      {
-        "channel_size": "Medium",
-        "genre": "Remix",
-        "video_count": 21,
-        "avg_views": 11471411.666666666,
-        "total_views": 240899645
-      }
-    ]
-  },
-  "upload_trends": {
-    "status": "ok",
-    "growth_period": [
-      {
-        "month": "2025-12-01 00:00:00",
-        "video_count": 294,
-        "growth": 121.0
-      },
-      {
-        "month": "2025-10-01 00:00:00",
-        "video_count": 325,
-        "growth": 89.0
-      },
-      {
-        "month": "2025-03-01 00:00:00",
-        "video_count": 176,
-        "growth": 61.0
-      }
-    ],
-    "consistent_genres": [
-      {
-        "genre": "Lofi",
-        "mean": 2.82,
-        "std": 1.335389570920205,
-        "count": 50,
-        "cv": 0.47354240103553374
-      },
-      {
-        "genre": "Nhạc vàng",
-        "mean": 3.0754716981132075,
-        "std": 1.719224518874421,
-        "count": 53,
-        "cv": 0.5590116533763455
-      },
-      {
-        "genre": "Dân ca",
-        "mean": 4.368421052631579,
-        "std": 2.5955427380922003,
-        "count": 57,
-        "cv": 0.5941603858283351
-      },
-      {
-        "genre": "Nhạc buồn",
-        "mean": 5.4655172413793105,
-        "std": 3.261769604959533,
-        "count": 58,
-        "cv": 0.596790653273353
-      },
-      {
-        "genre": "Vui tươi",
-        "mean": 4.450980392156863,
-        "std": 2.7518264879181324,
-        "count": 51,
-        "cv": 0.6182517660080386
-      }
-    ]
-  },
-  "selected_chart_state": {}
+  "tab_insights": [
+    "Đọc box plot cùng pie chart và combo chart sẽ cho thấy cả phân phối, tỷ trọng và độ lệch giữa cung - cầu nội dung."
+  ]
 }

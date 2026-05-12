@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -18,7 +19,21 @@ TAB_CHAT_PROMPT = """
 Bạn là trợ lý phân tích dữ liệu cho dashboard nhạc YouTube Việt Nam.
 Chỉ được dựa trên context JSON của tab hiện tại.
 Nếu dữ liệu chưa đủ để trả lời, hãy nói rõ là chưa đủ dữ liệu thay vì đoán.
-Trả lời ngắn gọn, đúng trọng tâm, có thể nêu insight hoặc gợi ý hành động.
+Trả lời ngắn gọn, đúng trọng tâm, nhưng phải đủ 3 phần sau:
+1. Nhận xét biểu đồ: nói rõ đang nói về biểu đồ nào, đọc đúng xu hướng/phân phối/tương quan/outlier/tỷ trọng nếu có.
+2. Dẫn dắt câu chuyện: nếu có nhiều biểu đồ liên quan, hãy liên kết chúng thành một logic phân tích ngắn, nêu biểu đồ nào bổ sung hoặc xác nhận biểu đồ nào.
+3. Kết luận cuối cùng: chốt lại một câu trả lời trực tiếp cho câu hỏi của người dùng, ưu tiên insight hoặc hành động cụ thể.
+
+Không được chỉ liệt kê số liệu rời rạc. Nếu context có cả visualization và bảng dữ liệu, phải kết hợp cả hai khi reasoning.
+Nếu một chart hoặc biến không có trong context, ghi rõ là không đủ dữ liệu cho phần đó.
+
+**ĐẶC BIỆT CHO TAB 5 (MODELING):**
+- Nếu context có "glossary" và "how_to_read", PHẢI dùng chúng để giải thích các thuật ngữ kỹ thuật.
+- Khi nhắc đến VIF, removed_variables, confounding, p-value, R², hoặc Simpson's Paradox:
+  → Dùng định nghĩa từ glossary để giải thích ý nghĩa
+  → Trích dẫn how_to_read để hướng dẫn người dùng đọc mô hình từng bước
+- Nếu phát hiện "flip_detected": True hoặc "flip_explanation", PHẢI nêu ra cảnh báo rõ ràng và giải thích lý do.
+- Mục đích: giúp người dùng hiểu mô hình hóa từng bước, không chỉ đọc số liệu.
 
 Context JSON:
 {context_json}
@@ -58,6 +73,36 @@ def _persist_tab_context(tab_key, tab_context):
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(tab_context, f, ensure_ascii=False, indent=2, default=str)
     return file_path
+
+
+def _append_tab_history_log(tab_key, tab_label, user_question, answer, context_file, tab_context):
+    log_dir = os.path.join("data", "ai_logs")
+    os.makedirs(log_dir, exist_ok=True)
+
+    timestamp = datetime.now().isoformat(timespec="seconds")
+    log_file = os.path.join(log_dir, f"{datetime.now().strftime('%Y%m%d')}_{tab_key}.jsonl")
+
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(json.dumps({
+            "role": "user",
+            "content": user_question,
+            "timestamp": timestamp,
+            "tab_key": tab_key,
+            "tab_label": tab_label,
+        }, ensure_ascii=False, default=str) + "\n")
+        f.write(json.dumps({
+            "role": "assistant",
+            "content": answer,
+            "timestamp": timestamp,
+            "tab_key": tab_key,
+            "tab_label": tab_label,
+            "context_file": context_file,
+            "context_rows": tab_context.get("rows"),
+            "active_filters": tab_context.get("active_filters", []),
+            "selected_chart_state": tab_context.get("selected_chart_state", {}),
+        }, ensure_ascii=False, default=str) + "\n")
+
+    return log_file
 
 
 def _selection_state(widget_key):
@@ -194,6 +239,282 @@ def _shared_selection_context(frame):
     return selection_context
 
 
+def _series_profile(series):
+    values = pd.to_numeric(series, errors="coerce").dropna()
+    if values.empty:
+        return {"status": "insufficient_data"}
+
+    return {
+        "status": "ok",
+        "count": int(len(values)),
+        "missing_count": int(series.isna().sum()) if hasattr(series, "isna") else None,
+        "min": _safe_float(values.min()),
+        "p25": _safe_float(values.quantile(0.25)),
+        "median": _safe_float(values.median()),
+        "p75": _safe_float(values.quantile(0.75)),
+        "max": _safe_float(values.max()),
+        "mean": _safe_float(values.mean()),
+        "std": _safe_float(values.std()),
+        "skewness": _safe_float(values.skew()),
+        "kurtosis": _safe_float(values.kurtosis()),
+        "zero_share": _safe_float((values == 0).mean()),
+        "shape": _distribution_shape(values).get("shape"),
+    }
+
+
+def _monthly_aggregate(frame, date_col, value_col, agg="sum"):
+    if date_col not in frame.columns or value_col not in frame.columns:
+        return {"status": "insufficient_data"}
+
+    time_frame = frame.dropna(subset=[date_col, value_col]).copy()
+    if time_frame.empty:
+        return {"status": "insufficient_data"}
+
+    time_frame[date_col] = pd.to_datetime(time_frame[date_col], errors="coerce")
+    time_frame = time_frame.dropna(subset=[date_col])
+    if time_frame.empty:
+        return {"status": "insufficient_data"}
+
+    monthly = (
+        time_frame.assign(period=time_frame[date_col].dt.to_period("M").dt.to_timestamp())
+        .groupby("period", as_index=False)[value_col]
+        .agg(agg)
+        .sort_values("period")
+    )
+    if monthly.empty:
+        return {"status": "insufficient_data"}
+
+    monthly["mom_change_pct"] = monthly[value_col].pct_change() * 100
+    monthly["mom_change_abs"] = monthly[value_col].diff().abs()
+    return {
+        "status": "ok",
+        "rows": int(len(monthly)),
+        "series": monthly.to_dict(orient="records"),
+    }
+
+
+def _top_group_table(frame, group_col, value_col, n=10, agg="sum", sort_desc=True):
+    if group_col not in frame.columns or value_col not in frame.columns:
+        return []
+
+    grouped = (
+        frame[[group_col, value_col]]
+        .dropna()
+        .groupby(group_col, as_index=False)[value_col]
+        .agg(agg)
+        .sort_values(value_col, ascending=not sort_desc)
+        .head(n)
+    )
+    return grouped.to_dict(orient="records")
+
+
+def _channel_engagement_table(frame, n=10):
+    required = {"channel_title", "video_view_count", "video_like_count", "video_comment_count"}
+    if not required.issubset(frame.columns):
+        return {"status": "insufficient_data"}
+
+    df = frame.dropna(subset=["channel_title", "video_view_count"]).copy()
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    grouped = (
+        df.groupby("channel_title", as_index=False)
+        .agg(
+            total_views=("video_view_count", "sum"),
+            total_likes=("video_like_count", "sum"),
+            total_comments=("video_comment_count", "sum"),
+            video_count=("video_view_count", "size"),
+        )
+    )
+    grouped["engagement_rate"] = (grouped["total_likes"].fillna(0) + grouped["total_comments"].fillna(0)) / grouped["total_views"].replace(0, np.nan)
+    grouped = grouped.replace([np.inf, -np.inf], np.nan).dropna(subset=["engagement_rate"])
+    grouped = grouped.sort_values(["engagement_rate", "total_views"], ascending=[False, False]).head(n)
+    return {
+        "status": "ok",
+        "rows": int(len(grouped)),
+        "table": grouped.to_dict(orient="records"),
+    }
+
+
+def _genre_distribution_table(frame, genre_col="genre", value_col="video_view_count"):
+    if genre_col not in frame.columns or value_col not in frame.columns:
+        return {"status": "insufficient_data"}
+
+    df = frame.dropna(subset=[genre_col, value_col]).copy()
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    grouped = (
+        df.groupby(genre_col, as_index=False)
+        .agg(
+            video_count=(value_col, "size"),
+            total_views=(value_col, "sum"),
+            avg_views=(value_col, "mean"),
+            median_views=(value_col, "median"),
+            p25_views=(value_col, lambda x: x.quantile(0.25)),
+            p75_views=(value_col, lambda x: x.quantile(0.75)),
+        )
+        .sort_values("total_views", ascending=False)
+    )
+    grouped["count_share"] = grouped["video_count"] / grouped["video_count"].sum()
+    grouped["view_share"] = grouped["total_views"] / grouped["total_views"].sum()
+    grouped["demand_gap"] = grouped["view_share"] - grouped["count_share"]
+    return {
+        "status": "ok",
+        "rows": int(len(grouped)),
+        "table": grouped.to_dict(orient="records"),
+    }
+
+
+def _time_heatmap_payload(frame):
+    if {"day", "hour", "video_view_count"}.difference(frame.columns):
+        return {"status": "insufficient_data"}
+
+    df = frame.dropna(subset=["day", "hour", "video_view_count"]).copy()
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    heat_data = df.groupby(["day", "hour"], as_index=False)["video_view_count"].mean()
+    heat_data["video_count"] = df.groupby(["day", "hour"]).size().values
+    heat_data = heat_data.sort_values("video_view_count", ascending=False)
+    top_cells = heat_data.head(8)
+    return {
+        "status": "ok",
+        "rows": int(len(top_cells)),
+        "table": top_cells.to_dict(orient="records"),
+        "top_cells": top_cells.to_dict(orient="records"),
+    }
+
+
+def _duration_group_payload(frame, bins, labels):
+    if "video_duration" not in frame.columns or "video_view_count" not in frame.columns:
+        return {"status": "insufficient_data"}
+
+    df = frame.dropna(subset=["video_duration", "video_view_count"]).copy()
+    df = df[df["video_duration"] > 0]
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    df["duration_min"] = df["video_duration"] / 60
+    df["duration_group"] = pd.cut(df["duration_min"], bins=bins, labels=labels, right=False)
+    grouped = (
+        df.groupby("duration_group", as_index=False)
+        .agg(
+            video_count=("video_view_count", "size"),
+            avg_views=("video_view_count", "mean"),
+            median_views=("video_view_count", "median"),
+        )
+        .sort_values("avg_views", ascending=False)
+    )
+    return {
+        "status": "ok",
+        "rows": int(len(grouped)),
+        "table": grouped.to_dict(orient="records"),
+    }
+
+
+def _top_duration_videos(frame, n=20):
+    if "video_duration" not in frame.columns:
+        return {"status": "insufficient_data"}
+
+    df = frame.dropna(subset=["video_duration"]).copy()
+    df = df[df["video_duration"] > 0]
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    columns = [c for c in ["video_title", "channel_title", "video_duration", "video_view_count", "genre", "video_publish_date"] if c in df.columns]
+    outliers = df.sort_values("video_duration", ascending=False).head(n)[columns].copy()
+    if "video_duration" in outliers.columns:
+        outliers["duration_min"] = outliers["video_duration"] / 60
+    return {
+        "status": "ok",
+        "rows": int(len(outliers)),
+        "table": outliers.to_dict(orient="records"),
+    }
+
+
+def _correlation_payload(frame, cols):
+    existing = [c for c in cols if c in frame.columns]
+    if len(existing) < 2:
+        return {"status": "insufficient_data"}
+
+    corr_df = frame[existing].apply(pd.to_numeric, errors="coerce").corr(numeric_only=True)
+    pairs = []
+    for i in range(len(existing)):
+        for j in range(i + 1, len(existing)):
+            corr_val = corr_df.iloc[i, j]
+            if pd.notna(corr_val):
+                pairs.append({"pair": [existing[i], existing[j]], "corr": _safe_float(corr_val)})
+
+    sorted_pairs = sorted(pairs, key=lambda item: abs(item["corr"]), reverse=True)
+    return {
+        "status": "ok",
+        "matrix": corr_df.round(4).fillna(None).to_dict(),
+        "pairs": sorted_pairs,
+        "strongest_positive": next((item for item in sorted_pairs if item["corr"] is not None and item["corr"] > 0), None),
+        "strongest_negative": next((item for item in sorted_pairs if item["corr"] is not None and item["corr"] < 0), None),
+    }
+
+
+def _heatmap_bins_payload(frame, x_col, y_col, value_col, bins=30):
+    if {x_col, y_col, value_col}.difference(frame.columns):
+        return {"status": "insufficient_data"}
+
+    df = frame.dropna(subset=[x_col, y_col, value_col]).copy()
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    df = df[(pd.to_numeric(df[x_col], errors="coerce") > 0) & (pd.to_numeric(df[y_col], errors="coerce") > 0)]
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    x_log = np.log10(pd.to_numeric(df[x_col], errors="coerce"))
+    y_log = np.log10(pd.to_numeric(df[y_col], errors="coerce"))
+    df = df.assign(x_log=x_log, y_log=y_log).dropna(subset=["x_log", "y_log"])
+    if df.empty:
+        return {"status": "insufficient_data"}
+
+    x_bins = pd.cut(df["x_log"], bins=bins, include_lowest=True)
+    y_bins = pd.cut(df["y_log"], bins=bins, include_lowest=True)
+    heat = df.groupby([x_bins, y_bins]).size().reset_index(name="count")
+    heat = heat.sort_values("count", ascending=False)
+    return {
+        "status": "ok",
+        "rows": int(len(heat)),
+        "top_cells": heat.head(10).to_dict(orient="records"),
+        "peak_cell": heat.head(1).to_dict(orient="records")[0] if not heat.empty else None,
+    }
+
+
+def _top_keyword_payload(frame, n=10):
+    if "search_query" not in frame.columns or "video_view_count" not in frame.columns:
+        return {"status": "insufficient_data"}
+
+    keyword_df = frame.dropna(subset=["search_query", "video_view_count"]).copy()
+    if keyword_df.empty:
+        return {"status": "insufficient_data"}
+
+    token_pattern = re.compile(r"[\wÀ-ỹ]+", re.UNICODE)
+    stop_tokens = {"nhac", "music", "official", "video", "mv", "song", "cover", "remix", "lyrics", "lyric", "playlist", "audio"}
+    rows = []
+    for _, row in keyword_df.iterrows():
+        text = f"{row.get('search_query', '')} {row.get('video_title', '')}"
+        tokens = [token.lower() for token in token_pattern.findall(str(text)) if len(token) > 2]
+        tokens = [token for token in tokens if token not in stop_tokens]
+        for token in tokens[:12]:
+            rows.append({"token": token, "views": row["video_view_count"]})
+
+    if not rows:
+        return {"status": "insufficient_data"}
+
+    token_df = pd.DataFrame(rows)
+    keyword_stats = token_df.groupby("token", as_index=False).agg(occurrences=("views", "size"), avg_views=("views", "mean"), total_views=("views", "sum")).sort_values(["avg_views", "occurrences"], ascending=[False, False])
+    return {
+        "status": "ok",
+        "table": keyword_stats.head(n).to_dict(orient="records"),
+    }
+
+
 def _active_filter_labels(active_cross_filters):
     return [item["label"] for item in active_cross_filters] if active_cross_filters else []
 
@@ -287,15 +608,15 @@ def _trend_summary(frame, date_col="video_publish_date", value_col="video_view_c
     }
 
 
-def _top_table_payload(frame, value_col, label_col, n=5):
-    if value_col not in frame.columns or label_col not in frame.columns:
+def _top_table_payload(frame, value_col, label_col, n=5, ascending=False):
+    if value_col not in frame.columns or label_col not in frame.columns or n < 1:
         return []
     top_df = (
         frame[[label_col, value_col]]
         .dropna()
         .groupby(label_col, as_index=False)[value_col]
         .sum()
-        .sort_values(value_col, ascending=False)
+        .sort_values(value_col, ascending=ascending)
         .head(n)
     )
     return [
@@ -673,11 +994,30 @@ def _build_tab1_context(frame, active_cross_filters):
             top_channel = channel_stats.to_dict(orient="records")[0]
 
     trend = _trend_summary(frame, "video_publish_date", "video_view_count")
+    duration_profile = _series_profile(durations)
+    top_channels = _top_table_payload(frame, "video_view_count", "channel_title", 10)
+    top_videos = _top_table_payload(frame, "video_view_count", "video_title", 10)
+    license_counts = []
+    if "video_licensed_content" in frame.columns:
+        license_series = frame["video_licensed_content"].fillna(False).astype(bool).map({True: "Chính thức (Official)", False: "Tự do (Cover/Remix)"})
+        license_counts = license_series.value_counts().rename_axis("Loai").reset_index(name="SoLuong").to_dict(orient="records")
+    monthly_views = _monthly_aggregate(frame, "video_publish_date", "video_view_count", agg="sum")
+    duration_outliers = _top_duration_videos(frame, n=20)
 
     payload = {
         "tab": 1,
         "name": "Tổng quan",
         "rows": int(len(frame)),
+        "dashboard_state": {
+            "columns": list(frame.columns),
+            "numeric_profile": {
+                "views": _series_profile(views),
+                "likes": _series_profile(likes),
+                "comments": _series_profile(comments),
+                "duration_minutes": duration_profile,
+            },
+            "selected_chart_state": _shared_selection_context(frame),
+        },
         "active_filters": _active_filter_labels(active_cross_filters),
         "kpi": {
             "total_views": total_views,
@@ -690,6 +1030,40 @@ def _build_tab1_context(frame, active_cross_filters):
             "licensed_ratio": _safe_float(frame["video_licensed_content"].fillna(False).astype(bool).mean()) if "video_licensed_content" in frame.columns else None,
             "caption_ratio": _boolean_rate(frame, "video_caption_status"),
         },
+        "charts": {
+            "view_distribution": {
+                "chart_type": "histogram",
+                "source_column": "video_view_count",
+                "profile": _series_profile(views),
+                "insight": "Phân bố lượt xem thường lệch phải nếu phần lớn video có view thấp và chỉ một số ít video bứt phá.",
+            },
+            "channel_overview": {
+                "chart_type": "bar",
+                "source_table": top_channels,
+                "insight": "Top kênh cho biết nơi tập trung phần lớn traffic và mức độ tập trung của thị trường.",
+            },
+            "copyright_share": {
+                "chart_type": "pie",
+                "source_table": license_counts,
+                "insight": "Tỷ trọng bản quyền cho biết phần nào của dữ liệu thuộc nội dung chính thức so với các biến thể cover/remix.",
+            },
+            "time_trend": {
+                "chart_type": "line",
+                "source": monthly_views,
+                "insight": "Xu hướng theo tháng giúp nhận diện giai đoạn tăng trưởng, chững lại hoặc biến động bất thường.",
+            },
+            "duration_distribution": {
+                "chart_type": "histogram",
+                "source_column": "video_duration",
+                "profile": duration_profile,
+                "insight": "Độ dài video thường tập trung ở một vài khoảng nhất định; lệch phải hàm ý có một nhóm video rất dài.",
+            },
+            "duration_outliers": {
+                "chart_type": "top_20_bubble",
+                "source_table": duration_outliers,
+                "insight": "Danh sách video dài nhất giúp phát hiện outlier và kiểm tra các nội dung hòa tấu, live, hoặc clip tổng hợp.",
+            },
+        },
         "distribution": {
             "view_distribution_shape": _distribution_shape(views),
             "duration_distribution": _distribution_shape(durations),
@@ -699,72 +1073,199 @@ def _build_tab1_context(frame, active_cross_filters):
             },
         },
         "top_entities": {
-            "top_channels": _top_table_payload(frame, "video_view_count", "channel_title", 5),
-            "top_videos": _top_table_payload(frame, "video_view_count", "video_title", 5),
+            "top_channels": top_channels,
+            "top_videos": top_videos,
         },
         "trend": {
             "peak_periods": trend.get("peak_periods", []),
             "fluctuation": trend.get("fluctuation", {}),
         },
         "top_channel_by_views": top_channel,
-        "selected_chart_state": _shared_selection_context(frame),
+        "tab_insights": [
+            "Đọc đồng thời phân phối, xu hướng và top entities để tránh chỉ nhìn vào KPI tổng.",
+            "Outlier thời lượng dài cần được diễn giải cùng lượt xem và thể loại, không xem như lỗi dữ liệu ngay lập tức.",
+        ],
     }
     return payload
 
 
 def _build_tab2_context(frame, active_cross_filters):
-    corr_payload = _pairwise_correlations(frame, ["video_view_count", "video_like_count", "video_comment_count", "engagement_rate"])
+    corr_payload = _correlation_payload(frame, ["video_view_count", "video_like_count", "video_comment_count", "engagement_rate"])
     heat_payload = _density_hotspot(frame)
     compare_payload = _compare_groups(frame)
+    engagement_payload = _channel_engagement_table(frame, n=10)
 
     payload = {
         "tab": 2,
         "name": "Định nghĩa thành công",
         "rows": int(len(frame)),
+        "dashboard_state": {
+            "columns": list(frame.columns),
+            "selected_chart_state": _shared_selection_context(frame),
+        },
         "active_filters": _active_filter_labels(active_cross_filters),
         "correlation": {
-            "pairs": corr_payload,
-            "views_vs_likes": next((item["corr"] for item in corr_payload if set(item["pair"]) == {"video_view_count", "video_like_count"}), None),
-            "views_vs_comments": next((item["corr"] for item in corr_payload if set(item["pair"]) == {"video_view_count", "video_comment_count"}), None),
-            "engagement_correlation": next((item["corr"] for item in corr_payload if "engagement_rate" in item["pair"]), None),
+            "matrix": corr_payload.get("matrix") if isinstance(corr_payload, dict) else None,
+            "pairs": corr_payload.get("pairs", []) if isinstance(corr_payload, dict) else [],
+            "views_vs_likes": next((item["corr"] for item in corr_payload.get("pairs", []) if set(item["pair"]) == {"video_view_count", "video_like_count"}), None) if isinstance(corr_payload, dict) else None,
+            "views_vs_comments": next((item["corr"] for item in corr_payload.get("pairs", []) if set(item["pair"]) == {"video_view_count", "video_comment_count"}), None) if isinstance(corr_payload, dict) else None,
+            "engagement_correlation": next((item["corr"] for item in corr_payload.get("pairs", []) if "engagement_rate" in item["pair"]), None) if isinstance(corr_payload, dict) else None,
+            "insight": "Tương quan cần đọc cùng heatmap và bảng so sánh top/bottom để tránh kết luận chỉ từ r.",
         },
         "density_heatmap": heat_payload,
+        "channel_engagement": {
+            "chart_type": "lollipop",
+            "source_table": engagement_payload.get("table", []) if isinstance(engagement_payload, dict) else [],
+            "insight": "Top kênh theo tỷ lệ tương tác cho thấy chất lượng tương tác, không chỉ tổng view.",
+        },
         "comparative_analysis": compare_payload,
         "key_findings": compare_payload.get("key_findings", {}) if isinstance(compare_payload, dict) else {},
-        "selected_chart_state": _shared_selection_context(frame),
+        "tab_insights": [
+            "Nếu heatmap tập trung ở một vùng sáng, đó là cụm dữ liệu phổ biến chứ không tự động là cụm hiệu quả nhất.",
+            "So sánh nhóm view cao và thấp nên ưu tiên các biến có chênh lệch ổn định và có ý nghĩa thực tế.",
+        ],
     }
     return payload
 
 
 def _build_tab3_context(frame, active_cross_filters):
+    genre_distribution = _genre_distribution_table(frame)
+    top_liked = _top_table_payload(frame, "video_like_count", "video_title", 5)
+    low_liked = _top_table_payload(frame, "video_like_count", "video_title", 5, ascending=True)
+    upload_share = genre_distribution.get("table", []) if isinstance(genre_distribution, dict) else []
+    upload_vs_view = []
+    if upload_share:
+        share_df = pd.DataFrame(upload_share)
+        if {"genre", "count_share", "view_share"}.issubset(share_df.columns):
+            upload_vs_view = share_df[["genre", "count_share", "view_share", "demand_gap"]].to_dict(orient="records")
+
+    genre_trend_table = []
+    if {"video_publish_date", "genre"}.issubset(frame.columns):
+        trend_df = frame.dropna(subset=["video_publish_date", "genre"]).copy()
+        if not trend_df.empty:
+            top_genres = []
+            if upload_share:
+                genre_rank_df = pd.DataFrame(upload_share)
+                if "genre" in genre_rank_df.columns:
+                    top_genres = genre_rank_df["genre"].astype(str).head(4).tolist()
+            if top_genres:
+                trend_df = trend_df[trend_df["genre"].astype(str).isin(top_genres)]
+            trend_df["quarter"] = pd.to_datetime(trend_df["video_publish_date"], errors="coerce").dt.to_period("Q").dt.to_timestamp()
+            trend_df = trend_df.dropna(subset=["quarter"])
+            if not trend_df.empty:
+                monthly = (
+                    trend_df.groupby(["quarter", "genre"], as_index=False)
+                    .size()
+                    .rename(columns={"size": "video_count"})
+                    .sort_values("quarter")
+                )
+                genre_trend_table = monthly.head(12).to_dict(orient="records")
+
     payload = {
         "tab": 3,
         "name": "Hành vi người dùng & Từ khóa",
         "rows": int(len(frame)),
+        "dashboard_state": {
+            "columns": list(frame.columns),
+            "selected_chart_state": _shared_selection_context(frame),
+            "dislike_data_available": "video_dislike_count" in frame.columns,
+        },
         "active_filters": _active_filter_labels(active_cross_filters),
+        "charts": {
+            "genre_boxplot": {
+                "chart_type": "box",
+                "source_table": genre_distribution,
+                "insight": "Box plot cần đọc median, IQR và outlier để hiểu phân phối view theo thể loại.",
+            },
+            "top_liked_videos": {
+                "chart_type": "bar/bubble",
+                "source_table": top_liked,
+                "insight": "Top video theo lượt thích cho biết nội dung nào được cộng đồng phản hồi tích cực nhất.",
+            },
+            "least_liked_videos_proxy": {
+                "chart_type": "bar/bubble",
+                "source_table": low_liked,
+                "insight": "Tập dữ liệu hiện không có cột dislike, nên nhóm này chỉ là proxy từ video có lượt thích thấp nhất.",
+            },
+            "genre_share": {
+                "chart_type": "pie",
+                "source_table": genre_distribution,
+                "insight": "Tỷ trọng thể loại giúp nhìn lệch dữ liệu và mức độ tập trung nội dung.",
+            },
+            "upload_vs_view_share": {
+                "chart_type": "combo_bar_line",
+                "source_table": upload_vs_view,
+                "insight": "So sánh upload share với view share để phát hiện thể loại bị đăng quá nhiều nhưng không thu hút tương ứng, hoặc ngược lại.",
+            },
+            "genre_trend": {
+                "chart_type": "stacked_area",
+                "source_table": genre_trend_table,
+                "insight": "Chỉ giữ các mốc tháng thưa để nhìn xu hướng thể loại mà không làm context quá dày.",
+            },
+        },
         "supply_vs_demand": _genre_supply_demand(frame),
-        "caption_impact": _caption_impact(frame),
-        "audience_segments": _audience_segments(frame),
-        "upload_trends": _upload_trends(frame),
-        "selected_chart_state": _shared_selection_context(frame),
+        "tab_insights": [
+            "Đọc box plot cùng pie chart và combo chart sẽ cho thấy cả phân phối, tỷ trọng và độ lệch giữa cung - cầu nội dung.",
+        ],
     }
     return payload
 
 
 def _build_tab4_context(frame, active_cross_filters):
+    day_table = _top_group_table(frame, "day", "video_view_count", n=7, agg="mean", sort_desc=True)
+    hour_table = _top_group_table(frame, "hour", "video_view_count", n=8, agg="mean", sort_desc=True)
+    supply_demand = frame.dropna(subset=["hour", "video_view_count"]).copy() if {"hour", "video_view_count"}.issubset(frame.columns) else pd.DataFrame()
+    if not supply_demand.empty:
+        hourly_supply = supply_demand.groupby("hour").size().reset_index(name="video_count")
+        hourly_demand = supply_demand.groupby("hour", as_index=False)["video_view_count"].sum().rename(columns={"video_view_count": "total_views"})
+        hourly_combo = pd.merge(hourly_supply, hourly_demand, on="hour", how="outer").fillna(0)
+        hourly_combo["imbalance"] = hourly_combo["total_views"] - hourly_combo["video_count"]
+        hourly_combo_table = hourly_combo.sort_values("total_views", ascending=False).head(8).to_dict(orient="records")
+    else:
+        hourly_combo_table = []
+
     payload = {
         "tab": 4,
         "name": "Thuật toán & Tối ưu nền tảng",
         "rows": int(len(frame)),
+        "dashboard_state": {
+            "columns": list(frame.columns),
+            "selected_chart_state": _shared_selection_context(frame),
+        },
         "active_filters": _active_filter_labels(active_cross_filters),
+        "charts": {
+            "time_heatmap": {
+                "chart_type": "heatmap",
+                "source_table": _time_heatmap_payload(frame),
+                "insight": "Heatmap giờ-ngày cho thấy vùng dày dữ liệu và các ô hiệu suất cao để tối ưu lịch đăng.",
+            },
+            "day_hour_performance": {
+                "chart_type": "bar",
+                "day_table": day_table,
+                "hour_table": hour_table,
+                "insight": "Đọc riêng theo ngày và theo giờ giúp tách hiệu quả thời điểm đăng theo hai chiều khác nhau.",
+            },
+            "upload_vs_views_by_hour": {
+                "chart_type": "combo_bar_line",
+                "source_table": hourly_combo_table,
+                "insight": "So sánh số video đăng và tổng lượt xem theo giờ giúp nhìn độ dồn dữ liệu và hiệu quả từng khung giờ.",
+            },
+            "duration_groups": {
+                "chart_type": "column",
+                "source_table": _duration_group_payload(frame, bins=[0, 5, 10, 15, np.inf], labels=["< 5 phút", "5-10 phút", "10-15 phút", "> 15 phút"]),
+                "insight": "Nhóm thời lượng nào có view trung bình cao nhất là ứng viên cho chiến lược sản xuất nội dung.",
+            },
+            "duration_views_map": {
+                "chart_type": "density_contour",
+                "source_table": _heatmap_bins_payload(frame, "video_duration", "video_view_count", "video_view_count"),
+                "insight": "Độ dồn dữ liệu giữa thời lượng và lượt xem cho biết vùng 'điểm rơi' phổ biến và outlier khác thường.",
+            },
+        },
         "timing_optimization": _timing_optimization(frame),
         "duration_optimization": _duration_optimization(frame),
-        "seo_nlp": {
-            "keyword_impacts": _keyword_impacts(frame),
-            "metadata_effectiveness": _metadata_effectiveness(frame),
-        },
-        "platform_behavior": _platform_behavior(frame),
-        "selected_chart_state": _shared_selection_context(frame),
+        "tab_insights": [
+            "Heatmap, combo chart và contour map cần được đọc cùng nhau để hiểu cả hành vi upload lẫn hiệu suất.",
+        ],
     }
     return payload
 
@@ -806,12 +1307,12 @@ def _stepwise_context(df_model, genre_dummy_cols):
     final_pool = [c for c in candidate_cols if c not in high_vif_list and c in df_model.columns]
 
     if len(final_pool) < 1:
-        return {"status": "insufficient_data", "high_vif_vars": high_vif_list, "ok_vif_vars": ok_vif_list}
+        return {"status": "insufficient_data", "high_vif_vars": high_vif_list, "ok_vif_vars": ok_vif_list, "model_context": {"correlation": _correlation_payload(df_model, ["video_view_count", "video_like_count", "video_comment_count", "engagement_rate"]), "vif": vif_rows}}
 
     try:
         selected, model, hist_df = _stepwise_selection(df_model, target_var, final_pool, direction="both", sl_enter=0.05, sl_remove=0.10)
     except Exception as exc:
-        return {"status": "error", "error": str(exc), "high_vif_vars": high_vif_list, "ok_vif_vars": ok_vif_list}
+        return {"status": "error", "error": str(exc), "high_vif_vars": high_vif_list, "ok_vif_vars": ok_vif_list, "model_context": {"correlation": _correlation_payload(df_model, ["video_view_count", "video_like_count", "video_comment_count", "engagement_rate"]), "vif": vif_rows}}
 
     rejected = [c for c in final_pool if c not in selected]
     removed_variables = sorted(set(high_vif_list + rejected))
@@ -846,7 +1347,14 @@ def _stepwise_context(df_model, genre_dummy_cols):
                 factor_importance = coef_df.head(8).to_dict(orient="records")
                 positive_effects = coef_df[coef_df["std_coef"] > 0].head(5).to_dict(orient="records")
                 negative_effects = coef_df[coef_df["std_coef"] < 0].head(5).to_dict(orient="records")
-                model_info = {"r2": _safe_float(m_std.rsquared), "adjusted_r2": _safe_float(m_std.rsquared_adj), "selected_features": selected, "rejected_features": rejected}
+                model_info = {
+                    "r2": _safe_float(m_std.rsquared),
+                    "adjusted_r2": _safe_float(m_std.rsquared_adj),
+                    "selected_features": selected,
+                    "rejected_features": rejected,
+                    "n_obs": int(len(X_s)),
+                    "chart_data": coef_df.to_dict(orient="records"),
+                }
                 statistical_interpretation = {
                     "multicollinearity_explanation": "Một số biến numeric có VIF cao hoặc tương quan mạnh, nên hệ số dễ biến động khi thêm/bớt biến.",
                     "significance_explanation": f"Có {int((coef_df['p_value'] < 0.05).sum())} biến có p-value < 0.05 trong mô hình cuối.",
@@ -877,6 +1385,12 @@ def _stepwise_context(df_model, genre_dummy_cols):
         "stepwise_history": hist_df.to_dict(orient="records") if "hist_df" in locals() else [],
         "high_vif_vars": high_vif_list,
         "ok_vif_vars": ok_vif_list,
+        "model_context": {
+            "correlation": _correlation_payload(df_model, ["video_view_count", "video_like_count", "video_comment_count", "engagement_rate"]),
+            "vif": vif_rows,
+            "selected_pool": final_pool,
+            "insight": "Đọc tương quan và VIF cùng kết quả stepwise để phân biệt biến ảnh hưởng thật với biến gây nhiễu hoặc đa cộng tuyến.",
+        },
     }
 
 def _simpson_context(df_model: pd.DataFrame):
@@ -935,10 +1449,33 @@ def _simpson_context(df_model: pd.DataFrame):
 
     flip_detected = None
     pct_change = None
+    flip_explanation = ""
     if coef_single is not None and coef_multi is not None:
         flip_detected = (np.sign(coef_single) != np.sign(coef_multi))
         if abs(coef_single) > 1e-12:
             pct_change = _safe_float(abs((coef_multi - coef_single) / coef_single))
+        
+        if flip_detected:
+            flip_explanation = (
+                "⚠️ HỆ SỐ THAY ĐỔI DẤU (Simpson's Paradox): "
+                f"Hệ số của {var_main} từ {coef_single:.4f} thành {coef_multi:.4f}. "
+                "Điều này cho thấy mối quan hệ thực sự phụ thuộc rất lớn vào biến {var_confounder} "
+                "('gây nhiễu'). Kênh lớn (subscriber nhiều) có xu hướng upload nhiều video, "
+                "nhưng nếu kiểm soát kích thước kênh, mối quan hệ thay đổi hoàn toàn."
+            )
+        else:
+            if pct_change and pct_change > 0.3:
+                flip_explanation = (
+                    f"⚠️ HỆ SỐ THAY ĐỔI MẠNH ({pct_change*100:.1f}%): "
+                    "Mối quan hệ vẫn cùng hướng nhưng độ mạnh giảm đáng kể khi kiểm soát "
+                    f"{var_confounder}. Điều này gợi ý confounding yếu hơn (kiểu 'bộ lộc' chứ không "
+                    "'đảo ngược')."
+                )
+            else:
+                flip_explanation = (
+                    f"✓ HỆ SỐ ỔNĐỊNH: Khi kiểm soát {var_confounder}, hệ số không thay đổi nhiều. "
+                    "Mối quan hệ giữa {var_main} và {target} khá độc lập với {var_confounder}."
+                )
 
     corr_xz = _safe_float(d[[var_main, var_confounder]].corr().iloc[0, 1])
 
@@ -952,13 +1489,32 @@ def _simpson_context(df_model: pd.DataFrame):
         "p_multi": p_multi,
         "r2_single": r2_single,
         "r2_multi": r2_multi,
-        "pct_change": pct_change,         # tỷ lệ đổi hệ số X sau khi thêm Z
-        "flip_detected": flip_detected,   # có đảo dấu hay không
-        "corr_x_z": corr_xz,              # tương quan X-Z (giúp giải thích confounding)
+        "pct_change": pct_change,         
+        "flip_detected": flip_detected,   
+        "corr_x_z": corr_xz,              
+        "flip_explanation": flip_explanation,
         "interpretation": (
-            "So sánh Std Coef của channel_video_count khi chạy đơn biến "
-            "và khi kiểm soát channel_subscriber_count để phát hiện confounding."
+            "So sánh Std Coef (hệ số chuẩn hóa) của {var_main} trước/sau khi kiểm soát {var_confounder}. "
+            "Nếu đổi dấu hay đổi mạnh (>30%), có khả năng confounding (biến gây nhiễu)."
         ),
+        "chart_context": {
+            "single_model": {
+                "coef": coef_single, 
+                "p_value": p_single, 
+                "r2": r2_single,
+                "label": "Mô hình đơn (Y ~ X): Chỉ xét X, chưa kiểm soát Z"
+            },
+            "multi_model": {
+                "coef": coef_multi, 
+                "p_value": p_multi, 
+                "r2": r2_multi,
+                "label": "Mô hình đa (Y ~ X + Z): Kiểm soát Z, cô lập tác động thật của X"
+            },
+            "insight": (
+                "So sánh hai mô hình để phát hiện Simpson's Paradox hoặc confounding. "
+                "Nếu hệ số đổi dấu/mạnh, Z là biến gây nhiễu và cần kiểm soát để diễn giải đúng."
+            ),
+        },
     }
 
 
@@ -967,13 +1523,87 @@ def _build_tab5_context(frame, active_cross_filters):
     payload = _stepwise_context(df_model, genre_dummy_cols)
     payload["simpson_confounding"] = _simpson_context(df_model)
 
+    # Add comprehensive glossary/definitions
+    glossary = {
+        "VIF (Variance Inflation Factor)": {
+            "definition": "Chỉ số đo mức độ của đa cộng tuyến (multicollinearity) giữa các biến.",
+            "scale": "VIF = 1: độc lập hoàn toàn | VIF < 5: chấp nhận được | VIF ≥ 10: đa cộng tuyến nghiêm trọng",
+            "impact": "VIF cao → hệ số không ổn định, dễ thay đổi khi thêm/bớt biến. Thường loại bớt biến VIF ≥ 10.",
+        },
+        "Removed Variables": {
+            "definition": "Các biến bị loại khỏi mô hình cuối do: (1) VIF cao hoặc (2) p-value > ngưỡng sl_remove",
+            "reason_1": "VIF cao: Biến này tương quan mạnh với biến khác → làm hệ số không ổn định → loại khỏi mô hình.",
+            "reason_2": "p-value > sl_remove: Biến này không có ý nghĩa thống kê trong mô hình → loại để đơn giản hóa.",
+        },
+        "Stepwise Regression": {
+            "definition": "Quy trình tự động thêm/bớt biến dựa trên tiêu chí thống kê (p-value).",
+            "forward": "Bắt đầu từ mô hình rỗng, từng bước THÊM biến có p-value < p_enter.",
+            "backward": "Bắt đầu từ tất cả biến, từng bước BỚT biến có p-value > sl_remove.",
+            "both": "Kết hợp forward và backward: vừa thêm biến mới tốt vừa bớt biến không còn cần.",
+        },
+        "Standardized Coefficients (Std Coef)": {
+            "definition": "Hệ số hồi quy sau khi chuẩn hóa X và Y về scale 0-1, giúp so sánh tác động tương đối giữa các biến.",
+            "interpretation": "|Std Coef| lớn → biến này ảnh hưởng mạnh hơn đến Y. Dấu (+/-) chỉ hướng tác động.",
+            "caveat": "Std Coef chỉ cho thấy mối quan hệ tuyến tính, KHÔNG chứng minh nhân quả.",
+        },
+        "p-value": {
+            "definition": "Xác suất quan sát thấy dữ liệu này nếu biến KHÔNG có tác động (giả thuyết vô).",
+            "threshold": "p-value < 0.05: thường được coi là 'có ý nghĩa thống kê' (đủ bằng chứng biến này có tác động).",
+            "danger": "p-value nhỏ ≠ tác động lớn. Dữ liệu lớn → p-value nhỏ ngay cả với tác động nhỏ.",
+        },
+        "R² (Coefficient of Determination)": {
+            "definition": "Tỷ lệ phương sai trong Y được mô hình giải thích.",
+            "scale": "0 ≤ R² ≤ 1. R² = 0.7 → mô hình giải thích 70% biến động trong lượt xem.",
+            "danger": "R² cao ≠ mô hình tốt. Có thể do overfitting hoặc confounding chưa loại bớt.",
+        },
+        "Confounding (Biến gây nhiễu)": {
+            "definition": "Biến Z ảnh hưởng đến cả X và Y → làm cho mối quan hệ X→Y bị bóp méo (spurious).",
+            "example": "Ví dụ: Kênh lớn (Z) → upload nhiều video (X) + lượt xem nhiều (Y). Nếu không kiểm soát Z, ta sẽ tưởng X→Y mạnh, thực chất là vì Z.",
+            "detection": "So sánh mô hình có/không Z: nếu hệ số X thay đổi mạnh, Z là confounding → cần kiểm soát.",
+        },
+        "Simpson's Paradox": {
+            "definition": "Hiện tượng hệ số X đảo dấu hoàn toàn khi kiểm soát Z (mối quan hệ đảo ngược).",
+            "example": "X→Y dương (lợi) nếu bỏ qua Z, nhưng X→Y âm (hại) khi kiểm soát Z.",
+            "action": "Nếu phát hiện flip_detected=True, PHẢI kiểm soát Z, không được diễn giải từ mô hình đơn.",
+        },
+    }
+
     payload.update(
         {
             "tab": 5,
             "name": "Mô hình hóa",
             "rows": int(len(frame)),
             "active_filters": _active_filter_labels(active_cross_filters),
+            "dashboard_state": {
+                "columns": list(frame.columns),
+                "selected_chart_state": _shared_selection_context(frame),
+            },
             "selected_chart_state": _shared_selection_context(frame),
+            "glossary": glossary,
+            "how_to_read": {
+                "step_1_vif": (
+                    "Kiểm tra VIF của các biến số. Nếu VIF ≥ 10, biến đó bị loại khỏi mô hình stepwise. "
+                    "Điều này tránh đa cộng tuyến làm hệ số không ổn định."
+                ),
+                "step_2_stepwise": (
+                    "Chạy hồi quy từng bước: các biến có p-value < p_enter được THÊM vào mô hình. "
+                    "Nếu dùng 'both', các biến có p-value > sl_remove bị BỚT. Kết quả: mô hình tối ưu với các biến "
+                    "có ý nghĩa thống kê."
+                ),
+                "step_3_interpret": (
+                    "Đọc Std Coef của các biến được chọn: |Std Coef| lớn → tác động mạnh, dấu chỉ hướng (+/-). "
+                    "NHƯNG: Std Coef ≠ nhân quả. Cần kiểm soát confounding (bước 4)."
+                ),
+                "step_4_confounding": (
+                    "Kiểm tra Simpson/Confounding: so sánh hệ số trước/sau kiểm soát Z. Nếu flip_detected=True "
+                    "hoặc pct_change > 30%, Z là biến gây nhiễu → phải xem xét trong diễn giải."
+                ),
+            },
+            "tab_insights": [
+                "Cần đọc đồng thời correlation, VIF, stepwise và confounding để tránh diễn giải hệ số hồi quy sai.",
+                "Hệ số chuẩn hóa và p-value phải được xem như bảng ưu tiên biến, không phải kết luận nhân quả trực tiếp.",
+                "Nếu phát hiện flip_detected=True trong Simpson's Paradox, PHẢI kiểm soát biến gây nhiễu khi giải thích.",
+            ],
         }
     )
     return payload
@@ -1098,11 +1728,16 @@ def _render_tab_chatbot(tab_key, tab_label, context_builder, frame, active_cross
             else:
                 st.session_state[f"{tab_key}_last_question"] = user_question
                 st.session_state[f"{tab_key}_last_answer"] = answer
+                log_file = _append_tab_history_log(tab_key, tab_label, user_question, answer, context_file, tab_context)
+                st.session_state[f"{tab_key}_last_log_file"] = log_file
 
         last_question = st.session_state.get(f"{tab_key}_last_question")
         last_answer = st.session_state.get(f"{tab_key}_last_answer")
         if last_question and last_answer:
             st.chat_message("user").write(last_question)
             st.chat_message("assistant").write(last_answer)
+            last_log_file = st.session_state.get(f"{tab_key}_last_log_file")
+            if last_log_file:
+                st.caption(f"Đã lưu lịch sử vào: {last_log_file}")
         else:
             st.info("Hãy nhập câu hỏi. Ví dụ: 'Vì sao bubble chart này tăng mạnh ở nhóm nào?' hoặc 'Khung giờ nào tốt nhất?'")

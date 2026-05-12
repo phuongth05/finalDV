@@ -2,6 +2,109 @@
   "tab": 1,
   "name": "Tổng quan",
   "rows": 6772,
+  "dashboard_state": {
+    "columns": [
+      "video_id",
+      "video_publish_date",
+      "channel_id",
+      "channel_title",
+      "video_title",
+      "video_description",
+      "video_tags",
+      "video_category_id",
+      "video_view_count",
+      "video_like_count",
+      "video_comment_count",
+      "video_duration",
+      "video_definition",
+      "video_caption_status",
+      "video_licensed_content",
+      "video_made_for_kids",
+      "video_tags_count",
+      "video_topics",
+      "search_query",
+      "channel_subscriber_count",
+      "channel_view_count",
+      "channel_video_count",
+      "_row_id",
+      "hour",
+      "day",
+      "genre",
+      "title_length",
+      "genre_label",
+      "video_type",
+      "engagement_rate",
+      "channel_size",
+      "publish_date"
+    ],
+    "numeric_profile": {
+      "views": {
+        "status": "ok",
+        "count": 6772,
+        "missing_count": 0,
+        "min": 0.0,
+        "p25": 13944.5,
+        "median": 291817.0,
+        "p75": 2327774.75,
+        "max": 307499819.0,
+        "mean": 4175196.747784997,
+        "std": 13532779.578067075,
+        "skewness": 7.888920817925534,
+        "kurtosis": 96.86527171221513,
+        "zero_share": 0.0014766686355581807,
+        "shape": "right_skewed"
+      },
+      "likes": {
+        "status": "ok",
+        "count": 6772,
+        "missing_count": 0,
+        "min": 0.0,
+        "p25": 156.0,
+        "median": 1655.5,
+        "p75": 10221.5,
+        "max": 2655980.0,
+        "mean": 20819.83594211459,
+        "std": 79014.12913385977,
+        "skewness": 13.283363868734131,
+        "kurtosis": 299.6195511493935,
+        "zero_share": 0.021264028352037802,
+        "shape": "right_skewed"
+      },
+      "comments": {
+        "status": "ok",
+        "count": 6772,
+        "missing_count": 0,
+        "min": 0.0,
+        "p25": 3.0,
+        "median": 45.0,
+        "p75": 301.25,
+        "max": 2276298.0,
+        "mean": 1416.4305965741287,
+        "std": 31186.409077010612,
+        "skewness": 62.7303042270012,
+        "kurtosis": 4346.7027075384985,
+        "zero_share": 0.16642055522740698,
+        "shape": "right_skewed"
+      },
+      "duration_minutes": {
+        "status": "ok",
+        "count": 6772,
+        "missing_count": 0,
+        "min": 0.0,
+        "p25": 0.9166666666666666,
+        "median": 3.85,
+        "p75": 5.633333333333334,
+        "max": 680.5,
+        "mean": 13.42454715495176,
+        "std": 30.693622598552047,
+        "skewness": 4.829365235147468,
+        "kurtosis": 50.350845086603584,
+        "zero_share": 0.003987005316007088,
+        "shape": "right_skewed"
+      }
+    },
+    "selected_chart_state": {}
+  },
   "active_filters": [],
   "kpi": {
     "total_views": 28274432376.0,
@@ -13,6 +116,670 @@
     "engagement_rate": 0.0053258008860266005,
     "licensed_ratio": 0.7628470171293562,
     "caption_ratio": 0.06246308328411104
+  },
+  "charts": {
+    "view_distribution": {
+      "chart_type": "histogram",
+      "source_column": "video_view_count",
+      "profile": {
+        "status": "ok",
+        "count": 6772,
+        "missing_count": 0,
+        "min": 0.0,
+        "p25": 13944.5,
+        "median": 291817.0,
+        "p75": 2327774.75,
+        "max": 307499819.0,
+        "mean": 4175196.747784997,
+        "std": 13532779.578067075,
+        "skewness": 7.888920817925534,
+        "kurtosis": 96.86527171221513,
+        "zero_share": 0.0014766686355581807,
+        "shape": "right_skewed"
+      },
+      "insight": "Phân bố lượt xem thường lệch phải nếu phần lớn video có view thấp và chỉ một số ít video bứt phá."
+    },
+    "channel_overview": {
+      "chart_type": "bar",
+      "source_table": [
+        {
+          "channel_title": "Kênh Thiếu Nhi - BHMEDIA",
+          "video_view_count": 1064134866.0
+        },
+        {
+          "channel_title": "Nal Official",
+          "video_view_count": 591676381.0
+        },
+        {
+          "channel_title": "Hòa Minzy",
+          "video_view_count": 587086195.0
+        },
+        {
+          "channel_title": "Sơn Tùng M-TP Official",
+          "video_view_count": 438379860.0
+        },
+        {
+          "channel_title": "Đen Vâu Official",
+          "video_view_count": 328213404.0
+        },
+        {
+          "channel_title": "Vie Channel - MUSIC",
+          "video_view_count": 322637802.0
+        },
+        {
+          "channel_title": "Nguyễn Thái Học Official",
+          "video_view_count": 322141637.0
+        },
+        {
+          "channel_title": "H2O Remix",
+          "video_view_count": 316512772.0
+        },
+        {
+          "channel_title": "Bé Minh Vy",
+          "video_view_count": 310078311.0
+        },
+        {
+          "channel_title": "Tăng Duy Tân",
+          "video_view_count": 298519140.0
+        }
+      ],
+      "insight": "Top kênh cho biết nơi tập trung phần lớn traffic và mức độ tập trung của thị trường."
+    },
+    "copyright_share": {
+      "chart_type": "pie",
+      "source_table": [
+        {
+          "Loai": "Chính thức (Official)",
+          "SoLuong": 5166
+        },
+        {
+          "Loai": "Tự do (Cover/Remix)",
+          "SoLuong": 1606
+        }
+      ],
+      "insight": "Tỷ trọng bản quyền cho biết phần nào của dữ liệu thuộc nội dung chính thức so với các biến thể cover/remix."
+    },
+    "time_trend": {
+      "chart_type": "line",
+      "source": {
+        "status": "ok",
+        "rows": 60,
+        "series": [
+          {
+            "period": "2021-01-01 00:00:00",
+            "video_view_count": 208749784,
+            "mom_change_pct": NaN,
+            "mom_change_abs": NaN
+          },
+          {
+            "period": "2021-02-01 00:00:00",
+            "video_view_count": 374562935,
+            "mom_change_pct": 79.43153177107001,
+            "mom_change_abs": 165813151.0
+          },
+          {
+            "period": "2021-03-01 00:00:00",
+            "video_view_count": 742531011,
+            "mom_change_pct": 98.23931884771247,
+            "mom_change_abs": 367968076.0
+          },
+          {
+            "period": "2021-04-01 00:00:00",
+            "video_view_count": 1056173479,
+            "mom_change_pct": 42.23964566511553,
+            "mom_change_abs": 313642468.0
+          },
+          {
+            "period": "2021-05-01 00:00:00",
+            "video_view_count": 339098896,
+            "mom_change_pct": -67.89363653392778,
+            "mom_change_abs": 717074583.0
+          },
+          {
+            "period": "2021-06-01 00:00:00",
+            "video_view_count": 158805986,
+            "mom_change_pct": -53.16823856601409,
+            "mom_change_abs": 180292910.0
+          },
+          {
+            "period": "2021-07-01 00:00:00",
+            "video_view_count": 657858199,
+            "mom_change_pct": 314.2527719326651,
+            "mom_change_abs": 499052213.0
+          },
+          {
+            "period": "2021-08-01 00:00:00",
+            "video_view_count": 532172335,
+            "mom_change_pct": -19.10531238966895,
+            "mom_change_abs": 125685864.0
+          },
+          {
+            "period": "2021-09-01 00:00:00",
+            "video_view_count": 582006357,
+            "mom_change_pct": 9.364263927774452,
+            "mom_change_abs": 49834022.0
+          },
+          {
+            "period": "2021-10-01 00:00:00",
+            "video_view_count": 237597734,
+            "mom_change_pct": -59.176092985527305,
+            "mom_change_abs": 344408623.0
+          },
+          {
+            "period": "2021-11-01 00:00:00",
+            "video_view_count": 323847512,
+            "mom_change_pct": 36.30075781783339,
+            "mom_change_abs": 86249778.0
+          },
+          {
+            "period": "2021-12-01 00:00:00",
+            "video_view_count": 533246653,
+            "mom_change_pct": 64.65979612034197,
+            "mom_change_abs": 209399141.0
+          },
+          {
+            "period": "2022-01-01 00:00:00",
+            "video_view_count": 625897040,
+            "mom_change_pct": 17.374771408082324,
+            "mom_change_abs": 92650387.0
+          },
+          {
+            "period": "2022-02-01 00:00:00",
+            "video_view_count": 459669709,
+            "mom_change_pct": -26.558254852906792,
+            "mom_change_abs": 166227331.0
+          },
+          {
+            "period": "2022-03-01 00:00:00",
+            "video_view_count": 465460985,
+            "mom_change_pct": 1.2598776657697819,
+            "mom_change_abs": 5791276.0
+          },
+          {
+            "period": "2022-04-01 00:00:00",
+            "video_view_count": 573118681,
+            "mom_change_pct": 23.12926313254804,
+            "mom_change_abs": 107657696.0
+          },
+          {
+            "period": "2022-05-01 00:00:00",
+            "video_view_count": 459365479,
+            "mom_change_pct": -19.84810577130708,
+            "mom_change_abs": 113753202.0
+          },
+          {
+            "period": "2022-06-01 00:00:00",
+            "video_view_count": 809878888,
+            "mom_change_pct": 76.30382016581616,
+            "mom_change_abs": 350513409.0
+          },
+          {
+            "period": "2022-07-01 00:00:00",
+            "video_view_count": 598647618,
+            "mom_change_pct": -26.08183434953302,
+            "mom_change_abs": 211231270.0
+          },
+          {
+            "period": "2022-08-01 00:00:00",
+            "video_view_count": 810600541,
+            "mom_change_pct": 35.40528962732799,
+            "mom_change_abs": 211952923.0
+          },
+          {
+            "period": "2022-09-01 00:00:00",
+            "video_view_count": 327660652,
+            "mom_change_pct": -59.57803684712813,
+            "mom_change_abs": 482939889.0
+          },
+          {
+            "period": "2022-10-01 00:00:00",
+            "video_view_count": 652813426,
+            "mom_change_pct": 99.23461117937347,
+            "mom_change_abs": 325152774.0
+          },
+          {
+            "period": "2022-11-01 00:00:00",
+            "video_view_count": 362013649,
+            "mom_change_pct": -44.545618306569565,
+            "mom_change_abs": 290799777.0
+          },
+          {
+            "period": "2022-12-01 00:00:00",
+            "video_view_count": 767341830,
+            "mom_change_pct": 111.9648892022853,
+            "mom_change_abs": 405328181.0
+          },
+          {
+            "period": "2023-01-01 00:00:00",
+            "video_view_count": 456247204,
+            "mom_change_pct": -40.54185681497384,
+            "mom_change_abs": 311094626.0
+          },
+          {
+            "period": "2023-02-01 00:00:00",
+            "video_view_count": 532459754,
+            "mom_change_pct": 16.704222915084422,
+            "mom_change_abs": 76212550.0
+          },
+          {
+            "period": "2023-03-01 00:00:00",
+            "video_view_count": 774379300,
+            "mom_change_pct": 45.43433455441968,
+            "mom_change_abs": 241919546.0
+          },
+          {
+            "period": "2023-04-01 00:00:00",
+            "video_view_count": 480546020,
+            "mom_change_pct": -37.94436137432909,
+            "mom_change_abs": 293833280.0
+          },
+          {
+            "period": "2023-05-01 00:00:00",
+            "video_view_count": 511710908,
+            "mom_change_pct": 6.4853076922788855,
+            "mom_change_abs": 31164888.0
+          },
+          {
+            "period": "2023-06-01 00:00:00",
+            "video_view_count": 813373110,
+            "mom_change_pct": 58.951684883762525,
+            "mom_change_abs": 301662202.0
+          },
+          {
+            "period": "2023-07-01 00:00:00",
+            "video_view_count": 518016401,
+            "mom_change_pct": -36.312573574014515,
+            "mom_change_abs": 295356709.0
+          },
+          {
+            "period": "2023-08-01 00:00:00",
+            "video_view_count": 450105466,
+            "mom_change_pct": -13.109804027228089,
+            "mom_change_abs": 67910935.0
+          },
+          {
+            "period": "2023-09-01 00:00:00",
+            "video_view_count": 379803328,
+            "mom_change_pct": -15.619036717052449,
+            "mom_change_abs": 70302138.0
+          },
+          {
+            "period": "2023-10-01 00:00:00",
+            "video_view_count": 1005427174,
+            "mom_change_pct": 164.72310795549427,
+            "mom_change_abs": 625623846.0
+          },
+          {
+            "period": "2023-11-01 00:00:00",
+            "video_view_count": 367167156,
+            "mom_change_pct": -63.48147677973939,
+            "mom_change_abs": 638260018.0
+          },
+          {
+            "period": "2023-12-01 00:00:00",
+            "video_view_count": 477948975,
+            "mom_change_pct": 30.172039407577067,
+            "mom_change_abs": 110781819.0
+          },
+          {
+            "period": "2024-01-01 00:00:00",
+            "video_view_count": 354211566,
+            "mom_change_pct": -25.889250834777922,
+            "mom_change_abs": 123737409.0
+          },
+          {
+            "period": "2024-02-01 00:00:00",
+            "video_view_count": 288451200,
+            "mom_change_pct": -18.5652791473218,
+            "mom_change_abs": 65760366.0
+          },
+          {
+            "period": "2024-03-01 00:00:00",
+            "video_view_count": 265181810,
+            "mom_change_pct": -8.067010988340485,
+            "mom_change_abs": 23269390.0
+          },
+          {
+            "period": "2024-04-01 00:00:00",
+            "video_view_count": 219778135,
+            "mom_change_pct": -17.12171547513006,
+            "mom_change_abs": 45403675.0
+          },
+          {
+            "period": "2024-05-01 00:00:00",
+            "video_view_count": 248620796,
+            "mom_change_pct": 13.123535241574412,
+            "mom_change_abs": 28842661.0
+          },
+          {
+            "period": "2024-06-01 00:00:00",
+            "video_view_count": 436806923,
+            "mom_change_pct": 75.69202980107907,
+            "mom_change_abs": 188186127.0
+          },
+          {
+            "period": "2024-07-01 00:00:00",
+            "video_view_count": 113399597,
+            "mom_change_pct": -74.03896526612515,
+            "mom_change_abs": 323407326.0
+          },
+          {
+            "period": "2024-08-01 00:00:00",
+            "video_view_count": 406552963,
+            "mom_change_pct": 258.51358713382376,
+            "mom_change_abs": 293153366.0
+          },
+          {
+            "period": "2024-09-01 00:00:00",
+            "video_view_count": 198042461,
+            "mom_change_pct": -51.287414181261305,
+            "mom_change_abs": 208510502.0
+          },
+          {
+            "period": "2024-10-01 00:00:00",
+            "video_view_count": 427471947,
+            "mom_change_pct": 115.84863409670514,
+            "mom_change_abs": 229429486.0
+          },
+          {
+            "period": "2024-11-01 00:00:00",
+            "video_view_count": 613618579,
+            "mom_change_pct": 43.54592934258679,
+            "mom_change_abs": 186146632.0
+          },
+          {
+            "period": "2024-12-01 00:00:00",
+            "video_view_count": 369846217,
+            "mom_change_pct": -39.727017783143104,
+            "mom_change_abs": 243772362.0
+          },
+          {
+            "period": "2025-01-01 00:00:00",
+            "video_view_count": 501576288,
+            "mom_change_pct": 35.61752559442834,
+            "mom_change_abs": 131730071.0
+          },
+          {
+            "period": "2025-02-01 00:00:00",
+            "video_view_count": 408100876,
+            "mom_change_pct": -18.63632995346064,
+            "mom_change_abs": 93475412.0
+          },
+          {
+            "period": "2025-03-01 00:00:00",
+            "video_view_count": 819970410,
+            "mom_change_pct": 100.92346236473162,
+            "mom_change_abs": 411869534.0
+          },
+          {
+            "period": "2025-04-01 00:00:00",
+            "video_view_count": 443896281,
+            "mom_change_pct": -45.864353690519145,
+            "mom_change_abs": 376074129.0
+          },
+          {
+            "period": "2025-05-01 00:00:00",
+            "video_view_count": 368054556,
+            "mom_change_pct": -17.085460781321572,
+            "mom_change_abs": 75841725.0
+          },
+          {
+            "period": "2025-06-01 00:00:00",
+            "video_view_count": 369234950,
+            "mom_change_pct": 0.3207116936218446,
+            "mom_change_abs": 1180394.0
+          },
+          {
+            "period": "2025-07-01 00:00:00",
+            "video_view_count": 507318818,
+            "mom_change_pct": 37.39729080359267,
+            "mom_change_abs": 138083868.0
+          },
+          {
+            "period": "2025-08-01 00:00:00",
+            "video_view_count": 566733657,
+            "mom_change_pct": 11.711538561536262,
+            "mom_change_abs": 59414839.0
+          },
+          {
+            "period": "2025-09-01 00:00:00",
+            "video_view_count": 257093439,
+            "mom_change_pct": -54.635932448247026,
+            "mom_change_abs": 309640218.0
+          },
+          {
+            "period": "2025-10-01 00:00:00",
+            "video_view_count": 237049016,
+            "mom_change_pct": -7.796551743197144,
+            "mom_change_abs": 20044423.0
+          },
+          {
+            "period": "2025-11-01 00:00:00",
+            "video_view_count": 153146737,
+            "mom_change_pct": -35.394485248569865,
+            "mom_change_abs": 83902279.0
+          },
+          {
+            "period": "2025-12-01 00:00:00",
+            "video_view_count": 273970979,
+            "mom_change_pct": 78.89442789760517,
+            "mom_change_abs": 120824242.0
+          }
+        ]
+      },
+      "insight": "Xu hướng theo tháng giúp nhận diện giai đoạn tăng trưởng, chững lại hoặc biến động bất thường."
+    },
+    "duration_distribution": {
+      "chart_type": "histogram",
+      "source_column": "video_duration",
+      "profile": {
+        "status": "ok",
+        "count": 6772,
+        "missing_count": 0,
+        "min": 0.0,
+        "p25": 0.9166666666666666,
+        "median": 3.85,
+        "p75": 5.633333333333334,
+        "max": 680.5,
+        "mean": 13.42454715495176,
+        "std": 30.693622598552047,
+        "skewness": 4.829365235147468,
+        "kurtosis": 50.350845086603584,
+        "zero_share": 0.003987005316007088,
+        "shape": "right_skewed"
+      },
+      "insight": "Độ dài video thường tập trung ở một vài khoảng nhất định; lệch phải hàm ý có một nhóm video rất dài."
+    },
+    "duration_outliers": {
+      "chart_type": "top_20_bubble",
+      "source_table": {
+        "status": "ok",
+        "rows": 20,
+        "table": [
+          {
+            "video_title": "nhạc không lời trịnh công sơn hay chưa từng thấy hòa tấu guitar rumba âm thanh nổi nghe sướng tai",
+            "channel_title": "Nhạc Sống Mạnh Hà",
+            "video_duration": 40830,
+            "video_view_count": 54604,
+            "genre": "Không lời",
+            "video_publish_date": "2024-10-01 10:09:46",
+            "duration_min": 680.5
+          },
+          {
+            "video_title": "nhạc ru bé ngủ ngon không quảng cáo nhạc cho bé nhạc giúp bé thông minh nhạc cho bà bầu",
+            "channel_title": "Nhạc Ru Bé Ngủ Ngon",
+            "video_duration": 28952,
+            "video_view_count": 20678825,
+            "genre": "Không lời",
+            "video_publish_date": "2021-10-13 08:25:55",
+            "duration_min": 482.53333333333336
+          },
+          {
+            "video_title": "nhạc không lời cafe buổi sáng hòa tấu guitar cổ điển nhạc phòng trà quán cafe nghe nổi da gà",
+            "channel_title": "Phòng Trà Mỹ Ngọc",
+            "video_duration": 15012,
+            "video_view_count": 196969,
+            "genre": "Không lời",
+            "video_publish_date": "2025-07-28 23:00:26",
+            "duration_min": 250.2
+          },
+          {
+            "video_title": "tổng kết 2025 top 50 nhạc remix càn quét tiktok 2025 playlist nhạc remix nghe xuyên tết 2026",
+            "channel_title": "H2O Remix",
+            "video_duration": 14103,
+            "video_view_count": 2692693,
+            "genre": "Remix",
+            "video_publish_date": "2025-12-06 09:00:32",
+            "duration_min": 235.05
+          },
+          {
+            "video_title": "hòa tấu guitar cổ điển nhạc phòng trà quán cafenhạc không lời cafe buổi sáng đánh bay mệt mỏi",
+            "channel_title": "Phòng Trà Mỹ Ngọc",
+            "video_duration": 13991,
+            "video_view_count": 582186,
+            "genre": "Không lời",
+            "video_publish_date": "2025-04-23 23:00:52",
+            "duration_min": 233.18333333333334
+          },
+          {
+            "video_title": "hòa tấu guitar cổ điển nhạc phòng trà quán cafenhạc không lời cafe buổi sáng ngày mới năng lượng",
+            "channel_title": "Phòng Trà Mỹ Ngọc",
+            "video_duration": 13594,
+            "video_view_count": 4511961,
+            "genre": "Khác",
+            "video_publish_date": "2025-04-09 23:00:41",
+            "duration_min": 226.56666666666666
+          },
+          {
+            "video_title": "30 bài nhạc xưa bất hủ tình ca phòng trà hải ngoại nhạc xưa để đời hay nhất mọi thời đại",
+            "channel_title": "Tình Ca 68",
+            "video_duration": 13148,
+            "video_view_count": 990144,
+            "genre": "Khác",
+            "video_publish_date": "2025-01-04 23:12:00",
+            "duration_min": 219.13333333333333
+          },
+          {
+            "video_title": "nhạc không lời buổi tối nghe ngủ ngon hơn hòa tấu guitar không lời phòng trà thư giãn 2025",
+            "channel_title": "Piano Mai Hương",
+            "video_duration": 13080,
+            "video_view_count": 194528,
+            "genre": "Không lời",
+            "video_publish_date": "2025-05-18 12:03:53",
+            "duration_min": 218.0
+          },
+          {
+            "video_title": "120 bài nhạc không lời buổi sáng đẳng cấp mọi thời đại hòa tấu rumba guitar nhạc cafe buổi sáng",
+            "channel_title": "Nhạc Sống VN365",
+            "video_duration": 13033,
+            "video_view_count": 3880944,
+            "genre": "Không lời",
+            "video_publish_date": "2022-04-24 21:02:01",
+            "duration_min": 217.21666666666667
+          },
+          {
+            "video_title": "nhạc không lời buổi sáng xua tan mệt mỏi hòa tấu guitar cổ điển nhạc cho phòng trà quán cafe",
+            "channel_title": "Nhạc Phòng Trà ",
+            "video_duration": 12801,
+            "video_view_count": 792993,
+            "genre": "Không lời",
+            "video_publish_date": "2024-11-05 22:01:08",
+            "duration_min": 213.35
+          },
+          {
+            "video_title": "nhạc lofi chill không quảng cáo 2025 triệu view nổi gió lên nợ ai đó lời xin lỗi",
+            "channel_title": "Diệu Nhiên Lofi",
+            "video_duration": 12604,
+            "video_view_count": 515969,
+            "genre": "Khác",
+            "video_publish_date": "2025-01-26 08:00:37",
+            "duration_min": 210.06666666666666
+          },
+          {
+            "video_title": "22h đêm nghe nhạc không lời giúp ngủ ngon hơn hòa tấu guitar không lời không quảng cáo",
+            "channel_title": "Piano Mai Hương",
+            "video_duration": 12477,
+            "video_view_count": 600192,
+            "genre": "Không lời",
+            "video_publish_date": "2024-12-30 13:32:30",
+            "duration_min": 207.95
+          },
+          {
+            "video_title": "cẩm ly tuyển tập 50 bài hát hay nhất của cẩm ly list nhạc hay chị tư cẩm ly",
+            "channel_title": "Bến Thành Audio Video",
+            "video_duration": 12475,
+            "video_view_count": 605977,
+            "genre": "Khác",
+            "video_publish_date": "2025-03-17 12:00:45",
+            "duration_min": 207.91666666666666
+          },
+          {
+            "video_title": "chế linh nhạc trước 1975 những bài hát hay và cảm xúc nhất của chế linh",
+            "channel_title": "Dòng Chảy Âm Nhạc",
+            "video_duration": 12440,
+            "video_view_count": 774208,
+            "genre": "Nhạc chế",
+            "video_publish_date": "2024-04-29 22:30:04",
+            "duration_min": 207.33333333333334
+          },
+          {
+            "video_title": "nhạc không lời buổi sáng rộn vang đất trời hòa tấu rumba guitar cafe buổi sáng nhạc phòng trà 39",
+            "channel_title": "Muzik Giải Trí",
+            "video_duration": 12258,
+            "video_view_count": 1130504,
+            "genre": "Không lời",
+            "video_publish_date": "2024-10-04 22:00:59",
+            "duration_min": 204.3
+          },
+          {
+            "video_title": "nhạc không lời buổi sáng tràn đầy năng lượnghòa tấu rumba guitar cafe buổi sángnhạc phòng trà 103",
+            "channel_title": "Muzik Giải Trí",
+            "video_duration": 12140,
+            "video_view_count": 490730,
+            "genre": "Không lời",
+            "video_publish_date": "2024-12-07 22:00:19",
+            "duration_min": 202.33333333333334
+          },
+          {
+            "video_title": "nhạc không lời hay nhất không quảng cáo hòa tấu guitar cổ điển nhẹ nhàng êm tai nghe rất thoải mái",
+            "channel_title": "Nhạc Phòng Trà ",
+            "video_duration": 12121,
+            "video_view_count": 1162780,
+            "genre": "Không lời",
+            "video_publish_date": "2024-11-04 08:00:16",
+            "duration_min": 202.01666666666668
+          },
+          {
+            "video_title": "nhạc không lời trịnh công sơn ai cũng ngả mũ thán phục hòa tấu guitar saxophone thư giãn chữa lành",
+            "channel_title": "Nhạc Sống Mạnh Hà",
+            "video_duration": 12120,
+            "video_view_count": 124395,
+            "genre": "Không lời",
+            "video_publish_date": "2024-06-29 01:47:01",
+            "duration_min": 202.0
+          },
+          {
+            "video_title": "top 50 remix nghe nhiều thê lương phận duyên lỡ làng đào nương sầu tương tư đoạn tuyệt nàng đi",
+            "channel_title": "HOA HỒNG DẠI MUSIC",
+            "video_duration": 12054,
+            "video_view_count": 4323714,
+            "genre": "Cải lương",
+            "video_publish_date": "2021-07-11 00:45:00",
+            "duration_min": 200.9
+          },
+          {
+            "video_title": "piano collection vol5 nhạc vpop tuyển chọn 3 hour playlist alice piano",
+            "channel_title": "Alice Piano",
+            "video_duration": 11629,
+            "video_view_count": 785805,
+            "genre": "Khác",
+            "video_publish_date": "2025-09-22 04:15:00",
+            "duration_min": 193.81666666666666
+          }
+        ]
+      },
+      "insight": "Danh sách video dài nhất giúp phát hiện outlier và kiểm tra các nội dung hòa tấu, live, hoặc clip tổng hợp."
+    }
   },
   "distribution": {
     "view_distribution_shape": {
@@ -73,6 +840,26 @@
       {
         "channel_title": "Đen Vâu Official",
         "video_view_count": 328213404.0
+      },
+      {
+        "channel_title": "Vie Channel - MUSIC",
+        "video_view_count": 322637802.0
+      },
+      {
+        "channel_title": "Nguyễn Thái Học Official",
+        "video_view_count": 322141637.0
+      },
+      {
+        "channel_title": "H2O Remix",
+        "video_view_count": 316512772.0
+      },
+      {
+        "channel_title": "Bé Minh Vy",
+        "video_view_count": 310078311.0
+      },
+      {
+        "channel_title": "Tăng Duy Tân",
+        "video_view_count": 298519140.0
       }
     ],
     "top_videos": [
@@ -95,6 +882,26 @@
       {
         "video_title": "em muốn làm cảnh sát minh vy nhạc thiếu nhi vui nhộn cho bé st nguyễn văn chung mv 4k",
         "video_view_count": 187343056.0
+      },
+      {
+        "video_title": "sơn tùng mtp đừng làm trái tim anh đau official music video",
+        "video_view_count": 171751332.0
+      },
+      {
+        "video_title": "tăng phúc ft trương thảo nhi chỉ là không cùng nhau nhạc hoa lời việt mây in the nest 2832021",
+        "video_view_count": 156107588.0
+      },
+      {
+        "video_title": "đám cưới nha hồng thanh x mie lần đầu biểu diễn cực sung",
+        "video_view_count": 150560353.0
+      },
+      {
+        "video_title": "dương domic mất kết nối ep dữ liệu quý",
+        "video_view_count": 140144129.0
+      },
+      {
+        "video_title": "tăng duy tân cắt đôi nỗi sầu ft drum7 official music video",
+        "video_view_count": 136052038.0
       }
     ]
   },
@@ -148,5 +955,8 @@
     "channel_title": "Kênh Thiếu Nhi - BHMEDIA",
     "video_view_count": 1064134866
   },
-  "selected_chart_state": {}
+  "tab_insights": [
+    "Đọc đồng thời phân phối, xu hướng và top entities để tránh chỉ nhìn vào KPI tổng.",
+    "Outlier thời lượng dài cần được diễn giải cùng lượt xem và thể loại, không xem như lỗi dữ liệu ngay lập tức."
+  ]
 }

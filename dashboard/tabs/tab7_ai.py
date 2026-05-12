@@ -56,10 +56,78 @@ def _get_dataframe_profile(filtered_df: pd.DataFrame):
     return _build_dataframe_profile(filtered_df)
 
 
+def _build_column_usage_guide(filtered_df: pd.DataFrame) -> str:
+    """Tóm tắt cách dùng thực tế của các cột đang được dùng trong app để AI tránh bịa cột."""
+    column_guide = [
+        {
+            "columns": ["video_view_count"],
+            "use": "Cột trung tâm cho gần như mọi phân tích: phân bố, top/bottom, xu hướng theo tháng, tương quan, model target, timing, duration.",
+            "safe_pairing": ["video_like_count", "video_comment_count", "video_publish_date", "hour", "day", "video_duration", "channel_title"],
+        },
+        {
+            "columns": ["video_like_count", "video_comment_count"],
+            "use": "Dùng để đo tương tác hoặc engagement_rate; thường đi cùng video_view_count để so sánh hiệu quả video.",
+            "safe_pairing": ["video_view_count", "video_title", "video_licensed_content"],
+        },
+        {
+            "columns": ["video_publish_date", "publish_date", "hour", "day"],
+            "use": "Cột thời gian cho lịch đăng, heatmap giờ/ngày, trend theo tháng, và lọc theo khoảng ngày.",
+            "safe_pairing": ["video_view_count", "video_duration", "video_title"],
+        },
+        {
+            "columns": ["video_duration"],
+            "use": "Dùng cho phân bố thời lượng, outlier thời lượng, log-scale duration, và so sánh duration với view.",
+            "safe_pairing": ["video_view_count", "video_title", "video_type"],
+        },
+        {
+            "columns": ["channel_title", "channel_subscriber_count", "channel_size"],
+            "use": "Dùng để xếp hạng kênh, phân nhóm quy mô kênh, và kiểm soát confounder trong modeling.",
+            "safe_pairing": ["video_view_count", "video_like_count", "video_comment_count"],
+        },
+        {
+            "columns": ["video_licensed_content", "video_caption_status"],
+            "use": "Dùng cho phân tích bản quyền và caption impact; thường được diễn giải như biến nhị phân hoặc tỷ trọng nhóm.",
+            "safe_pairing": ["video_view_count", "video_like_count", "video_title"],
+        },
+        {
+            "columns": ["search_query", "genre"],
+            "use": "Dùng để phân nhóm thể loại, supply-demand, hành vi người dùng, và so sánh theo genre.",
+            "safe_pairing": ["video_view_count", "hour", "day", "video_caption_status", "video_licensed_content"],
+        },
+        {
+            "columns": ["video_title", "video_description", "video_tags", "video_tags_count", "title_length", "video_type"],
+            "use": "Dùng cho SEO/NLP, nhận diện loại video, hoặc feature engineering trong model; title_length và video_type là cột dẫn xuất hay gặp.",
+            "safe_pairing": ["video_view_count", "video_like_count", "channel_title"],
+        },
+        {
+            "columns": ["engagement_rate"],
+            "use": "Cột dẫn xuất từ like/comment/view, dùng cho success analysis và modeling; nếu có thì ưu tiên dùng thay vì tự viết lại công thức nhiều nơi.",
+            "safe_pairing": ["video_view_count", "video_like_count", "video_comment_count", "channel_subscriber_count"],
+        },
+        {
+            "columns": ["_row_id"],
+            "use": "Chỉ dùng để nhận diện dòng hoặc trace kết quả, không nên dùng như feature phân tích.",
+            "safe_pairing": [],
+        },
+    ]
+
+    available = set(filtered_df.columns)
+    lines = ["Bản đồ cột thực tế và cách dùng an toàn:"]
+    for item in column_guide:
+        cols = [col for col in item["columns"] if col in available]
+        if not cols:
+            continue
+        pairs = [col for col in item["safe_pairing"] if col in available]
+        lines.append(f"- {', '.join(cols)}: {item['use']}")
+        if pairs:
+            lines.append(f"  Cột nên đi kèm: {', '.join(pairs)}")
+
+    return "\n".join(lines)
 def _build_code_prompt(question: str, filtered_df: pd.DataFrame, dataframe_profile: dict) -> str:
     column_list = ", ".join(filtered_df.columns.tolist())
+    usage_guide = _build_column_usage_guide(filtered_df)
     return f"""
-Bạn là Data Engineer và Data Analyst.
+Bạn là Data Engineer và Data Analyst đang làm về dữ liệu tren youtube
 
 Ngữ cảnh dữ liệu:
 - `filtered_df` là DataFrame cuối cùng đã được xử lý trong `dashboard/app.py` sau khi load CSV, tạo cột dẫn xuất, và áp dụng bộ lọc hiện tại.
@@ -69,9 +137,12 @@ Ngữ cảnh dữ liệu:
 - Khi gặp cột ngày giờ, ưu tiên `pd.to_datetime(..., errors='coerce')`.
 - Khi cần nhóm/so sánh, luôn `copy()` dataframe con trước khi gán cột mới để tránh SettingWithCopyWarning.
 - Nếu dữ liệu không đủ, hãy trả về `ai_extracted_data` là dict mô tả rõ thiếu gì, không được để code lỗi.
+- Không được giả định dữ liệu để thực hiện các phép so sánh bằng (ví dụ genere == "Music")
 
 Schema thực tế của `filtered_df`:
 {column_list}
+
+{usage_guide}
 
 Tóm tắt dataframe:
     {json.dumps(dataframe_profile, ensure_ascii=False, indent=2, default=str)}
@@ -88,11 +159,8 @@ Nhiệm vụ:
 4. Khối 2 chỉ nên tập trung vào visualization, có thể dùng dữ liệu đã trích xuất hoặc dataframe phụ trợ cần thiết.
 5. Tránh code quá dài, tránh logic phức tạp không cần thiết.
 6. Trả về đúng 2 khối code, không thêm nội dung nào khác.
-
-Gợi ý an toàn:
-- Có thể bắt đầu bằng `df = filtered_df.copy()`.
-- Nếu cần xem schema trong code, dùng `filtered_df.columns`, `filtered_df.dtypes`, `filtered_df.isna().sum()`.
-- Nếu phải chọn top/bottom, dùng `nlargest`, `nsmallest`, `sort_values`, `groupby`.
+7. Phải có comment rõ ràng trong code để giải thích từng bước, đặc biệt là phần trích xuất dữ liệu.
+8. Không sử dụng câu lệnh so sánh với context bạn tự suy, ví dụ (genre == Music)
 """
 
 
@@ -105,13 +173,18 @@ def _extract_python_code_blocks(text: str):
     return text.strip(), ""
 
 
-def _build_answer_prompt(question: str, extracted_data) -> str:
+def _build_answer_prompt(question: str, extracted_data, recent_dialogue: str = "") -> str:
     return f"""
 Bạn là Data Analyst chuyên nghiệp.
 Người dùng hỏi: "{question}"
 Dữ liệu đã trích xuất: {extracted_data}
 
-Dựa hoàn toàn vào dữ liệu trên, hãy trả lời ngắn gọn, đúng trọng tâm, ưu tiên insight và khuyến nghị hành động.
+Dựa hoàn toàn vào dữ liệu trên và ngữ cảnh hội thoại trước đó nếu có, hãy trả lời ngắn gọn, đúng trọng tâm, theo đúng cấu trúc sau:
+1. Nhận xét biểu đồ: nói rõ đang nói về biểu đồ nào, đọc xu hướng/phân phối/tương quan/outlier/tỷ trọng nếu có.
+2. Dẫn dắt câu chuyện: nối các ý lại thành một mạch phân tích ngắn, giải thích vì sao các dấu hiệu đó đi cùng nhau.
+3. Liên kết biểu đồ nếu có: nếu có nhiều biểu đồ hoặc nhiều phần dữ liệu, hãy nói biểu đồ nào xác nhận hoặc bổ sung cho biểu đồ nào.
+4. Kết luận cuối cùng: chốt lại trực tiếp câu trả lời cho câu hỏi của người dùng.
+
 Nếu dữ liệu chưa đủ, hãy nói rõ thiếu gì thay vì suy đoán.
 Trình bày đẹp bằng Markdown.
 """
@@ -298,10 +371,17 @@ def render_tab(filtered_df):
                         
                         if code_to_run:
                             # Execute extraction code
+                            import plotly.graph_objects as go
+                            import plotly.express as px
+                            import matplotlib.pyplot as plt
+                            
                             local_env = {
                                 "filtered_df": filtered_df,
                                 "pd": pd,
                                 "np": np,
+                                "plt": plt,
+                                "go": go,
+                                "px": px,
                                 "ai_extracted_data": None
                             }
                             
@@ -454,10 +534,17 @@ def render_tab(filtered_df):
             try:
                 active_question = st.session_state.pending_question or q
 
+                import plotly.graph_objects as go
+                import plotly.express as px
+                import matplotlib.pyplot as plt
+
                 local_env = {
                     "filtered_df": filtered_df,
                     "pd": pd,
                     "np": np,
+                    "plt": plt,
+                    "go": go,
+                    "px": px,
                     "ai_extracted_data": None
                 }
 
